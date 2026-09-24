@@ -1,0 +1,926 @@
+\documentclass[12pt]{article}
+\usepackage[spanish, es-tabla]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{listings}
+\geometry{margin=1in}
+\definecolor{guinda}{RGB}{128,0,32}
+\hypersetup{hidelinks}
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+
+% Placeholder reutilizable para diagramas pendientes.
+% Sustituir el contenido de cada figure por \includegraphics cuando el diagrama esté listo.
+\newcommand{\diagramplaceholder}[2]{%
+    \begin{figure}[H]
+        \centering
+        \fbox{%
+            \begin{minipage}[c][6cm][c]{0.88\textwidth}
+                \centering
+                \textbf{#1}\\[0.4cm]
+                \small #2
+            \end{minipage}
+        }
+    \end{figure}
+}
+
+\begin{document}
+
+% Custom title block
+\begin{titlepage}
+    \begin{picture}(0,0)
+        \put(-45,-2){\includegraphics[width=25mm]{Logo_IPN.png}}
+        \put(400,10){\includegraphics[width=25mm]{upiita-logo.png}}
+    \end{picture}
+
+    \vspace*{1cm}
+    \centering
+    \vspace*{2cm}
+    {\Huge Unidad Profesional Interdisciplinaria en Ingeniería y Tecnologías Avanzadas}\\[0.3cm]
+    {\Large Instituto Politécnico Nacional}\\[1cm]
+    {\Huge\bfseries\textcolor{guinda}{Documento técnico del MVP}}\\[0.4cm]
+    {\Large\bfseries Plataforma integral de gestión académica y operativa para laboratorios}\\[0.4cm]
+    {\large Implementación inicial: Laboratorio de Pesados}\\[0.8cm]
+    {\large Prácticas, espacios, reservaciones, inventario, mantenimiento, documentación, notificaciones e inteligencia artificial}
+
+    \vspace{1.5cm}
+
+    \begin{flushleft}
+    \textbf{Fecha:} 13 de agosto de 2026\\
+    \textbf{Versión:} 3.0\\
+    \textbf{Alcance:} MVP web funcional y base extensible\\
+    \end{flushleft}
+
+    \vfill
+\end{titlepage}
+
+\section*{1. Resumen ejecutivo}
+
+El presente documento define la versión 3.0 del diseño técnico de una plataforma integral para la gestión académica y operativa de laboratorios. La implementación inicial está orientada al Laboratorio de Pesados de la UPIITA, pero la arquitectura se diseña para permitir que otros laboratorios puedan incorporarse sin reescribir el núcleo del sistema.
+
+La plataforma centraliza prácticas académicas, sesiones de laboratorio, asistencia, reservación de espacios y recursos, inventario, préstamos, consumos, ubicación física de materiales, documentación técnica, mantenimiento, incidencias, reportes y notificaciones. Asimismo, contempla una capa de inteligencia artificial orientada a interpretar lenguaje natural, consultar información y ejecutar acciones autorizadas mediante los mismos servicios de dominio utilizados por la interfaz tradicional.
+
+La solución evoluciona desde el enfoque local de la versión anterior hacia una arquitectura \textbf{web first}, implementada inicialmente como un \textbf{monolito modular} en TypeScript con Next.js y PostgreSQL. Los archivos se almacenan en Amazon S3 y la infraestructura se despliega sobre AWS. La aplicación deberá poder instalarse como Progressive Web App (PWA) para habilitar una experiencia similar a una aplicación nativa y permitir notificaciones push cuando el navegador y el dispositivo lo soporten.
+
+La arquitectura prioriza cinco principios: integridad transaccional, trazabilidad, modularidad, crecimiento progresivo y autoridad determinista de los datos. La inteligencia artificial nunca constituye la fuente de verdad sobre disponibilidad, inventario, permisos, mantenimiento o estado de recursos; toda acción deberá validarse en los servicios de dominio antes de producir cambios persistentes.
+
+\section*{2. Objetivo del sistema}
+
+El objetivo del sistema es centralizar en una sola plataforma los procesos académicos, espaciales, operativos y técnicos de los laboratorios, reduciendo tareas manuales y dispersas sin sustituir el criterio del personal responsable.
+
+La plataforma deberá permitir que profesores, ayudantes, administradores y alumnos interactúen con prácticas, sesiones, recursos, inventario, espacios, reservaciones, manuales, mantenimiento e incidencias de acuerdo con sus permisos. Adicionalmente, deberá ofrecer mecanismos de automatización y lenguaje natural que simplifiquen operaciones repetitivas sin omitir validaciones ni controles de autorización.
+
+\section*{3. Alcance del MVP}
+
+La V3 se plantea como una aplicación web centralizada y multiusuario. La primera implementación se utilizará en el Laboratorio de Pesados, pero el modelo no deberá codificar reglas exclusivas de dicho laboratorio dentro del núcleo general.
+
+El MVP deberá ser funcional para uso real y concentrarse en los procesos que mayor valor aportan a la operación cotidiana. La arquitectura podrá incluir puntos de extensión para funcionalidades posteriores sin exigir su implementación completa en la primera entrega.
+
+\subsection*{3.1 Funciones incluidas}
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item Autenticación y control de acceso por roles y permisos.
+    \item Interfaz diferenciada para alumno, profesor, ayudante y administrador.
+    \item Creación, publicación y gestión de prácticas.
+    \item Programación y apertura de sesiones de laboratorio.
+    \item Registro y corrección de asistencia.
+    \item Catálogo de espacios físicos y recursos reservables.
+    \item Visualización gráfica de planos de laboratorios y recursos.
+    \item Calendario de reservaciones por espacio o recurso.
+    \item Reservaciones individuales, grupales, exclusivas y recurrentes.
+    \item Cálculo de disponibilidad y detección de conflictos.
+    \item Gestión de inventario para consumibles, herramientas reutilizables y activos fijos.
+    \item Ubicaciones físicas jerárquicas opcionales para inventario y recursos.
+    \item Préstamos, devoluciones, consumos, compras y ajustes de inventario.
+    \item Registro de uso de maquinaria fija.
+    \item Biblioteca de manuales y documentos técnicos.
+    \item Bitácora de mantenimiento por equipo.
+    \item Consumo de materiales asociado a mantenimiento cuando aplique.
+    \item Reporte y seguimiento de incidencias.
+    \item Centro de notificaciones dentro de la plataforma.
+    \item Correo electrónico para eventos importantes o críticos.
+    \item Soporte PWA y notificaciones push cuando estén disponibles.
+    \item Exportación de reportes básicos en CSV y PDF.
+    \item Auditoría de operaciones relevantes.
+    \item Base técnica para asistente de IA con herramientas autorizadas.
+\end{itemize}
+
+\subsection*{3.2 Funciones fuera del alcance inicial}
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item Videollamadas, chat institucional completo o sustitución de Teams/Google Classroom.
+    \item Sistema de nómina, recursos humanos o administración financiera institucional general.
+    \item Control biométrico obligatorio de asistencia.
+    \item RFID o telemetría en tiempo real de cada herramienta.
+    \item Gemelo digital industrial del laboratorio.
+    \item Registro automático de movimientos físicos milimétricos de materiales.
+    \item Analítica predictiva de fallos como requisito del MVP.
+    \item Control automático de responsabilidad disciplinaria.
+    \item Aplicaciones nativas separadas para iOS, Android, Windows o macOS.
+\end{itemize}
+
+\section*{4. Actores principales}
+
+\subsection*{4.1 Profesor / responsable}
+
+Gestiona prácticas, sesiones, reservaciones, asistencia, inventario, manuales, mantenimiento, incidencias y reportes de acuerdo con los permisos asignados.
+
+\subsection*{4.2 Ayudante / operador de laboratorio}
+
+Apoya la operación física del laboratorio. Puede registrar préstamos, devoluciones, consumos, ubicaciones, entradas de inventario, mantenimiento e incidencias cuando sus permisos lo autoricen.
+
+\subsection*{4.3 Alumno}
+
+Consulta prácticas y sesiones, registra asistencia cuando corresponda, solicita o reserva recursos permitidos, consulta documentación y reporta incidencias.
+
+\subsection*{4.4 Administrador}
+
+Gestiona usuarios, roles, permisos, configuración de laboratorios, espacios, catálogos, políticas y parámetros generales de la plataforma.
+
+\section*{5. Principios de diseño}
+
+\begin{enumerate}[label=PD\arabic*., leftmargin=1.4cm]
+    \item \textbf{Monolito modular primero.} La V3 no utilizará microservicios como requisito inicial. Los dominios deberán permanecer separados internamente para facilitar una extracción futura únicamente cuando exista una necesidad real.
+    \item \textbf{API y servicios de dominio como autoridad.} La interfaz web, automatizaciones y agentes deberán utilizar los mismos servicios de aplicación y reglas de negocio.
+    \item \textbf{Precisión opcional.} El modelo podrá representar más detalle del que exige la experiencia de usuario. Por ejemplo, una ubicación puede registrarse como ``Almacén A'' sin obligar a capturar estante, fila y columna.
+    \item \textbf{Identidad únicamente cuando aporta valor.} Un torno puede requerir identidad individual; cien tornillos equivalentes pueden manejarse como cantidad.
+    \item \textbf{Auditoría útil, no telemetría excesiva.} Se registrarán operaciones con valor académico, operativo o de trazabilidad, evitando capturar movimientos irrelevantes.
+    \item \textbf{IA no autoritativa.} El modelo de lenguaje puede interpretar, resumir y proponer, pero nunca establecer por sí mismo hechos operativos ni omitir permisos o validaciones.
+\end{enumerate}
+
+\section*{6. Visión funcional del sistema}
+
+La práctica continúa siendo la unidad académica principal, mientras que la sesión representa su ejecución concreta en una fecha y horario determinados. Sin embargo, la V3 incorpora dominios operativos independientes que pueden relacionarse con una práctica sin depender de ella.
+
+Una sesión puede requerir espacios, maquinaria, mesas, herramientas, consumibles y documentación. El sistema deberá poder reservar recursos, comprobar disponibilidad, registrar asistencia, entregar materiales, documentar mantenimiento e incidencias y conservar la relación entre estas operaciones cuando sea útil.
+
+\section*{7. Dominios funcionales}
+
+La plataforma se organiza inicialmente en los siguientes dominios:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item \textbf{Academic}: prácticas, grupos, sesiones y asistencia.
+    \item \textbf{Spatial}: espacios, planos, ubicaciones y recursos físicos.
+    \item \textbf{Reservations}: disponibilidad, calendarios, series recurrentes, bloqueos y asignaciones.
+    \item \textbf{Inventory}: ítems, existencias, préstamos, consumos, compras y movimientos.
+    \item \textbf{Maintenance}: bitácoras, estados de equipo, servicios realizados y materiales utilizados.
+    \item \textbf{Incidents}: reportes, severidad, seguimiento y resolución.
+    \item \textbf{Knowledge}: manuales, documentos y referencias técnicas.
+    \item \textbf{Notifications}: notificaciones in-app, email y push.
+    \item \textbf{Identity}: usuarios, roles, permisos y perfiles.
+    \item \textbf{Audit}: historial de acciones relevantes.
+    \item \textbf{AI}: agente, herramientas, memoria y recuperación de conocimiento.
+\end{itemize}
+
+\section*{8. Interfaces principales}
+
+\subsection*{8.1 Interfaz del alumno}
+
+La interfaz del alumno deberá permitir:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item Consultar prácticas y sesiones activas.
+    \item Revisar instrucciones, materiales y manuales.
+    \item Registrar asistencia cuando la sesión se encuentre habilitada.
+    \item Consultar disponibilidad y solicitar o reservar recursos permitidos.
+    \item Consultar sus reservaciones y préstamos.
+    \item Reportar fallos o anomalías.
+    \item Recibir notificaciones relacionadas con prácticas, sesiones, cambios e incidencias relevantes.
+\end{itemize}
+
+\subsection*{8.2 Dashboard del profesor / ayudante}
+
+La interfaz de personal autorizado deberá permitir:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item Crear y publicar prácticas.
+    \item Programar sesiones y gestionar asistencia.
+    \item Visualizar planos interactivos y calendarios de espacios.
+    \item Crear, revisar, modificar o cancelar reservaciones.
+    \item Administrar inventario, ubicaciones y movimientos.
+    \item Registrar préstamos, devoluciones, compras y consumos.
+    \item Registrar mantenimiento en formato estructurado o mediante lenguaje natural asistido.
+    \item Revisar y resolver incidencias.
+    \item Gestionar documentos y manuales.
+    \item Consultar reportes y auditoría de acuerdo con permisos.
+\end{itemize}
+
+\section*{9. Requisitos funcionales}
+
+\begin{enumerate}[label=RF\arabic*., leftmargin=1.3cm]
+    \item El sistema deberá permitir autenticación y autorización diferenciadas.
+    \item El sistema deberá permitir crear, editar, publicar y cerrar prácticas.
+    \item El sistema deberá permitir asociar prácticas a grupos y periodos.
+    \item El sistema deberá permitir crear sesiones asociadas a prácticas.
+    \item El sistema deberá permitir registrar asistencia únicamente en sesiones habilitadas.
+    \item El sistema deberá mantener un catálogo de usuarios y alumnos activos.
+    \item El sistema deberá permitir crear y configurar espacios físicos.
+    \item El sistema deberá permitir asociar uno o más planos a espacios configurables.
+    \item El sistema deberá representar recursos reservables dentro de planos mediante coordenadas y dimensiones opcionales.
+    \item El sistema deberá mostrar disponibilidad de espacios y recursos para un intervalo de tiempo.
+    \item El sistema deberá permitir reservaciones recurrentes y detectar conflictos por ocurrencia.
+    \item El sistema deberá permitir reservar un espacio de forma exclusiva cuando el usuario tenga autorización.
+    \item El sistema deberá permitir reservar recursos de forma compartida sin bloquear innecesariamente todo el espacio contenedor.
+    \item El sistema deberá permitir registrar bloqueos de disponibilidad por mantenimiento, cierre u otras causas operativas.
+    \item El sistema deberá permitir crear, editar y desactivar ítems de inventario.
+    \item El sistema deberá distinguir consumibles, herramientas reutilizables y activos individualizables cuando corresponda.
+    \item El sistema deberá permitir asociar existencias a una ubicación física opcional.
+    \item El sistema deberá permitir que una ubicación contenga múltiples tipos de ítems sin restricción por defecto.
+    \item El sistema deberá permitir ubicaciones jerárquicas de profundidad variable.
+    \item El sistema deberá permitir registrar préstamos y devoluciones sin considerar el préstamo como consumo permanente.
+    \item El sistema deberá permitir registrar compras, consumos, daños, pérdidas y ajustes de inventario mediante movimientos auditables.
+    \item El sistema deberá permitir registrar cantidades en unidades adecuadas, incluyendo piezas, metros, litros o kilogramos.
+    \item El sistema deberá registrar uso de maquinaria por alumno y sesión cuando aplique.
+    \item El sistema deberá permitir adjuntar documentos y manuales a recursos o prácticas.
+    \item El sistema deberá permitir registrar notas de mantenimiento estructuradas o texto libre.
+    \item El sistema deberá permitir vincular materiales consumidos con una actividad de mantenimiento.
+    \item El sistema deberá permitir modificar el estado operativo de un recurso como resultado del mantenimiento.
+    \item El sistema deberá permitir reportar, clasificar, seguir y resolver incidencias.
+    \item El sistema deberá identificar usos previos relevantes de un recurso con fines de trazabilidad.
+    \item El sistema deberá proporcionar un centro de notificaciones dentro de la aplicación.
+    \item El sistema deberá enviar correo electrónico para eventos definidos como importantes o críticos.
+    \item El sistema deberá soportar notificaciones push para usuarios que instalen la PWA y otorguen permiso.
+    \item El sistema deberá permitir configurar preferencias de notificación sin exigir una matriz excesivamente compleja en el MVP.
+    \item El sistema deberá generar reportes básicos por práctica, sesión, inventario, reservación, mantenimiento e incidencia.
+    \item El sistema deberá exportar información seleccionada en CSV y PDF.
+    \item La capa de IA deberá consultar datos reales antes de afirmar disponibilidad, ubicación, stock, permisos o estado de recursos.
+    \item Toda acción iniciada por IA deberá atravesar las mismas reglas de autorización, validación y transacción que una acción iniciada desde la interfaz.
+    \item El sistema deberá volver a comprobar las condiciones críticas inmediatamente antes de ejecutar una modificación iniciada por IA o por una confirmación diferida del usuario.
+\end{enumerate}
+
+\section*{10. Requisitos no funcionales}
+
+\begin{enumerate}[label=RNF\arabic*., leftmargin=1.4cm]
+    \item La aplicación se diseñará bajo un enfoque web first y deberá ser usable desde computadoras, tabletas y teléfonos con navegadores modernos.
+    \item La aplicación deberá poder instalarse como PWA cuando el navegador lo permita.
+    \item La arquitectura deberá mantener separación modular de dominios sin requerir microservicios en el MVP.
+    \item PostgreSQL será la fuente principal de verdad para datos transaccionales del dominio.
+    \item La integridad deberá preservarse mediante restricciones, llaves foráneas, índices y transacciones.
+    \item Las operaciones críticas de reservación e inventario deberán ser seguras ante concurrencia.
+    \item Los documentos y archivos binarios deberán mantenerse separados de la base relacional.
+    \item La arquitectura deberá permitir crecimiento hacia múltiples laboratorios sin reescribir los dominios principales.
+    \item El sistema deberá conservar trazabilidad suficiente para auditar acciones operativas relevantes.
+    \item El sistema deberá minimizar acoplamiento directo a proveedores externos mediante adaptadores para correo, push, almacenamiento y servicios de IA.
+    \item La disponibilidad, el inventario y los permisos deberán resolverse mediante lógica determinista del backend.
+    \item El sistema deberá privilegiar simplicidad operativa y de mantenimiento considerando un equipo de desarrollo reducido.
+\end{enumerate}
+
+\section*{11. Arquitectura propuesta}
+
+La V3 se implementará inicialmente como un monolito modular en TypeScript. Next.js concentrará la interfaz web y los endpoints o acciones de aplicación necesarios, mientras que los servicios de dominio encapsularán reglas de negocio, autorización y acceso a persistencia.
+
+\begin{center}
+\begin{tabular}{p{4cm} p{9.5cm}}
+\toprule
+\textbf{Capa} & \textbf{Responsabilidad principal} \\
+\midrule
+Next.js / React & Interfaz web responsiva, PWA, dashboards, planos, calendarios y experiencia de usuario. \\
+Servicios de aplicación & Casos de uso, validaciones, permisos, coordinación entre dominios y transacciones. \\
+Dominios & Reglas de Academic, Reservations, Inventory, Maintenance, Incidents, Notifications, etc. \\
+PostgreSQL & Fuente de verdad para entidades, relaciones, movimientos y auditoría. \\
+Amazon S3 & Almacenamiento de manuales, documentos, evidencias y archivos generados. \\
+Adaptadores AWS & Integración con identidad, email, observabilidad, eventos y servicios de IA. \\
+Capa de IA & Interpretación de lenguaje natural, recuperación de conocimiento y uso de herramientas autorizadas. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\diagramplaceholder
+{Figura pendiente: arquitectura general de la plataforma en AWS}
+{Diagrama con Web/PWA, capa de aplicación Next.js, PostgreSQL administrado, Amazon S3, identidad, Amazon SES, observabilidad, eventos y la capa de IA con Amazon Bedrock/AgentCore. Se recomienda utilizar iconografía oficial de AWS.}
+
+\subsection*{11.1 Stack tecnológico inicial}
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item \textbf{Lenguaje principal}: TypeScript.
+    \item \textbf{Framework web}: Next.js con React.
+    \item \textbf{Base de datos}: PostgreSQL administrado en AWS.
+    \item \textbf{ORM / acceso a datos}: Drizzle ORM como propuesta inicial, sin impedir SQL explícito cuando sea conveniente.
+    \item \textbf{Archivos}: Amazon S3.
+    \item \textbf{Identidad}: capa de autenticación desacoplada con soporte para cuentas locales y proveedores federados mediante OpenID Connect (OIDC) y OAuth 2.0. Amazon Cognito podrá utilizarse como servicio administrado de identidad y Microsoft Entra ID se contempla como proveedor institucional potencial para cuentas del IPN. Los permisos de aplicación se persistirán y evaluarán en el dominio.
+    \item \textbf{Correo}: Amazon SES mediante un adaptador de notificaciones.
+    \item \textbf{Observabilidad}: Amazon CloudWatch para infraestructura y aplicación.
+    \item \textbf{Infraestructura como código}: AWS CDK con TypeScript.
+    \item \textbf{IA}: Amazon Bedrock y, cuando se implemente la capa agentiva, componentes de Amazon Bedrock AgentCore.
+\end{itemize}
+
+\subsection*{11.2 Estructura sugerida de carpetas}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.9\textwidth}
+\footnotesize
+\begin{verbatim}
+src/
+|-- app/
+|-- modules/
+|   |-- academic/
+|   |-- spatial/
+|   |-- reservations/
+|   |-- inventory/
+|   |-- maintenance/
+|   |-- incidents/
+|   |-- knowledge/
+|   `-- notifications/
+|-- core/
+|   |-- auth/
+|   |-- permissions/
+|   |-- audit/
+|   |-- events/
+|   |-- database/
+|   `-- storage/
+|-- ai/
+|   |-- agent/
+|   |-- tools/
+|   |-- memory/
+|   `-- knowledge/
+`-- infrastructure/
+    `-- aws/
+\end{verbatim}
+\end{minipage}
+\caption{Estructura conceptual sugerida para el monolito modular.}
+\end{figure}
+
+\section*{12. Modelo espacial}
+
+\subsection*{12.1 Space}
+
+Un \texttt{Space} representa un lugar operativo relevante para el sistema y potencialmente reservable: laboratorio, salón, taller, área o espacio equivalente. Puede tener capacidad, horario, calendario, plano y políticas de reservación.
+
+\subsection*{12.2 Location}
+
+Una \texttt{Location} responde principalmente a la pregunta ``¿dónde está?''. Se utiliza para representar ubicaciones internas como almacenes, gabinetes, estantes, cajones, filas, columnas o zonas personalizadas.
+
+Las ubicaciones serán jerárquicas mediante una relación padre-hijo y no exigirán una profundidad fija. Un registro podrá apuntar a ``Almacén A'' o a ``Almacén A > Estante B > Fila 3 > Columna 5'' según el nivel de precisión que resulte útil.
+
+\subsection*{12.3 Diferencia entre Space y Location}
+
+Un \texttt{Space} participa en disponibilidad y reservaciones. Una \texttt{Location} organiza la posición física de materiales y recursos. Ambos conceptos podrán presentarse de forma integrada en la interfaz gráfica.
+
+\subsection*{12.4 FloorPlan}
+
+Los espacios podrán tener uno o más planos. Los elementos del plano podrán representar recursos reservables, ubicaciones o elementos visuales no interactivos. Las coordenadas serán opcionales para las ubicaciones, permitiendo combinar navegación gráfica y jerárquica sin obligar a modelar cada detalle físicamente.
+
+\diagramplaceholder
+{Figura pendiente: modelo espacial y navegación física}
+{Representar la relación entre \texttt{Space}, \texttt{FloorPlan}, \texttt{Location}, \texttt{Resource} e inventario. El diagrama deberá mostrar que las ubicaciones pueden ser jerárquicas y que solo algunas requieren coordenadas gráficas.}
+
+\section*{13. Sistema de reservaciones y disponibilidad}
+
+\subsection*{13.1 Principio de atomicidad}
+
+La disponibilidad deberá poder calcularse a nivel de recurso individual cuando su identidad importe. Reservar un torno no deberá bloquear todo un laboratorio si aún existen otros recursos disponibles para compartir el espacio.
+
+Una reservación representa la intención del usuario; los recursos concretos asignados representan su implementación física. Una misma reservación podrá asociar múltiples recursos.
+
+\subsection*{13.2 Reservación exclusiva}
+
+Los usuarios autorizados podrán reservar un espacio completo de forma exclusiva. En este caso, los recursos contenidos deberán considerarse no disponibles para terceros durante el intervalo correspondiente.
+
+\subsection*{13.3 Reservaciones recurrentes}
+
+Las reservaciones recurrentes deberán representarse como una serie y ocurrencias concretas. El sistema deberá detectar conflictos por fecha y permitir excepciones sin invalidar necesariamente toda la serie.
+
+\subsection*{13.4 Bloqueos de disponibilidad}
+
+No toda indisponibilidad constituye una reservación. El sistema deberá poder representar bloqueos por mantenimiento, cierre, seguridad, evento institucional u otras causas operativas.
+
+\subsection*{13.5 Vistas del frontend}
+
+El mismo motor de reservaciones deberá alimentar al menos:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item vista gráfica de plano tipo selección de asiento;
+    \item calendario de día, semana o mes;
+    \item lista de reservaciones;
+    \item consulta de disponibilidad para el asistente de IA.
+\end{itemize}
+
+\section*{14. Sistema de inventario}
+
+\subsection*{14.1 Tipos operativos}
+
+El inventario distinguirá como mínimo:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item \textbf{Consumibles}: reducen cantidad al utilizarse, por ejemplo aceite, tornillos o material de trabajo.
+    \item \textbf{Herramientas reutilizables}: pueden prestarse y devolverse sin consumirse, por ejemplo destornilladores o pinzas.
+    \item \textbf{Activos individualizables}: poseen identidad propia cuando el mantenimiento, historial, número de serie o trazabilidad lo justifican.
+\end{itemize}
+
+\subsection*{14.2 Cantidad y unidad}
+
+La cantidad no representará únicamente piezas. Cada ítem podrá declarar una unidad adecuada, por ejemplo pieza, metro, litro o kilogramo.
+
+\subsection*{14.3 Existencias por ubicación}
+
+La existencia se asociará opcionalmente a una \texttt{Location}. Una ubicación podrá contener distintos tipos de ítems sin restricción por defecto. Un mismo ítem podrá existir en más de una ubicación si posteriormente se requiere dicha capacidad.
+
+La primera versión podrá simplificar la experiencia permitiendo una ubicación principal por existencias, manteniendo el modelo preparado para múltiples ubicaciones.
+
+\subsection*{14.4 Movimientos}
+
+Toda modificación relevante de existencias deberá producir un movimiento histórico. Entre los tipos iniciales se contemplan compra, consumo, devolución, daño, pérdida y ajuste.
+
+El stock no deberá modificarse de forma silenciosa sin una operación trazable.
+
+\subsection*{14.5 Préstamos}
+
+Los préstamos de herramientas reutilizables se representarán como operaciones temporales. La disponibilidad podrá calcularse a partir de la cantidad total y las unidades actualmente prestadas sin tratar el préstamo como consumo definitivo.
+
+\section*{15. Sistema de mantenimiento}
+
+Cada activo mantenible podrá contar con una bitácora de mantenimiento. Una entrada deberá guardar al menos recurso, fecha, responsable, tipo, descripción y estado resultante.
+
+El mantenimiento podrá relacionarse con consumos de inventario. Por ejemplo, una lubricación podrá registrar simultáneamente una entrada de bitácora y un consumo de aceite mediante una transacción independiente pero vinculada.
+
+El sistema podrá aceptar texto libre como entrada de usuario. Cuando la IA esté habilitada, podrá proponer la estructuración del texto en acciones concretas, pero deberá solicitar precisión cuando el texto no contenga datos suficientes y aplicar confirmación antes de modificaciones sensibles.
+
+\section*{16. Gestión de incidencias}
+
+Los alumnos y usuarios autorizados podrán reportar anomalías asociadas a recursos, sesiones o espacios. La incidencia deberá registrar severidad, descripción, estado, autor, fechas y resolución cuando aplique.
+
+El sistema podrá recuperar usos previos relevantes del recurso con fines de trazabilidad, sin inferir automáticamente culpabilidad o responsabilidad disciplinaria.
+
+Una incidencia podrá producir un bloqueo de disponibilidad o una orden de mantenimiento cuando personal autorizado así lo determine.
+
+\section*{17. Módulo académico}
+
+\subsection*{17.1 Prácticas}
+
+El profesor podrá crear, editar, publicar y cerrar prácticas. Una práctica podrá contener instrucciones, documentos, grupo, requisitos y recursos sugeridos.
+
+\subsection*{17.2 Sesiones}
+
+Una práctica podrá tener una o más sesiones concretas. Las sesiones deberán registrar fecha, horario, espacio, profesor responsable y estado.
+
+\subsection*{17.3 Asistencia}
+
+La asistencia solo podrá registrarse cuando la sesión esté habilitada. El sistema conservará hora y estado y permitirá correcciones autorizadas.
+
+\section*{18. Biblioteca documental}
+
+Los manuales, procedimientos, evidencias y documentos se almacenarán físicamente en Amazon S3. PostgreSQL conservará metadatos, asociaciones, permisos y claves de objeto.
+
+Los documentos podrán relacionarse con recursos, prácticas, mantenimientos o incidencias según corresponda. La capa de IA podrá utilizar documentos autorizados como fuente de recuperación de conocimiento sin convertirlos automáticamente en reglas operativas.
+
+\section*{19. Notificaciones y comunicación}
+
+\subsection*{19.1 Modelo general}
+
+Los módulos de negocio no deberán enviar correos o push directamente. Deberán emitir eventos de dominio que el módulo de notificaciones pueda transformar en comunicaciones.
+
+Ejemplos de eventos incluyen \texttt{ReservationCreated}, \texttt{PracticePublished}, \texttt{LabSessionStartingSoon}, \texttt{IncidentCreated}, \texttt{MaintenanceScheduled} e \texttt{InventoryLow}.
+
+\subsection*{19.2 Canales}
+
+La V3 contempla tres canales:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item \textbf{In-app}: centro de notificaciones persistente en la plataforma.
+    \item \textbf{Email}: eventos importantes o críticos mediante un proveedor desacoplado, inicialmente Amazon SES.
+    \item \textbf{Push}: recordatorios y eventos oportunos para usuarios con PWA instalada y permiso concedido.
+\end{itemize}
+
+\subsection*{19.3 Preferencias}
+
+El sistema deberá permitir preferencias razonables por categoría o canal sin exigir una matriz excesiva en el MVP. Determinadas notificaciones transaccionales podrán considerarse obligatorias por política del sistema.
+
+\subsection*{19.4 Recordatorios programados}
+
+Los recordatorios futuros deberán modelarse como trabajos o eventos programados. La implementación podrá evolucionar hacia servicios administrados de programación sin acoplar los dominios a un proveedor específico.
+
+\section*{20. Inteligencia artificial y agentes}
+
+\subsection*{20.1 Propósito}
+
+La IA se utilizará como una interfaz adicional para operar la plataforma mediante lenguaje natural. No sustituirá los formularios, calendarios, planos ni servicios tradicionales.
+
+Ejemplos de uso incluyen:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item consultar disponibilidad y proponer alternativas;
+    \item crear reservaciones después de validar recursos y permisos;
+    \item localizar materiales en ubicaciones jerárquicas;
+    \item registrar mantenimiento a partir de texto libre;
+    \item proponer consumos de inventario derivados de una descripción;
+    \item consultar manuales y documentación autorizada;
+    \item resumir incidencias o historial de un recurso.
+\end{itemize}
+
+\subsection*{20.2 Herramientas del agente}
+
+El agente no tendrá acceso directo a tablas. Utilizará herramientas que invoquen servicios de aplicación, por ejemplo:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item \texttt{checkAvailability}
+    \item \texttt{findAlternativeSpaces}
+    \item \texttt{createReservation}
+    \item \texttt{searchInventory}
+    \item \texttt{registerInventoryMovement}
+    \item \texttt{createMaintenanceLog}
+    \item \texttt{getResourceHistory}
+    \item \texttt{searchDocuments}
+\end{itemize}
+
+\subsection*{20.3 Memoria}
+
+La memoria conversacional podrá dividirse en contexto de sesión y memoria persistente. La memoria nunca sustituirá a PostgreSQL como fuente de verdad de información operacional. Datos como stock, disponibilidad, ubicación actual, reservaciones o permisos deberán consultarse nuevamente cuando sean necesarios.
+
+\subsection*{20.4 Confirmación y revalidación}
+
+Las operaciones de escritura sensibles deberán requerir confirmación cuando sea apropiado. Después de la confirmación y antes de persistir una operación, el backend deberá volver a verificar las condiciones que pueden haber cambiado, especialmente disponibilidad y stock.
+
+\diagramplaceholder
+{Figura pendiente: flujo seguro del agente de IA}
+{Mostrar el flujo Usuario $\rightarrow$ Agente $\rightarrow$ Herramienta $\rightarrow$ Servicio de aplicación $\rightarrow$ validación de permisos y reglas de negocio $\rightarrow$ PostgreSQL/servicios de dominio, incluyendo confirmación y revalidación antes de operaciones sensibles.}
+
+\section*{21. Reglas de seguridad frente a alucinaciones}
+
+\begin{enumerate}[label=IA\arabic*., leftmargin=1.4cm]
+    \item El modelo de lenguaje no será fuente autoritativa para usuarios, espacios, recursos, inventario, mantenimiento, permisos o disponibilidad.
+    \item Una afirmación operacional deberá derivarse de datos recuperados mediante servicios confiables.
+    \item Los identificadores inventados por el modelo no deberán producir escrituras válidas si no existen o no pertenecen al contexto solicitado.
+    \item El backend deberá validar relaciones. La existencia de un espacio y un recurso por separado no implica que dicho recurso pertenezca al espacio.
+    \item Las herramientas de escritura deberán aplicar autorización independientemente del comportamiento del modelo.
+    \item Cuando la entrada en lenguaje natural sea ambigua en un dato necesario, el sistema deberá solicitar precisión o limitarse a registrar información no cuantificada.
+    \item Las alternativas propuestas por el agente deberán proceder de resultados reales de búsqueda y disponibilidad.
+    \item Toda acción ejecutada por un agente deberá ser auditable e identificable como originada por IA.
+\end{enumerate}
+
+\section*{22. Modelo de datos propuesto}
+
+\subsection*{22.1 Tablas principales}
+
+\footnotesize
+\begin{longtable}{p{4cm} p{9cm}}
+\toprule
+\textbf{Tabla} & \textbf{Propósito} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Tabla} & \textbf{Propósito} \\
+\midrule
+\endhead
+users & Perfil local de usuario vinculado a identidad y configuración. \\
+roles & Roles disponibles. \\
+permissions & Capacidades atómicas del sistema. \\
+role\_permissions & Relación entre roles y permisos. \\
+students & Información académica adicional de alumnos cuando sea necesaria. \\
+assignments & Prácticas o actividades académicas. \\
+lab\_sessions & Sesiones concretas asociadas a prácticas. \\
+attendance & Registro de asistencia por alumno y sesión. \\
+spaces & Laboratorios, salones, talleres y otros espacios operativos. \\
+floor\_plans & Planos asociados a espacios. \\
+floor\_plan\_elements & Elementos visuales y referencias a recursos o ubicaciones. \\
+locations & Ubicaciones físicas jerárquicas de almacenamiento u organización. \\
+resources & Recursos físicos individualizados cuando su identidad sea relevante. \\
+reservations & Intención de reservación y datos generales. \\
+reservation\_resources & Recursos concretos asignados a una reservación. \\
+reservation\_series & Regla y metadatos de recurrencia. \\
+availability\_blocks & Bloqueos por mantenimiento, cierre u otras causas. \\
+inventory\_items & Catálogo de materiales y herramientas gestionadas por cantidad. \\
+inventory\_stocks & Existencias por ubicación. \\
+inventory\_movements & Compras, consumos, daños, pérdidas y ajustes auditables. \\
+loans & Préstamos y devoluciones de herramientas reutilizables. \\
+equipment\_usage & Uso de activos por sesión y usuario cuando aplique. \\
+documents & Metadatos y referencias S3 de manuales y documentos. \\
+maintenance\_logs & Bitácora de mantenimiento por recurso. \\
+maintenance\_materials & Consumos de inventario relacionados con mantenimiento. \\
+incident\_reports & Reportes y seguimiento de incidencias. \\
+notifications & Registro principal de notificaciones in-app. \\
+notification\_deliveries & Intentos de entrega por email o push. \\
+notification\_preferences & Preferencias de usuario por categoría o canal. \\
+push\_subscriptions & Suscripciones Web Push por navegador o dispositivo. \\
+audit\_logs & Historial de acciones relevantes. \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection*{22.2 Campos lógicos relevantes}
+
+\footnotesize
+\begin{longtable}{p{4cm} p{9cm}}
+\toprule
+\textbf{Entidad} & \textbf{Campos principales sugeridos} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Entidad} & \textbf{Campos principales sugeridos} \\
+\midrule
+\endhead
+spaces & id, organization\_id, name, type, capacity, is\_reservable, is\_active, created\_at \\
+locations & id, space\_id, parent\_location\_id, name, type, metadata, created\_at \\
+resources & id, space\_id, default\_location\_id, category\_id, name, resource\_type, serial\_number, status, is\_reservable, is\_maintainable, metadata \\
+reservations & id, space\_id, series\_id, created\_by, starts\_at, ends\_at, status, is\_exclusive, assignment\_id, session\_id, notes \\
+reservation\_resources & reservation\_id, resource\_id \\
+inventory\_items & id, sku, name, category\_id, inventory\_type, unit, min\_stock, is\_active, metadata \\
+inventory\_stocks & id, item\_id, location\_id, quantity, updated\_at \\
+inventory\_movements & id, item\_id, location\_id, type, quantity, user\_id, reference\_type, reference\_id, notes, created\_at \\
+loans & id, item\_id, quantity, borrower\_id, session\_id, status, loaned\_at, due\_at, returned\_at \\
+maintenance\_logs & id, resource\_id, user\_id, entry\_date, maintenance\_type, description, status\_after, next\_maintenance\_due, created\_at \\
+incident\_reports & id, resource\_id, session\_id, reported\_by, description, severity, status, created\_at, resolved\_at \\
+notifications & id, user\_id, type, title, body, reference\_type, reference\_id, read\_at, created\_at \\
+audit\_logs & id, user\_id, action, entity\_type, entity\_id, source, before\_data, after\_data, metadata, created\_at \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section*{23. Identidad y autenticación}
+
+La autenticación deberá mantenerse desacoplada de la autorización de negocio. La plataforma deberá poder identificar a un usuario mediante distintos proveedores sin modificar la forma en que el resto del dominio representa usuarios, grupos, roles o permisos.
+
+\subsection*{23.1 Autenticación local}
+
+La V1 podrá operar con cuentas locales creadas o administradas por personal autorizado. El profesor o ayudante podrá registrar alumnos mediante correo electrónico, grupo y credenciales temporales. Las contraseñas deberán almacenarse mediante mecanismos de hash seguros y la arquitectura podrá exigir cambio de contraseña en el primer acceso.
+
+Este mecanismo permite que la primera versión sea funcional sin depender de autorizaciones o integraciones institucionales externas.
+
+\subsection*{23.2 Identidad institucional federada}
+
+La arquitectura deberá admitir, como extensión, autenticación mediante proveedores institucionales compatibles con OpenID Connect (OIDC) u OAuth 2.0. Para el Instituto Politécnico Nacional se contempla la integración potencial con Microsoft Entra ID para usuarios con cuentas institucionales, incluyendo dominios como \texttt{@ipn.mx} y \texttt{@alumno.ipn.mx}, sujeto a las políticas y autorizaciones administrativas de la institución.
+
+El proveedor institucional será responsable de autenticar la identidad del usuario. La plataforma no deberá recibir ni almacenar la contraseña institucional.
+
+La autenticación federada no sustituirá la autorización interna. Después de validar la identidad externa, PostgreSQL continuará siendo la fuente de verdad para información de negocio como grupo, rol, estado de cuenta, laboratorios asociados y permisos.
+
+\subsection*{23.3 Vinculación de identidades}
+
+Una cuenta de aplicación podrá vincularse con una o más identidades externas mediante un identificador estable del proveedor. Esto permitirá migrar usuarios locales hacia inicio de sesión institucional sin duplicar sus prácticas, reservaciones, historial, permisos o registros académicos.
+
+El correo electrónico podrá utilizarse para facilitar el proceso de vinculación, pero la identidad externa deberá persistirse mediante identificadores propios del proveedor y no depender exclusivamente de que una dirección de correo permanezca sin cambios.
+
+\subsection*{23.4 Alcance de la integración}
+
+La autenticación institucional se considera una capacidad prevista y no un requisito de aceptación de la V1. Integraciones posteriores con calendario, correo, grupos institucionales, Teams, OneDrive u otros servicios de Microsoft 365 deberán evaluarse por separado y podrán requerir Microsoft Graph y permisos administrativos adicionales.
+
+\section*{24. Permisos y autorización}
+
+La autenticación responde a quién es el usuario. La autorización de negocio deberá resolverse mediante permisos de aplicación.
+
+Ejemplos de permisos:
+
+\begin{verbatim}
+reservation.read
+reservation.create
+reservation.approve
+reservation.cancel
+inventory.read
+inventory.adjust
+inventory.loan
+maintenance.create
+maintenance.close
+incident.create
+incident.resolve
+practice.create
+attendance.modify
+location.manage
+\end{verbatim}
+
+Los roles se compondrán a partir de permisos. Esto permitirá incorporar perfiles como ayudante de laboratorio sin dispersar comprobaciones rígidas de rol por todo el código.
+
+El agente deberá actuar bajo la identidad y permisos del usuario que inició la interacción. Una operación que el usuario no puede ejecutar desde la interfaz tampoco podrá ejecutarse mediante IA.
+
+\section*{25. Auditoría}
+
+Se deberán auditar acciones que tengan relevancia académica, física, económica u operativa. Entre ellas se incluyen cambios de stock, reservaciones, cancelaciones, mantenimiento, cierre de incidencias, cambios de permisos y acciones ejecutadas por agentes.
+
+El campo \texttt{source} permitirá distinguir al menos \texttt{WEB}, \texttt{API}, \texttt{AGENT} y \texttt{SYSTEM}.
+
+No se pretende registrar cada interacción de interfaz ni cada movimiento físico sin valor de negocio.
+
+\section*{26. Eventos de dominio}
+
+Los módulos podrán publicar eventos internos para desacoplar efectos secundarios. Algunos eventos sugeridos son:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item \texttt{ReservationCreated}
+    \item \texttt{ReservationCancelled}
+    \item \texttt{InventoryLow}
+    \item \texttt{MaintenanceScheduled}
+    \item \texttt{ResourceOutOfService}
+    \item \texttt{IncidentCreated}
+    \item \texttt{PracticePublished}
+    \item \texttt{LabSessionStartingSoon}
+\end{itemize}
+
+Inicialmente el bus podrá ser interno al monolito. Servicios administrados como Amazon EventBridge, SQS o Lambda podrán incorporarse posteriormente para tareas asíncronas cuando el volumen o los casos de uso lo justifiquen.
+
+\section*{27. Infraestructura AWS}
+
+\diagramplaceholder
+{Figura pendiente: despliegue y servicios AWS}
+{Mostrar qué componentes pertenecen al despliegue inicial y cuáles son extensiones progresivas: aplicación web/PWA, PostgreSQL administrado, S3, SES, CloudWatch, identidad, EventBridge/SQS/Lambda cuando sean necesarios y Bedrock/AgentCore para la capa agentiva.}
+
+La infraestructura deberá evolucionar de forma progresiva. La adopción de AWS no implica utilizar todos sus servicios desde la primera versión.
+
+Una configuración inicial razonable contempla:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item aplicación Next.js desplegada en infraestructura AWS adecuada;
+    \item PostgreSQL administrado;
+    \item Amazon S3 para archivos;
+    \item Amazon Cognito para autenticación administrada si se adopta esta opción;
+    \item Amazon SES para correo transaccional;
+    \item Amazon CloudWatch para logs y observabilidad;
+    \item AWS CDK para definición de infraestructura.
+\end{itemize}
+
+Posteriormente podrán incorporarse EventBridge, SQS, Lambda u otros servicios para procesos asíncronos y Amazon Bedrock / AgentCore para capacidades agentivas.
+
+\section*{28. Flujos principales}
+
+\subsection*{27.1 Reservación gráfica}
+
+\begin{enumerate}[leftmargin=1.2cm]
+    \item El usuario selecciona un espacio, fecha y horario.
+    \item El frontend solicita disponibilidad al backend.
+    \item El plano muestra recursos libres, ocupados o bloqueados.
+    \item El usuario selecciona los recursos deseados.
+    \item El backend revalida relaciones, disponibilidad y permisos.
+    \item La reservación se guarda en una transacción.
+    \item Se generan auditoría y notificaciones correspondientes.
+\end{enumerate}
+
+\subsection*{27.2 Alta de material con ubicación}
+
+\begin{enumerate}[leftmargin=1.2cm]
+    \item El usuario registra o selecciona el ítem.
+    \item Selecciona una ubicación con el nivel de precisión deseado.
+    \item Registra cantidad y unidad.
+    \item El sistema genera una entrada de inventario auditable.
+    \item La ubicación puede refinarse posteriormente sin afectar el resto del catálogo.
+\end{enumerate}
+
+\subsection*{27.3 Mantenimiento en lenguaje natural}
+
+\begin{enumerate}[leftmargin=1.2cm]
+    \item El responsable escribe una descripción libre, por ejemplo una lubricación y materiales utilizados.
+    \item El agente identifica posibles acciones y consulta entidades reales.
+    \item El agente propone mantenimiento y movimientos cuantificables sin inventar datos faltantes.
+    \item El usuario revisa y confirma.
+    \item Los servicios de dominio validan nuevamente y ejecutan las operaciones.
+    \item Se registra auditoría y, cuando corresponda, una alerta de stock bajo.
+\end{enumerate}
+
+\subsection*{27.4 Reservación por agente}
+
+\begin{enumerate}[leftmargin=1.2cm]
+    \item El usuario expresa una necesidad en lenguaje natural.
+    \item El agente interpreta espacio, horario y requisitos.
+    \item El agente consulta catálogo, relación entre espacio y recursos y disponibilidad.
+    \item Si la petición es imposible, busca alternativas reales.
+    \item Presenta la propuesta al usuario.
+    \item Tras confirmación, el backend revalida y persiste la operación.
+\end{enumerate}
+
+\section*{29. Reglas de negocio mínimas}
+
+\begin{enumerate}[label=RB\arabic*., leftmargin=1.4cm]
+    \item No se podrá registrar asistencia en sesiones cerradas o canceladas.
+    \item Ningún movimiento podrá dejar existencias negativas salvo una política explícita y autorizada.
+    \item Toda modificación de stock deberá generar un movimiento histórico auditable.
+    \item Un préstamo no se considerará consumo permanente mientras permanezca activo.
+    \item Un recurso fuera de servicio o con mantenimiento crítico no deberá considerarse disponible.
+    \item Una reservación no podrá asignar recursos que no pertenezcan al espacio o contexto válido de la solicitud.
+    \item Una reservación exclusiva de espacio deberá bloquear sus recursos contenidos durante el intervalo correspondiente.
+    \item Una reservación individual de recurso no deberá bloquear otros recursos independientes del mismo espacio.
+    \item Las reservaciones recurrentes deberán comprobar conflicto por cada ocurrencia.
+    \item Una ubicación podrá contener múltiples ítems y su nivel de detalle será opcional.
+    \item Toda incidencia deberá asociarse al recurso, espacio o sesión afectada cuando dicha relación sea conocida.
+    \item El historial previo de uso será informativo y no implicará asignación automática de responsabilidad.
+    \item Toda acción de IA deberá respetar permisos, reglas y transacciones del dominio.
+    \item Ninguna cantidad deberá inferirse únicamente de expresiones cualitativas como ``ya casi se acaba''.
+\end{enumerate}
+
+\section*{30. Consideraciones de persistencia y concurrencia}
+
+PostgreSQL será la fuente de verdad para el dominio transaccional. Las reservaciones y movimientos de inventario deberán implementarse con transacciones y controles apropiados para evitar conflictos concurrentes.
+
+La comprobación de disponibilidad mostrada al usuario no constituye por sí sola una garantía de escritura. La disponibilidad deberá validarse dentro o inmediatamente antes de la transacción que crea una reservación.
+
+Los archivos no se almacenarán directamente en tablas relacionales salvo casos excepcionales; PostgreSQL conservará referencias y metadatos de objetos almacenados en S3.
+
+\section*{31. Seguridad y control de acceso}
+
+Las credenciales no deberán almacenarse en texto plano. Si se utiliza un proveedor administrado de identidad, la aplicación mantendrá únicamente la información de dominio necesaria para asociar la identidad externa con roles y permisos locales.
+
+Todas las operaciones deberán evaluarse según el usuario autenticado. Los endpoints utilizados por agentes no constituirán rutas privilegiadas que omitan autorización.
+
+El acceso a documentos deberá respetar permisos y utilizar mecanismos temporales o protegidos cuando sea necesario.
+
+\section*{32. Reportes del MVP}
+
+Los reportes mínimos esperados son:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item Reporte de práctica y sesiones asociadas.
+    \item Reporte de asistencia.
+    \item Reporte de reservaciones y utilización de espacios.
+    \item Reporte de préstamos y devoluciones.
+    \item Reporte de movimientos y stock actual de inventario.
+    \item Reporte de uso de maquinaria.
+    \item Reporte de mantenimiento por recurso.
+    \item Reporte de incidencias y estado de seguimiento.
+    \item Reporte de recursos fuera de servicio o próximos a mantenimiento.
+\end{itemize}
+
+\section*{33. Criterios de aceptación del MVP}
+
+El MVP se considerará funcional si permite al menos:
+
+\begin{enumerate}[leftmargin=1.2cm]
+    \item Autenticar usuarios y aplicar permisos básicos.
+    \item Crear y publicar una práctica.
+    \item Abrir una sesión y registrar asistencia.
+    \item Configurar un espacio con plano y recursos visibles.
+    \item Consultar disponibilidad y crear una reservación válida.
+    \item Mostrar reservaciones en calendario y plano.
+    \item Registrar ítems y ubicaciones físicas opcionales.
+    \item Registrar una compra o entrada de inventario.
+    \item Registrar un préstamo y su devolución.
+    \item Registrar un consumo asociado a una operación real.
+    \item Guardar una entrada de mantenimiento sobre un recurso.
+    \item Registrar y resolver una incidencia.
+    \item Consultar al menos un manual o documento almacenado externamente.
+    \item Generar una notificación in-app y enviar un correo para un evento transaccional definido.
+    \item Generar un reporte exportable.
+\end{enumerate}
+
+La capa agentiva podrá desarrollarse como una fase posterior al MVP base siempre que los servicios de dominio, permisos y contratos necesarios queden preparados desde la primera versión.
+
+\section*{34. Estrategia de evolución}
+
+\subsection*{34.1 V1 web}
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item autenticación local desacoplada y permisos de aplicación;
+    \item prácticas, sesiones y asistencia;
+    \item espacios, planos y reservaciones;
+    \item inventario, ubicaciones y préstamos;
+    \item mantenimiento e incidencias;
+    \item documentos;
+    \item auditoría básica;
+    \item notificaciones in-app y correo transaccional esencial.
+\end{itemize}
+
+\subsection*{34.2 V1.5}
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item PWA y push;
+    \item recordatorios programados;
+    \item asistente de IA para consultas;
+    \item reservaciones mediante lenguaje natural;
+    \item registro asistido de mantenimiento y movimientos de inventario.
+\end{itemize}
+
+\subsection*{34.3 V2 y extensiones}
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item incorporación de nuevos laboratorios;
+    \item flujos de aprobación más sofisticados;
+    \item autenticación federada con proveedores institucionales mediante OIDC/OAuth 2.0;
+    \item integración potencial con Microsoft Entra ID para cuentas institucionales del IPN;
+    \item vinculación opcional entre cuentas locales existentes e identidades institucionales;
+    \item integraciones institucionales adicionales cuando exista autorización y un caso de uso concreto;
+    \item RAG documental avanzado;
+    \item métricas y analítica;
+    \item extracción de servicios únicamente cuando volumen o operación lo justifiquen.
+\end{itemize}
+
+\section*{35. Referencias tecnológicas}
+
+Las siguientes referencias oficiales respaldan los servicios AWS considerados en la arquitectura. Su adopción final deberá validarse durante la implementación según costo, disponibilidad regional y necesidades reales del proyecto.
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item Amazon Bedrock AgentCore Gateway: \url{https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html}
+    \item Amazon Bedrock AgentCore Memory: \url{https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory.html}
+    \item Amazon Cognito: \url{https://docs.aws.amazon.com/cognito/}
+    \item Microsoft identity platform / OpenID Connect: \url{https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols-oidc}
+    \item Microsoft Graph authentication concepts: \url{https://learn.microsoft.com/en-us/graph/auth/auth-concepts}
+    \item Amazon S3: \url{https://docs.aws.amazon.com/s3/}
+    \item Amazon SES: \url{https://docs.aws.amazon.com/ses/}
+    \item Amazon EventBridge: \url{https://docs.aws.amazon.com/eventbridge/}
+\end{itemize}
+
+\section*{36. Conclusión}
+
+La versión 3.0 transforma el proyecto desde una aplicación local centrada en inventario y prácticas hacia una plataforma web modular capaz de representar de forma coherente la operación académica, espacial y técnica de un laboratorio.
+
+El diseño busca evitar tanto la rigidez de un sistema construido exclusivamente para el Laboratorio de Pesados como la sobreingeniería de una plataforma industrial. Los dominios de reservaciones, inventario, mantenimiento, incidencias, notificaciones y conocimiento quedan definidos mediante entidades y reglas generales que pueden ampliarse progresivamente.
+
+La decisión de mantener un monolito modular, PostgreSQL como fuente de verdad, archivos desacoplados, autorización centralizada y servicios de dominio reutilizables permite incorporar posteriormente PWA, automatizaciones y agentes de inteligencia artificial sin reconstruir el núcleo de la aplicación.
+
+La implementación inicial deberá priorizar los flujos operativos reales del laboratorio y validar su utilidad con profesores, ayudantes y alumnos. Las capacidades avanzadas deberán añadirse únicamente cuando reduzcan trabajo, mejoren trazabilidad o permitan una experiencia claramente superior sin trasladar complejidad innecesaria a los usuarios ni al equipo de desarrollo.
+
+\end{document}
