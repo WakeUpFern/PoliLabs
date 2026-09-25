@@ -2,7 +2,7 @@
 
 Base de una plataforma de gestión académica y operativa para laboratorios. Primera implementación prevista: Laboratorio de Pesados, UPIITA-IPN. Proyecto de servicio social universitario.
 
-Esta entrega contiene los fundamentos técnicos y una página informativa. No implementa autenticación, inventario, reservaciones, mantenimiento, gestión académica ni Giussepe.
+Esta entrega contiene los fundamentos técnicos, autenticación local con Better Auth y el primer flujo backend de autorización por laboratorio. No implementa UI de acceso, inventario, reservaciones, mantenimiento, gestión académica ni Giussepe.
 
 ## Requisitos
 
@@ -42,24 +42,40 @@ Next.js, Drizzle y el script de conexión cargan configuración mediante `@next/
 
 ## Esquema y migraciones
 
-El esquema está vacío deliberadamente. No hay tablas del SRS ni migraciones ficticias. Al implementar el primer módulo aprobado:
+El esquema contiene las tablas de autenticación y el primer modelo aprobado de laboratorios, membresías, roles y permisos. Las migraciones versionadas son:
+
+- `0000_late_devos.sql`: Better Auth con UUID nativo.
+- `0001_reflective_shriek.sql`: laboratorio, membresías y autorización de aplicación.
+
+Para cambios posteriores:
 
 1. Definir sus tablas y exportarlas desde `src/infrastructure/database/schema.ts`.
 2. Ejecutar `pnpm db:generate` y revisar el SQL generado en `drizzle/`.
-3. Versionar la migración y ejecutar `pnpm db:migrate` sobre la base local configurada.
+3. Versionar la migración y ejecutar `pnpm db:migrate` sobre la base local configurada sólo después de revisarla.
 4. Probar restricciones, transacciones y concurrencia cuando corresponda.
 
 No ejecutar cambios destructivos sin aprobación explícita ni reemplazar migraciones revisadas por `drizzle-kit push`.
+
+## Bootstrap inicial
+
+En una instalación vacía, después de aplicar las migraciones:
+
+```bash
+pnpm bootstrap:development
+```
+
+El comando crea interactivamente la primera identidad local, el Laboratorio de Pesados, su membresía y el rol responsable mínimo. La contraseña no se recibe como argumento y no se muestra. El registro público continúa deshabilitado y el bootstrap se detiene si detecta una instalación ya inicializada.
 
 ## Validación
 
 ```bash
 pnpm check
+pnpm test:integration
 pnpm build
 pnpm start
 ```
 
-`check` agrupa ESLint, TypeScript, pruebas con `node:test`/`tsx` y revisión de formato. `pnpm format` aplica Prettier, excluyendo el SRS original. `pnpm test` ejecuta pruebas de validación de configuración; todavía no hay pruebas de funcionalidades de negocio. `pnpm build` genera la aplicación de producción; `pnpm start` la sirve después de compilar.
+`check` agrupa ESLint, TypeScript, pruebas unitarias con `node:test`/`tsx` y revisión de formato. `pnpm test:integration` crea o reutiliza una base PostgreSQL local separada, aplica las migraciones y verifica autenticación, bootstrap, restricciones y aislamiento entre laboratorios. `pnpm format` aplica Prettier, excluyendo el SRS original. `pnpm build` genera la aplicación de producción; `pnpm start` la sirve después de compilar.
 
 Las dependencias se declaran en `package.json`; `pnpm-lock.yaml` fija las versiones exactas resueltas. `pnpm-workspace.yaml` permite los scripts de instalación de esbuild y unrs-resolver, usados por las herramientas. TypeScript 5.9 se mantiene dentro de la rama compatible de las herramientas de lint elegidas; actualizarlo requiere verificar sus peer dependencies.
 
@@ -71,7 +87,8 @@ Consulta [validación de la inicialización](docs/architecture/validation.md) pa
 
 - [SRS original](docs/srs/PoliLabs-SRS.tex): fuente de requisitos, sin modificaciones. La ruta real usa `docs` y el nombre `PoliLabs-SRS.tex`.
 - [Arquitectura](docs/architecture/README.md): módulos, relaciones, estado implementado y decisiones pendientes.
+- [Identity y Authorization](docs/architecture/identity-authorization.md): esquema, permisos, bootstrap y validación del primer flujo.
 - [ADR](docs/decisions/README.md): decisiones aceptadas y propuestas.
 - [Instrucciones permanentes](AGENTS.md): continuidad del desarrollo.
 
-Próximo paso recomendado: acordar alcance de laboratorio y membresías, decidir cuentas locales y comenzar un corte pequeño de identidad/permisos antes del catálogo de espacios. Ningún módulo siguiente se considera aprobado por esta recomendación.
+El siguiente incremento funcional debe seleccionarse explícitamente; esta entrega no autoriza módulos operativos ni amplía el catálogo de permisos por anticipado.

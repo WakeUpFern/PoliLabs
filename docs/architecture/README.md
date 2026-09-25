@@ -51,13 +51,38 @@ Se prefiere `infrastructure/database` a duplicar `core/database` del esquema sug
 
 Las tablas de §22 son sugeridas, no un esquema aprobado para migrar íntegro. Los recursos físicos individualizados no se deben duplicar como otra identidad independiente de inventario sin definir su relación. Grupos, periodos, organizaciones y membresías no están completamente especificados por la lista de tablas.
 
+## Laboratorios y membresías aprobados
+
+El [ADR 0006](../decisions/0006-laboratory-scope.md) define la unidad operativa `Laboratory` separada del espacio físico `Space`. Cada laboratorio administra sus espacios, recursos y prácticas; las sesiones y reservaciones mantienen relaciones coherentes dentro de un solo laboratorio. `Organization` se pospone.
+
+```mermaid
+erDiagram
+    User ||--o{ LaboratoryMembership : participa
+    Laboratory ||--o{ LaboratoryMembership : tiene
+    LaboratoryMembership }o--o{ Role : asigna
+    Role }o--o{ Permission : agrupa
+    Laboratory ||--o{ Space : administra
+    Space ||--o{ Resource : contiene
+    Laboratory ||--o{ Assignment : gestiona
+    Assignment ||--o{ LabSession : tiene
+    Space ||--o{ LabSession : aloja
+    Space ||--o{ Reservation : recibe
+    Reservation }o--o{ Resource : asigna
+```
+
+Una sola membresía por usuario y laboratorio admite varios roles: una persona puede ser alumno y ayudante simultáneamente. Los permisos se resuelven únicamente con los roles de esa membresía activa, y siempre se someten a las restricciones del caso de uso. La participación académica y los horarios de servicio son independientes; no se activan permisos automáticamente por horario ni se permiten intervenciones indebidas en registros académicos propios.
+
+Los servicios deben verificar actor, membresía, permiso y relaciones; acotar lecturas y escrituras, incluidos listados y exportaciones; y revalidar operaciones diferidas. El mismo límite aplica al asistente, a documentos y a cachés. Administrar recursos no implica gestionar membresías ni acceder a otros laboratorios. Las políticas específicas de delegación y registros propios se definirán antes de implementar esas operaciones.
+
+El primer corte de este modelo está implementado en tablas y servicios de aplicación. El catálogo inicial de roles es común; sus asignaciones tienen alcance local. Sólo existen tres permisos mínimos de identidad y laboratorio; los módulos operativos añadirán capacidades por caso de uso. Ver [Identity y Authorization](identity-authorization.md).
+
 ## Aceptado, implementado y posterior
 
-**Aceptado:** monolito modular, stack indicado, PostgreSQL autoritativo, servicios reutilizables, separación autenticación/autorización, control por permisos, trazabilidad útil y adaptadores externos. Ver ADR 0001–0005.
+**Aceptado:** monolito modular, stack indicado, PostgreSQL autoritativo, servicios reutilizables, separación autenticación/autorización, control por permisos, trazabilidad útil y adaptadores externos. También se aceptan Laboratory separado de Space, membresías con varios roles y postergación de Organization. Ver ADR 0001–0006.
 
-**Implementado:** App Router con una página informativa responsiva; TypeScript estricto; Tailwind; configuración de lint, formato y pruebas; validación de URL de base de datos sin revelar secretos; cliente Drizzle de servidor; esquema vacío; Compose para PostgreSQL local con la imagen `postgres:17-alpine`, volumen persistente, healthcheck y publicación en `127.0.0.1:5433`; script de lectura para comprobar conexión. PostgreSQL local y la conexión de Drizzle mediante `select 1` fueron verificados; ver el informe de validación de esta sesión.
+**Implementado:** App Router con una página informativa responsiva; TypeScript estricto; Tailwind; configuración de lint, formato y pruebas; validación de URL de base de datos sin revelar secretos; cliente Drizzle de servidor; Compose para PostgreSQL local con la imagen `postgres:17-alpine`, volumen persistente, healthcheck y publicación en `127.0.0.1:5433`; script de lectura para comprobar conexión. Better Auth 1.7.6 está integrado con correo/contraseña, registro público y borrado físico deshabilitados, sesiones de 12 horas sin renovación, Route Handler Node.js y UUID nativo de PostgreSQL. Identity implementa laboratorios, membresías activables con varios roles, permisos, autorización reutilizable, consulta protegida, asignación acotada de roles y bootstrap controlado. Las dos migraciones fueron revisadas y aplicadas localmente. Ver la [validación de autenticación](authentication-spike.md) y el [primer flujo de autorización](identity-authorization.md).
 
-**Posterior:** servicios de negocio, tablas y migraciones, autenticación, autorización ejecutable, auditoría, transacciones de negocio, archivos S3, correos, PWA, push, reportes y Giussepe. AWS y Bedrock no están aprovisionados ni conectados. shadcn/ui se evaluará cuando se necesiten componentes interactivos; no aporta valor instalarlo para una página estática.
+**Posterior:** UI y ciclo de vida completo de cuentas, auditoría persistente, servicios y transacciones de módulos operativos, archivos S3, correos, PWA, push, reportes y Giussepe. AWS y Bedrock no están aprovisionados ni conectados. shadcn/ui se evaluará cuando se necesiten componentes interactivos; no aporta valor instalarlo para una página estática.
 
 ## Integridad y seguridad que guiarán los módulos
 
@@ -67,8 +92,8 @@ Cada servicio recibirá contexto autenticado y verificará permisos y pertenenci
 
 ## Decisiones pendientes y consecuencias
 
-- **Múltiples laboratorios:** `spaces.organization_id` aparece sin entidad organizacional ni membresías completas (§22). Falta decidir propiedad, alcance de permisos y catálogos compartidos. ADR 0006 es propuesta; resolver antes de la primera migración funcional.
-- **Identidad:** cuentas locales son una capacidad V1; no se ha elegido biblioteca, política de altas ni proveedor. Cognito es opcional; Entra ID depende de autorización institucional. No asumir integración IPN.
+- **Extensión del alcance aprobado:** el primer corte de Laboratory y membresías ya existe. Quedan por diseñar las restricciones físicas de Space, la matriz de permisos de cada módulo y las reglas de delegación más allá del rol inicial. Organization y operaciones compartidas entre laboratorios se posponen.
+- **Identidad:** Better Auth, UUID y el bootstrap local están implementados conforme al ADR 0008. El registro público y el borrado físico permanecen deshabilitados. Quedan por implementar UI, recuperación, adaptador de correo y retención de auditoría. No asumir AWS ni integración IPN.
 - **Atomicidad de mantenimiento y consumo:** §15 menciona transacción independiente vinculada, mientras RNF5–6 exige integridad. Definir si ambas escrituras son atómicas o si se admiten estados parciales y compensaciones antes de implementar ese flujo.
 - **PWA:** §3.1 y RNF2 la incluyen, pero §34.2 la sitúa en V1.5. Se aplaza según el alcance explícito de esta sesión; confirmar la aceptación de cada entrega futura.
 - **Modelo incompleto:** §16 permite incidentes asociados a espacios, pero el ejemplo de campos en §22.2 no incluye `space_id`; grupos, periodos, asignación de roles y vínculo activo/ítem requieren modelado. No copiar el listado como contrato completo.
@@ -78,4 +103,4 @@ Cada servicio recibirá contexto autenticado y verificará permisos y pertenenci
 
 ## Siguiente incremento recomendado
 
-Acordar el alcance de laboratorio/organización y membresías, y elegir la estrategia de cuentas locales. Después implementar un primer corte pequeño de Identity con permisos de aplicación y pruebas; luego un catálogo Spatial mínimo de espacios. Esto proporciona una base autorizada para prácticas y reservaciones sin iniciar todavía esos módulos. La selección y aceptación del siguiente módulo corresponden al responsable del proyecto.
+Seleccionar explícitamente el siguiente flujo funcional. Si continúa Identity, deberá abordar ciclo de vida de cuentas o auditoría sin ampliar permisos por anticipado; si comienza un módulo operativo, deberá introducir sólo sus permisos y restricciones concretas reutilizando `AuthorizationService`. La selección corresponde al responsable del proyecto.

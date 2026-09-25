@@ -17,3 +17,5 @@ Usar solo roles del proveedor o email como identidad estable acopla el dominio y
 ## Consecuencias
 
 Proveedor y biblioteca siguen pendientes; no se crea autenticación en esta sesión. El alcance de permisos entre laboratorios debe definirse antes de implementar membresías.
+
+Actualización: el alcance local y las membresías con varios roles quedan definidos en el [ADR 0006 aceptado](0006-laboratory-scope.md). La decisión de desacoplar identidad y autorización se conserva.

@@ -1,3 +1,3 @@
 # Servicios de aplicación de identidad
 
-Ubicación prevista para los primeros casos de uso de identidad, una vez aprobado su alcance. Coordinarán validación, autorización y transacciones mediante adaptadores concretos. Los invocadores web y las futuras herramientas de IA compartirán estos servicios. No hay cuentas, sesiones ni permisos ejecutables en esta inicialización.
+Contiene servicios reutilizables para autorización por usuario, laboratorio, membresía y permiso; consulta protegida de laboratorio; asignación acotada de roles; y bootstrap inicial. Los invocadores web y las futuras herramientas de IA deberán compartir estos servicios. Ningún servicio depende de React ni confía en roles de Better Auth.

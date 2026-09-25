@@ -1,3 +1,3 @@
 # Dominio de identidad
 
-Punto de entrada para las futuras reglas puras de identidad y permisos. Sin implementación todavía: el modelo de membresías y alcance de laboratorio requiere una decisión previa (ADR 0006). No añadir dependencias de React, Next.js, Drizzle ni proveedores de identidad aquí.
+Contiene el catálogo inicial de permisos y rol de bootstrap, además de errores de dominio/aplicación independientes de infraestructura. El ADR 0006 define membresías únicas por usuario y laboratorio con varios roles; sus permisos siguen sujetos a restricciones adicionales de cada caso de uso. No añadir dependencias de React, Next.js, Drizzle ni proveedores de identidad aquí.

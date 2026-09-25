@@ -1,7 +1,7 @@
 # identity
 
-Estado: pendiente de implementación; este directorio delimita responsabilidades.
+Estado: primer incremento backend implementado.
 
 Identidad interna, roles y permisos, desacoplados de proveedores de autenticación (SRS §§23–24).
 
-Al iniciar el módulo, crear `domain/` para reglas puras y `application/` para casos de uso, autorización, validación y coordinación transaccional. Añadir adaptadores de persistencia solo cuando exista un caso de uso. No importar React, Next.js ni SDK de IA en el dominio.
+`domain/` contiene el catálogo mínimo y errores; `application/` resuelve autorización, consulta protegida, asignación de roles y bootstrap; `infrastructure/` integra Drizzle, PostgreSQL y Better Auth. El dominio no importa React, Next.js, Drizzle ni SDK de IA.
