@@ -2,7 +2,7 @@
 
 Base de una plataforma de gestión académica y operativa para laboratorios. Primera implementación prevista: Laboratorio de Pesados, UPIITA-IPN. Proyecto de servicio social universitario.
 
-Esta entrega contiene los fundamentos técnicos, autenticación local con Better Auth y el primer flujo backend de autorización por laboratorio. No implementa UI de acceso, inventario, reservaciones, mantenimiento, gestión académica ni Giussepe.
+Esta entrega contiene los fundamentos técnicos, autenticación local con Better Auth, autorización por laboratorio y la primera interfaz funcional de acceso. Incluye login, logout, cambio de contraseña, selección de laboratorios y un shell protegido. No implementa inventario, reservaciones, mantenimiento, gestión académica ni Giussepe.
 
 ## Requisitos
 
@@ -19,7 +19,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Abre [localhost:3000](http://localhost:3000). La página inicial no consulta la base de datos; puede compilarse y ejecutarse sin `.env` ni PostgreSQL.
+Abre [localhost:3000/login](http://localhost:3000/login). El login y `/app` requieren `.env`, PostgreSQL, migraciones aplicadas y una cuenta local. La página informativa `/` no consulta la base de datos.
 
 ## PostgreSQL local
 
@@ -66,6 +66,19 @@ pnpm bootstrap:development
 
 El comando crea interactivamente la primera identidad local, el Laboratorio de Pesados, su membresía y el rol responsable mínimo. La contraseña no se recibe como argumento y no se muestra. El registro público continúa deshabilitado y el bootstrap se detiene si detecta una instalación ya inicializada.
 
+Después del bootstrap, inicia `pnpm dev`, abre `/login` y usa el correo y la contraseña capturados. No hay registro público ni recuperación de contraseña en esta etapa.
+
+## Flujo de autenticación disponible
+
+- `/login` autentica por correo y contraseña mediante Better Auth y muestra un error uniforme para credenciales inválidas o cuentas inactivas.
+- `/app` valida la sesión en el servidor, resuelve únicamente `actorUserId` y vuelve a comprobar que `users.is_active` sea verdadero.
+- El selector muestra laboratorios activos asociados a membresías activas del usuario, junto con sus roles locales.
+- `/app/labs/[slug]` trata el slug como intención de navegación y usa `AuthorizationService` antes de mostrar datos; un laboratorio inexistente o no autorizado produce la misma respuesta de no encontrado.
+- `/app/account/security` cambia la contraseña local. La sesión del navegador se rota y permanece autenticada; las demás sesiones se revocan.
+- Cerrar sesión revoca la sesión actual y regresa a `/login`.
+
+Consulta [shell autenticado](docs/architecture/authenticated-shell.md) para los límites de seguridad y decisiones de implementación.
+
 ## Validación
 
 ```bash
@@ -88,6 +101,7 @@ Consulta [validación de la inicialización](docs/architecture/validation.md) pa
 - [SRS original](docs/srs/PoliLabs-SRS.tex): fuente de requisitos, sin modificaciones. La ruta real usa `docs` y el nombre `PoliLabs-SRS.tex`.
 - [Arquitectura](docs/architecture/README.md): módulos, relaciones, estado implementado y decisiones pendientes.
 - [Identity y Authorization](docs/architecture/identity-authorization.md): esquema, permisos, bootstrap y validación del primer flujo.
+- [Shell autenticado](docs/architecture/authenticated-shell.md): login, sesión, selección de laboratorio, cambio de contraseña y protección de rutas.
 - [ADR](docs/decisions/README.md): decisiones aceptadas y propuestas.
 - [Instrucciones permanentes](AGENTS.md): continuidad del desarrollo.
 

@@ -3,6 +3,12 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { AuthorizationReader } from "../application/authorization-service";
 import type { LaboratoryReader } from "../application/get-laboratory";
 import type { MembershipRoleAssigner } from "../application/assign-membership-role";
+import type { ActiveUserReader } from "../application/get-current-user";
+import type { LaboratorySlugReader } from "../application/get-laboratory-by-slug";
+import type {
+  AccessibleLaboratory,
+  UserLaboratoriesReader,
+} from "../application/get-user-laboratories";
 import { INITIAL_PERMISSIONS } from "../domain/access-catalog";
 import * as databaseSchema from "@/infrastructure/database/schema";
 import { users } from "./auth-schema";
@@ -16,6 +22,90 @@ import {
 } from "./access-schema";
 
 export type IdentityDatabase = NodePgDatabase<typeof databaseSchema>;
+
+export class DrizzleActiveUserReader implements ActiveUserReader {
+  constructor(private readonly database: IdentityDatabase) {}
+
+  async findActiveById(userId: string) {
+    const [user] = await this.database
+      .select({ id: users.id, name: users.name, email: users.email })
+      .from(users)
+      .where(and(eq(users.id, userId), eq(users.isActive, true)))
+      .limit(1);
+
+    return user ?? null;
+  }
+}
+
+export class DrizzleUserLaboratoriesReader implements UserLaboratoriesReader {
+  constructor(private readonly database: IdentityDatabase) {}
+
+  async listActiveForUser(
+    actorUserId: string,
+  ): Promise<readonly AccessibleLaboratory[] | null> {
+    const [activeUser] = await this.database
+      .select({ id: users.id })
+      .from(users)
+      .where(and(eq(users.id, actorUserId), eq(users.isActive, true)))
+      .limit(1);
+    if (!activeUser) return null;
+
+    const rows = await this.database
+      .select({
+        id: laboratories.id,
+        slug: laboratories.slug,
+        name: laboratories.name,
+        roleKey: roles.key,
+        roleName: roles.name,
+      })
+      .from(laboratoryMemberships)
+      .innerJoin(
+        laboratories,
+        and(
+          eq(laboratories.id, laboratoryMemberships.laboratoryId),
+          eq(laboratories.isActive, true),
+        ),
+      )
+      .leftJoin(
+        membershipRoles,
+        eq(membershipRoles.membershipId, laboratoryMemberships.id),
+      )
+      .leftJoin(roles, eq(roles.id, membershipRoles.roleId))
+      .where(
+        and(
+          eq(laboratoryMemberships.userId, actorUserId),
+          eq(laboratoryMemberships.isActive, true),
+        ),
+      );
+
+    type MutableAccessibleLaboratory = Omit<
+      AccessibleLaboratory,
+      "roleKeys" | "roleNames"
+    > & {
+      roleKeys: string[];
+      roleNames: string[];
+    };
+    const result = new Map<string, MutableAccessibleLaboratory>();
+    for (const row of rows) {
+      const laboratory = result.get(row.id) ?? {
+        id: row.id,
+        slug: row.slug,
+        name: row.name,
+        roleKeys: [],
+        roleNames: [],
+      };
+      if (row.roleKey && !laboratory.roleKeys.includes(row.roleKey)) {
+        laboratory.roleKeys.push(row.roleKey);
+      }
+      if (row.roleName && !laboratory.roleNames.includes(row.roleName)) {
+        laboratory.roleNames.push(row.roleName);
+      }
+      result.set(row.id, laboratory);
+    }
+
+    return [...result.values()];
+  }
+}
 
 export class DrizzleAuthorizationReader implements AuthorizationReader {
   constructor(private readonly database: IdentityDatabase) {}
@@ -74,7 +164,9 @@ export class DrizzleAuthorizationReader implements AuthorizationReader {
   }
 }
 
-export class DrizzleLaboratoryReader implements LaboratoryReader {
+export class DrizzleLaboratoryReader
+  implements LaboratoryReader, LaboratorySlugReader
+{
   constructor(private readonly database: IdentityDatabase) {}
 
   async findActiveById(laboratoryId: string) {
@@ -88,6 +180,20 @@ export class DrizzleLaboratoryReader implements LaboratoryReader {
       .where(
         and(eq(laboratories.id, laboratoryId), eq(laboratories.isActive, true)),
       )
+      .limit(1);
+
+    return laboratory ?? null;
+  }
+
+  async findActiveBySlug(slug: string) {
+    const [laboratory] = await this.database
+      .select({
+        id: laboratories.id,
+        slug: laboratories.slug,
+        name: laboratories.name,
+      })
+      .from(laboratories)
+      .where(and(eq(laboratories.slug, slug), eq(laboratories.isActive, true)))
       .limit(1);
 
     return laboratory ?? null;

@@ -8,16 +8,20 @@ import { AssignMembershipRole } from "../../src/modules/identity/application/ass
 import { AuthorizationService } from "../../src/modules/identity/application/authorization-service";
 import { BootstrapInstallation } from "../../src/modules/identity/application/bootstrap-installation";
 import { GetLaboratory } from "../../src/modules/identity/application/get-laboratory";
+import { GetLaboratoryBySlug } from "../../src/modules/identity/application/get-laboratory-by-slug";
+import { GetUserLaboratories } from "../../src/modules/identity/application/get-user-laboratories";
 import { INITIAL_PERMISSIONS } from "../../src/modules/identity/domain/access-catalog";
 import {
   AuthorizationDeniedError,
   BootstrapAlreadyInitializedError,
+  InactiveUserError,
   InvalidLaboratoryRelationError,
 } from "../../src/modules/identity/domain/access-errors";
 import {
   DrizzleAuthorizationReader,
   DrizzleLaboratoryReader,
   DrizzleMembershipRoleAssigner,
+  DrizzleUserLaboratoriesReader,
   type IdentityDatabase,
 } from "../../src/modules/identity/infrastructure/access-repository";
 import {
@@ -33,6 +37,7 @@ import {
   createBootstrapAuth,
 } from "../../src/modules/identity/infrastructure/bootstrap-auth";
 import { DrizzleBootstrapCoordinator } from "../../src/modules/identity/infrastructure/bootstrap-coordinator";
+import { createRuntimeAuth } from "../../src/modules/identity/infrastructure/runtime-auth";
 import {
   accounts,
   sessions,
@@ -59,6 +64,13 @@ function hasPostgresCode(error: unknown, code: string): boolean {
   if (!error || typeof error !== "object") return false;
   if ("code" in error && error.code === code) return true;
   return "cause" in error && hasPostgresCode(error.cause, code);
+}
+
+function cookieHeader(headers: Headers): string {
+  return headers
+    .getSetCookie()
+    .map((value) => value.split(";", 1)[0])
+    .join("; ");
 }
 
 test("authorization remains scoped to one active laboratory membership", async (context) => {
@@ -93,13 +105,22 @@ test("authorization remains scoped to one active laboratory membership", async (
         ])
         .returning({ id: users.id });
 
-    const [laboratoryA, laboratoryB] = await database
+    const [laboratoryA, laboratoryB, inactiveLaboratory] = await database
       .insert(laboratories)
       .values([
         { slug: `laboratory-a-${suffix}`, name: "Laboratory A fixture" },
         { slug: `laboratory-b-${suffix}`, name: "Laboratory B fixture" },
+        {
+          slug: `inactive-laboratory-${suffix}`,
+          name: "Inactive laboratory fixture",
+          isActive: false,
+        },
       ])
-      .returning({ id: laboratories.id, name: laboratories.name });
+      .returning({
+        id: laboratories.id,
+        slug: laboratories.slug,
+        name: laboratories.name,
+      });
 
     const [readPermission, membershipPermission, assignPermission] =
       await database
@@ -147,26 +168,34 @@ test("authorization remains scoped to one active laboratory membership", async (
       },
     ]);
 
-    const [actorInA, actorInB, noPermissionInA, inactiveMembership, inactive] =
-      await database
-        .insert(laboratoryMemberships)
-        .values([
-          { userId: actor.id, laboratoryId: laboratoryA.id },
-          { userId: actor.id, laboratoryId: laboratoryB.id },
-          { userId: withoutPermission.id, laboratoryId: laboratoryA.id },
-          {
-            userId: inactiveMembershipUser.id,
-            laboratoryId: laboratoryA.id,
-            isActive: false,
-          },
-          { userId: inactiveUser.id, laboratoryId: laboratoryA.id },
-        ])
-        .returning({ id: laboratoryMemberships.id });
+    const [
+      actorInA,
+      actorInB,
+      actorInInactiveLaboratory,
+      noPermissionInA,
+      inactiveMembership,
+      inactive,
+    ] = await database
+      .insert(laboratoryMemberships)
+      .values([
+        { userId: actor.id, laboratoryId: laboratoryA.id },
+        { userId: actor.id, laboratoryId: laboratoryB.id },
+        { userId: actor.id, laboratoryId: inactiveLaboratory.id },
+        { userId: withoutPermission.id, laboratoryId: laboratoryA.id },
+        {
+          userId: inactiveMembershipUser.id,
+          laboratoryId: laboratoryA.id,
+          isActive: false,
+        },
+        { userId: inactiveUser.id, laboratoryId: laboratoryA.id },
+      ])
+      .returning({ id: laboratoryMemberships.id });
 
     await database.insert(membershipRoles).values([
       { membershipId: actorInA.id, roleId: readerRole.id },
       { membershipId: actorInA.id, roleId: roleAssigner.id },
       { membershipId: actorInB.id, roleId: membershipManager.id },
+      { membershipId: actorInInactiveLaboratory.id, roleId: readerRole.id },
       { membershipId: noPermissionInA.id, roleId: emptyRole.id },
       { membershipId: inactiveMembership.id, roleId: readerRole.id },
       { membershipId: inactive.id, roleId: readerRole.id },
@@ -178,6 +207,13 @@ test("authorization remains scoped to one active laboratory membership", async (
     const getLaboratory = new GetLaboratory(
       authorization,
       new DrizzleLaboratoryReader(database),
+    );
+    const getLaboratoryBySlug = new GetLaboratoryBySlug(
+      authorization,
+      new DrizzleLaboratoryReader(database),
+    );
+    const getUserLaboratories = new GetUserLaboratories(
+      new DrizzleUserLaboratoriesReader(database),
     );
     const assignRole = new AssignMembershipRole(
       authorization,
@@ -270,6 +306,62 @@ test("authorization remains scoped to one active laboratory membership", async (
       },
     );
 
+    await context.test(
+      "lists only active memberships of active users and laboratories",
+      async () => {
+        const actorLaboratories = await getUserLaboratories.execute(actor.id);
+        assert.deepEqual(
+          new Set(actorLaboratories.map(({ id }) => id)),
+          new Set([laboratoryA.id, laboratoryB.id]),
+        );
+        assert.equal(
+          actorLaboratories.some(({ id }) => id === inactiveLaboratory.id),
+          false,
+        );
+
+        const inactiveMembershipLaboratories =
+          await getUserLaboratories.execute(inactiveMembershipUser.id);
+        assert.deepEqual(inactiveMembershipLaboratories, []);
+        await assert.rejects(
+          getUserLaboratories.execute(inactiveUser.id),
+          InactiveUserError,
+        );
+      },
+    );
+
+    await context.test(
+      "keeps laboratory lists isolated between users",
+      async () => {
+        const otherUserLaboratories = await getUserLaboratories.execute(
+          withoutPermission.id,
+        );
+        assert.deepEqual(
+          otherUserLaboratories.map(({ id }) => id),
+          [laboratoryA.id],
+        );
+      },
+    );
+
+    await context.test(
+      "changing the laboratory slug does not grant access or reveal data",
+      async () => {
+        await assert.rejects(
+          getLaboratoryBySlug.execute({
+            actorUserId: actor.id,
+            laboratorySlug: laboratoryB.slug,
+          }),
+          AuthorizationDeniedError,
+        );
+        await assert.rejects(
+          getLaboratoryBySlug.execute({
+            actorUserId: actor.id,
+            laboratorySlug: `unknown-${suffix}`,
+          }),
+          AuthorizationDeniedError,
+        );
+      },
+    );
+
     await context.test("rejects duplicate membership assignments", async () => {
       await assert.rejects(
         database.insert(laboratoryMemberships).values({
@@ -315,6 +407,7 @@ test("controlled bootstrap creates exactly one local responsible", async () => {
   await clearIdentityData(database);
   try {
     const bootstrapAuth = createBootstrapAuth(database);
+    const runtimeAuth = createRuntimeAuth(database, "http://localhost:3000");
     const bootstrap = new BootstrapInstallation(
       new BetterAuthLocalIdentityProvisioner(bootstrapAuth),
       new DrizzleBootstrapCoordinator(database),
@@ -355,17 +448,30 @@ test("controlled bootstrap creates exactly one local responsible", async () => {
       BootstrapAlreadyInitializedError,
     );
 
-    const signedIn = await bootstrapAuth.api.signInEmail({
+    const invalidLogin = await runtimeAuth.handler(
+      new Request("http://localhost:3000/api/auth/sign-in/email", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          email: input.userEmail,
+          password: `${password}-incorrect`,
+        }),
+      }),
+    );
+    assert.equal(invalidLogin.status, 401);
+    assert.equal(
+      ((await invalidLogin.json()) as { code?: string }).code,
+      "INVALID_EMAIL_OR_PASSWORD",
+    );
+
+    const signedIn = await runtimeAuth.api.signInEmail({
       body: { email: input.userEmail, password },
       returnHeaders: true,
     });
     assert.equal(signedIn.response.user.id, result.userId);
 
-    const cookie = signedIn.headers
-      .getSetCookie()
-      .map((value) => value.split(";", 1)[0])
-      .join("; ");
-    const authenticatedSession = await bootstrapAuth.api.getSession({
+    const cookie = cookieHeader(signedIn.headers);
+    const authenticatedSession = await runtimeAuth.api.getSession({
       headers: new Headers({ cookie }),
     });
     assert.ok(authenticatedSession);
@@ -378,6 +484,87 @@ test("controlled bootstrap creates exactly one local responsible", async () => {
       laboratoryId: result.laboratoryId,
       requiredPermission: INITIAL_PERMISSIONS.laboratoryRead.key,
     });
+
+    const secondSignIn = await runtimeAuth.api.signInEmail({
+      body: { email: input.userEmail, password },
+      returnHeaders: true,
+    });
+    const secondCookie = cookieHeader(secondSignIn.headers);
+    const newPassword = randomBytes(24).toString("base64url");
+    const passwordChange = await runtimeAuth.api.changePassword({
+      body: {
+        currentPassword: password,
+        newPassword,
+        revokeOtherSessions: true,
+      },
+      headers: new Headers({ cookie }),
+      returnHeaders: true,
+    });
+    const replacementCookie = cookieHeader(passwordChange.headers);
+    assert.ok(replacementCookie);
+    assert.equal(
+      await runtimeAuth.api.getSession({
+        headers: new Headers({ cookie: secondCookie }),
+      }),
+      null,
+    );
+    assert.equal(
+      await runtimeAuth.api.getSession({ headers: new Headers({ cookie }) }),
+      null,
+    );
+    assert.equal(
+      (
+        await runtimeAuth.api.getSession({
+          headers: new Headers({ cookie: replacementCookie }),
+        })
+      )?.user.id,
+      result.userId,
+    );
+
+    const oldPasswordLogin = await runtimeAuth.handler(
+      new Request("http://localhost:3000/api/auth/sign-in/email", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: input.userEmail, password }),
+      }),
+    );
+    assert.equal(oldPasswordLogin.status, 401);
+
+    const newPasswordLogin = await runtimeAuth.api.signInEmail({
+      body: { email: input.userEmail, password: newPassword },
+      returnHeaders: true,
+    });
+    const logoutCookie = cookieHeader(newPasswordLogin.headers);
+    const logout = await runtimeAuth.api.signOut({
+      headers: new Headers({ cookie: logoutCookie }),
+    });
+    assert.equal(logout.success, true);
+    assert.equal(
+      await runtimeAuth.api.getSession({
+        headers: new Headers({ cookie: logoutCookie }),
+      }),
+      null,
+    );
+
+    await database
+      .update(users)
+      .set({ isActive: false })
+      .where(eq(users.id, result.userId));
+    const inactiveLogin = await runtimeAuth.handler(
+      new Request("http://localhost:3000/api/auth/sign-in/email", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          email: input.userEmail,
+          password: newPassword,
+        }),
+      }),
+    );
+    assert.equal(inactiveLogin.status, 401);
+    assert.equal(
+      ((await inactiveLogin.json()) as { message?: string }).message,
+      "Correo o contraseña incorrectos.",
+    );
 
     const [{ value: userCount }] = await database
       .select({ value: count() })

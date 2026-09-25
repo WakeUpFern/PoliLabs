@@ -15,7 +15,7 @@ sesión Better Auth
   → decisión autorizada o denegada
 ```
 
-No incluye interfaz de acceso, administración gráfica, módulos operativos, OIDC, AWS, SES, MFA ni el plugin Organization de Better Auth.
+Este documento describe el flujo backend original. La interfaz de acceso, selección y shell protegido añadida después se documenta en [Shell autenticado y selección de laboratorio](authenticated-shell.md). Siguen fuera de alcance la administración gráfica, módulos operativos, OIDC, AWS, SES, MFA y el plugin Organization de Better Auth.
 
 ## Persistencia
 
@@ -91,11 +91,11 @@ Se comprueban:
 
 ## Limitaciones pendientes
 
-- No hay UI ni endpoints de administración de membresías.
+- Existe UI de login, selección y contexto mínimo, pero no hay UI ni endpoints de administración de membresías.
 - El catálogo completo de permisos se agregará por caso de uso; estos tres permisos no anticipan módulos operativos.
 - Falta auditoría persistente de cambios de membresías y roles.
 - El bootstrap está limitado al desarrollo local; un procedimiento de despliegue requerirá controles operativos específicos.
-- No se implementaron recuperación de contraseña, proveedor de correo, OIDC ni MFA.
+- Se implementaron logout y cambio de contraseña; recuperación, proveedor de correo, OIDC y MFA siguen pendientes.
 
 ## Resultados de validación
 

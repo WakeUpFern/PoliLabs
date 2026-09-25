@@ -4,4 +4,15 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   background: #faf9f6;
   color: #272326;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+::selection {
+  background: #7a1731;
+  color: white;
 }

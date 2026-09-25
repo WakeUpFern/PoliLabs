@@ -7,6 +7,24 @@ export class AuthorizationDeniedError extends Error {
   }
 }
 
+export class AuthenticationRequiredError extends Error {
+  readonly code = "AUTHENTICATION_REQUIRED";
+
+  constructor() {
+    super("A valid session is required.");
+    this.name = "AuthenticationRequiredError";
+  }
+}
+
+export class InactiveUserError extends Error {
+  readonly code = "INACTIVE_USER";
+
+  constructor() {
+    super("The authenticated user is not active.");
+    this.name = "InactiveUserError";
+  }
+}
+
 export class DuplicateMembershipRoleError extends Error {
   readonly code = "DUPLICATE_MEMBERSHIP_ROLE";
 

@@ -2,6 +2,7 @@ import { loadEnvConfig } from "@next/env";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
+import { Writable } from "node:stream";
 import { Pool } from "pg";
 import { readDatabaseUrl } from "../src/config/database-env";
 import * as schema from "../src/infrastructure/database/schema";
@@ -26,7 +27,18 @@ async function readBootstrapInput() {
   if (!stdin.isTTY || !stdout.isTTY)
     throw new Error("Bootstrap requires an interactive terminal.");
 
-  const prompt = createInterface({ input: stdin, output: stdout });
+  let hideOutput = false;
+  const promptOutput = new Writable({
+    write(chunk, _encoding, callback) {
+      if (!hideOutput) stdout.write(chunk);
+      callback();
+    },
+  });
+  const prompt = createInterface({
+    input: stdin,
+    output: promptOutput,
+    terminal: true,
+  });
   try {
     const userName = await prompt.question("Responsible name: ");
     const userEmail = await prompt.question("Responsible email: ");
@@ -39,18 +51,15 @@ async function readBootstrapInput() {
       `Laboratory slug [${defaultSlug}]: `,
     );
 
-    const mutablePrompt = prompt as typeof prompt & {
-      _writeToOutput: (value: string) => void;
-    };
-    const writeToOutput = mutablePrompt._writeToOutput.bind(prompt);
-    mutablePrompt._writeToOutput = () => undefined;
-
     stdout.write("Password: ");
+    hideOutput = true;
     const password = await prompt.question("");
+    hideOutput = false;
     stdout.write("\nConfirm password: ");
+    hideOutput = true;
     const confirmation = await prompt.question("");
+    hideOutput = false;
     stdout.write("\n");
-    mutablePrompt._writeToOutput = writeToOutput;
 
     if (password !== confirmation)
       throw new Error("Password confirmation does not match.");
@@ -63,6 +72,7 @@ async function readBootstrapInput() {
       laboratorySlug: slugAnswer.trim() || defaultSlug,
     };
   } finally {
+    hideOutput = false;
     prompt.close();
   }
 }
