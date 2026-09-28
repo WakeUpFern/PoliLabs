@@ -17,6 +17,18 @@ export const INITIAL_PERMISSIONS = {
     description:
       "Permite asignar roles a membresías del laboratorio autorizado.",
   },
+  spaceRead: {
+    key: "space.read",
+    name: "Consultar espacios",
+    description:
+      "Permite consultar los espacios activos del laboratorio autorizado.",
+  },
+  spaceManage: {
+    key: "space.manage",
+    name: "Administrar espacios",
+    description:
+      "Permite crear, editar y desactivar espacios del laboratorio autorizado.",
+  },
 } as const;
 
 export type PermissionKey =
@@ -26,7 +38,7 @@ export const INITIAL_RESPONSIBLE_ROLE = {
   key: "laboratory_responsible",
   name: "Responsable de laboratorio",
   description:
-    "Responsable inicial con las capacidades mínimas de identidad del laboratorio.",
+    "Responsable inicial con las capacidades de identidad y catálogo espacial del laboratorio.",
 } as const;
 
 export const INITIAL_PERMISSION_LIST = Object.values(INITIAL_PERMISSIONS);

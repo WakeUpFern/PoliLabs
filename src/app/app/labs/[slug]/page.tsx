@@ -51,8 +51,8 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
             {laboratory.name}
           </h1>
           <p className="mt-4 max-w-2xl leading-7 text-white/72">
-            Sesión activa de {user.name}. Las funciones disponibles se
-            habilitarán conforme se implementen los siguientes módulos.
+            Sesión activa de {user.name}. Trabaja únicamente con los datos
+            autorizados para este laboratorio.
           </p>
         </div>
         <div className="grid gap-px bg-white/15 sm:grid-cols-2">
@@ -78,9 +78,16 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
       <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6 sm:p-8">
         <h2 className="text-lg font-semibold">Navegación del laboratorio</h2>
         <p className="mt-2 text-sm leading-6 text-stone-600">
-          Los módulos operativos todavía no forman parte de este incremento.
+          Spatial I habilita el catálogo inicial de espacios. Los demás módulos
+          se incorporarán en incrementos posteriores.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
+          <Link
+            href={`/app/labs/${slug}/spaces`}
+            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
+          >
+            Espacios
+          </Link>
           {["Prácticas", "Reservaciones", "Inventario", "Mantenimiento"].map(
             (item) => (
               <span

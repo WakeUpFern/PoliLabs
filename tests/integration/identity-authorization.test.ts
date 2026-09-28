@@ -10,7 +10,10 @@ import { BootstrapInstallation } from "../../src/modules/identity/application/bo
 import { GetLaboratory } from "../../src/modules/identity/application/get-laboratory";
 import { GetLaboratoryBySlug } from "../../src/modules/identity/application/get-laboratory-by-slug";
 import { GetUserLaboratories } from "../../src/modules/identity/application/get-user-laboratories";
-import { INITIAL_PERMISSIONS } from "../../src/modules/identity/domain/access-catalog";
+import {
+  INITIAL_PERMISSION_LIST,
+  INITIAL_PERMISSIONS,
+} from "../../src/modules/identity/domain/access-catalog";
 import {
   AuthorizationDeniedError,
   BootstrapAlreadyInitializedError,
@@ -438,7 +441,7 @@ test("controlled bootstrap creates exactly one local responsible", async () => {
       laboratoryId: result.laboratoryId,
       requiredPermission: INITIAL_PERMISSIONS.laboratoryRead.key,
     });
-    assert.equal(grant.permissionKeys.length, 3);
+    assert.equal(grant.permissionKeys.length, INITIAL_PERMISSION_LIST.length);
 
     await assert.rejects(
       bootstrap.execute({

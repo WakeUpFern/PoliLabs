@@ -34,7 +34,7 @@ Todas las identidades usan UUID nativo. Las FKs tienen `ON DELETE RESTRICT`; la 
 
 La revisión manual encontró seis `CREATE TABLE`, seis claves foráneas, dos PK compuestas, tres índices únicos y cuatro índices de apoyo. No contiene `DROP`, modificaciones de las tablas de autenticación, datos, extensiones ni operaciones destructivas. Se aplicó correctamente a PostgreSQL local después de esa revisión.
 
-## Catálogo mínimo
+## Catálogo mínimo original
 
 Sólo se introdujeron capacidades necesarias para demostrar el flujo:
 
@@ -42,7 +42,7 @@ Sólo se introdujeron capacidades necesarias para demostrar el flujo:
 - `laboratory.membership.manage`: administrar membresías dentro del laboratorio autorizado.
 - `laboratory.role.assign`: asignar roles a membresías del laboratorio autorizado.
 
-El bootstrap crea `laboratory_responsible` con esos tres permisos. No concede permisos operativos ni privilegios sobre otros laboratorios. Los roles no se guardan en `users`, cuentas o sesiones de Better Auth.
+Spatial I añadió después `space.read` y `space.manage`, documentados en [Catálogo de espacios](spatial-catalog.md). El bootstrap actual crea `laboratory_responsible` con el catálogo aprobado vigente: los tres permisos anteriores y ambos permisos espaciales. No concede privilegios sobre otros laboratorios. Los roles no se guardan en `users`, cuentas o sesiones de Better Auth.
 
 ## Servicio de autorización
 
@@ -65,7 +65,7 @@ El procedimiento:
 1. obtiene un advisory lock transaccional de PostgreSQL;
 2. comprueba que identidad, laboratorios, membresías, roles y permisos estén vacíos;
 3. usa una instancia interna no publicada de Better Auth para crear la identidad y el hash de contraseña;
-4. crea el laboratorio, el rol inicial, los tres permisos, la membresía y sus asignaciones;
+4. crea el laboratorio, el rol inicial, el catálogo de permisos aprobado, la membresía y sus asignaciones;
 5. finaliza sin crear una sesión.
 
 La instancia pública conserva `disableSignUp: true`. Una segunda ejecución se detiene antes de crear otra identidad. Si Better Auth alcanzara a crear la identidad pero fallara la transacción de dominio, una nueva ejecución también se detendría de forma segura; ese estado parcial requiere diagnóstico manual y nunca habilita responsables repetidos.
@@ -92,14 +92,14 @@ Se comprueban:
 ## Limitaciones pendientes
 
 - Existe UI de login, selección y contexto mínimo, pero no hay UI ni endpoints de administración de membresías.
-- El catálogo completo de permisos se agregará por caso de uso; estos tres permisos no anticipan módulos operativos.
+- El catálogo de permisos crece únicamente por caso de uso; Spatial I añadió sus dos capacidades sin anticipar otros módulos operativos.
 - Falta auditoría persistente de cambios de membresías y roles.
 - El bootstrap está limitado al desarrollo local; un procedimiento de despliegue requerirá controles operativos específicos.
 - Se implementaron logout y cambio de contraseña; recuperación, proveedor de correo, OIDC y MFA siguen pendientes.
 
 ## Resultados de validación
 
-Validación ejecutada el 24 de septiembre de 2026:
+Validación histórica del incremento Identity ejecutada el 24 de septiembre de 2026 (antes de Spatial I):
 
 - `pnpm db:migrate`: correcto; PostgreSQL local registra dos migraciones aplicadas.
 - Base de desarrollo después de migrar: cero usuarios, laboratorios, membresías, roles y permisos; el bootstrap real no fue ejecutado.

@@ -15,6 +15,13 @@
       "when": 1790303095965,
       "tag": "0001_reflective_shriek",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790613717471,
+      "tag": "0002_ancient_blue_marvel",
+      "breakpoints": true
     }
   ]
 }

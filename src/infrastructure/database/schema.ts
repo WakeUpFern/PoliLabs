@@ -1,5 +1,6 @@
 export * from "@/modules/identity/infrastructure/auth-schema";
 export * from "@/modules/identity/infrastructure/access-schema";
+export * from "@/modules/spatial/infrastructure/spatial-schema";
 
-// Business tables beyond the authentication identity will be introduced with
-// their approved modules and migrations.
+// Each business module exports only the tables introduced by its approved
+// increment and migration.
