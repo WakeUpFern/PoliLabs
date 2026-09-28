@@ -29,6 +29,30 @@ export const INITIAL_PERMISSIONS = {
     description:
       "Permite crear, editar y desactivar espacios del laboratorio autorizado.",
   },
+  locationRead: {
+    key: "location.read",
+    name: "Consultar ubicaciones",
+    description:
+      "Permite consultar las ubicaciones activas de los espacios del laboratorio autorizado.",
+  },
+  locationManage: {
+    key: "location.manage",
+    name: "Administrar ubicaciones",
+    description:
+      "Permite crear, editar y desactivar ubicaciones de los espacios del laboratorio autorizado.",
+  },
+  resourceRead: {
+    key: "resource.read",
+    name: "Consultar recursos",
+    description:
+      "Permite consultar los recursos físicos activos de los espacios del laboratorio autorizado.",
+  },
+  resourceManage: {
+    key: "resource.manage",
+    name: "Administrar recursos",
+    description:
+      "Permite crear, editar y desactivar recursos físicos de los espacios del laboratorio autorizado.",
+  },
 } as const;
 
 export type PermissionKey =

@@ -5,7 +5,7 @@ export default function Home() {
         UPIITA · LABORATORIO DE PESADOS
       </p>
       <h1 className="text-6xl font-semibold tracking-tight sm:text-8xl">
-        Labora
+        PoliLabs
       </h1>
       <p className="mt-6 max-w-xl text-xl leading-relaxed">
         Un espacio para la gestión académica y operativa de nuestros

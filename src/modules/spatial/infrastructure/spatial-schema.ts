@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  foreignKey,
   index,
   integer,
   pgTable,
@@ -48,5 +49,72 @@ export const spaces = pgTable(
       sql`${table.capacity} is null or ${table.capacity} > 0`,
     ),
     check("spaces_name_not_blank_check", sql`btrim(${table.name}) <> ''`),
+  ],
+);
+
+const spatialTimestamps = () => ({
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const locations = pgTable(
+  "locations",
+  {
+    id: uuid("id")
+      .default(sql`pg_catalog.gen_random_uuid()`)
+      .primaryKey(),
+    spaceId: uuid("space_id")
+      .notNull()
+      .references(() => spaces.id, { onDelete: "restrict" }),
+    parentId: uuid("parent_id"),
+    name: text("name").notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    ...spatialTimestamps(),
+  },
+  (table) => [
+    uniqueIndex("locations_id_space_unique_idx").on(table.id, table.spaceId),
+    index("locations_space_idx").on(table.spaceId),
+    index("locations_parent_idx").on(table.parentId),
+    foreignKey({
+      name: "locations_parent_same_space_fk",
+      columns: [table.parentId, table.spaceId],
+      foreignColumns: [table.id, table.spaceId],
+    }).onDelete("restrict"),
+    check(
+      "locations_not_own_parent_check",
+      sql`${table.parentId} is null or ${table.parentId} <> ${table.id}`,
+    ),
+    check("locations_name_not_blank_check", sql`btrim(${table.name}) <> ''`),
+  ],
+);
+
+export const resources = pgTable(
+  "resources",
+  {
+    id: uuid("id")
+      .default(sql`pg_catalog.gen_random_uuid()`)
+      .primaryKey(),
+    spaceId: uuid("space_id")
+      .notNull()
+      .references(() => spaces.id, { onDelete: "restrict" }),
+    locationId: uuid("location_id"),
+    name: text("name").notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    ...spatialTimestamps(),
+  },
+  (table) => [
+    index("resources_space_idx").on(table.spaceId),
+    index("resources_location_idx").on(table.locationId),
+    foreignKey({
+      name: "resources_location_same_space_fk",
+      columns: [table.locationId, table.spaceId],
+      foreignColumns: [locations.id, locations.spaceId],
+    }).onDelete("restrict"),
+    check("resources_name_not_blank_check", sql`btrim(${table.name}) <> ''`),
   ],
 );

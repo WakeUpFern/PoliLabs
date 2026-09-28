@@ -104,6 +104,12 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
                       ? `Capacidad: ${space.capacity} personas`
                       : "Capacidad no especificada"}
                   </p>
+                  <Link
+                    href={`/app/labs/${slug}/spaces/${space.slug}`}
+                    className="mt-5 inline-flex text-sm font-semibold text-[#7a1731] transition hover:text-[#571020]"
+                  >
+                    Abrir organización física <span aria-hidden="true">→</span>
+                  </Link>
                   {catalog.canManage ? (
                     <div className="mt-5 flex items-center gap-4 border-t border-stone-100 pt-4">
                       <Link

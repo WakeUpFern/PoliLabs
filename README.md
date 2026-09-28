@@ -2,7 +2,7 @@
 
 Base de una plataforma de gestión académica y operativa para laboratorios. Primera implementación prevista: Laboratorio de Pesados, UPIITA-IPN. Proyecto de servicio social universitario.
 
-Esta entrega contiene los fundamentos técnicos, autenticación local con Better Auth, autorización por laboratorio y la primera interfaz funcional de acceso. Incluye login, logout, cambio de contraseña, selección de laboratorios y un shell protegido. No implementa inventario, reservaciones, mantenimiento, gestión académica ni Giussepe.
+Esta entrega contiene los fundamentos técnicos, autenticación local con Better Auth, autorización por laboratorio y el catálogo espacial básico. Incluye login, logout, cambio de contraseña, selección de laboratorios, espacios, ubicaciones jerárquicas y recursos físicos individuales. No implementa inventario, reservaciones, planos, mantenimiento, gestión académica ni Giussepe.
 
 ## Requisitos
 
@@ -46,6 +46,8 @@ El esquema contiene las tablas de autenticación y el primer modelo aprobado de 
 
 - `0000_late_devos.sql`: Better Auth con UUID nativo.
 - `0001_reflective_shriek.sql`: laboratorio, membresías y autorización de aplicación.
+- `0002_ancient_blue_marvel.sql`: catálogo de espacios y permisos de Spatial I.
+- `0003_strange_red_hulk.sql`: ubicaciones, recursos y permisos de Spatial II.
 
 Para cambios posteriores:
 

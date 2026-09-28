@@ -42,7 +42,7 @@ Sólo se introdujeron capacidades necesarias para demostrar el flujo:
 - `laboratory.membership.manage`: administrar membresías dentro del laboratorio autorizado.
 - `laboratory.role.assign`: asignar roles a membresías del laboratorio autorizado.
 
-Spatial I añadió después `space.read` y `space.manage`, documentados en [Catálogo de espacios](spatial-catalog.md). El bootstrap actual crea `laboratory_responsible` con el catálogo aprobado vigente: los tres permisos anteriores y ambos permisos espaciales. No concede privilegios sobre otros laboratorios. Los roles no se guardan en `users`, cuentas o sesiones de Better Auth.
+Spatial añadió después `space.read`, `space.manage`, `location.read`, `location.manage`, `resource.read` y `resource.manage`, documentados en [Catálogo espacial](spatial-catalog.md). El bootstrap actual crea `laboratory_responsible` con el catálogo aprobado vigente. No concede privilegios sobre otros laboratorios. Los roles no se guardan en `users`, cuentas o sesiones de Better Auth.
 
 ## Servicio de autorización
 
@@ -92,7 +92,7 @@ Se comprueban:
 ## Limitaciones pendientes
 
 - Existe UI de login, selección y contexto mínimo, pero no hay UI ni endpoints de administración de membresías.
-- El catálogo de permisos crece únicamente por caso de uso; Spatial I añadió sus dos capacidades sin anticipar otros módulos operativos.
+- El catálogo de permisos crece únicamente por caso de uso; Spatial I y II añadieron sólo las capacidades de espacios, ubicaciones y recursos físicos implementadas.
 - Falta auditoría persistente de cambios de membresías y roles.
 - El bootstrap está limitado al desarrollo local; un procedimiento de despliegue requerirá controles operativos específicos.
 - Se implementaron logout y cambio de contraseña; recuperación, proveedor de correo, OIDC y MFA siguen pendientes.
