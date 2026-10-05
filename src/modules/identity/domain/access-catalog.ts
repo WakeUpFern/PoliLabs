@@ -53,6 +53,22 @@ export const INITIAL_PERMISSIONS = {
     description:
       "Permite crear, editar y desactivar recursos físicos de los espacios del laboratorio autorizado.",
   },
+  reservationRead: {
+    key: "reservation.read",
+    name: "Consultar reservaciones propias",
+    description:
+      "Consultar disponibilidad y reservaciones propias del laboratorio.",
+  },
+  reservationCreate: {
+    key: "reservation.create",
+    name: "Crear reservaciones",
+    description: "Crear reservaciones individuales del laboratorio.",
+  },
+  reservationCancel: {
+    key: "reservation.cancel",
+    name: "Cancelar reservaciones propias",
+    description: "Cancelar reservaciones propias antes de su inicio.",
+  },
 } as const;
 
 export type PermissionKey =
@@ -62,7 +78,7 @@ export const INITIAL_RESPONSIBLE_ROLE = {
   key: "laboratory_responsible",
   name: "Responsable de laboratorio",
   description:
-    "Responsable inicial con las capacidades de identidad y catálogo espacial del laboratorio.",
+    "Responsable inicial con las capacidades de identidad, catálogo espacial y reservaciones propias del laboratorio.",
 } as const;
 
 export const INITIAL_PERMISSION_LIST = Object.values(INITIAL_PERMISSIONS);

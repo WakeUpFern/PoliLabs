@@ -10,3 +10,5 @@ Aceptada no implica implementada. Las decisiones iniciales se fundamentan en el 
 - [0006 — Alcance organizacional y membresías de laboratorio](0006-laboratory-scope.md): Aceptada.
 - [0007 — Ubicación canónica del SRS](0007-canonical-srs-location.md): Aceptada.
 - [0008 — Autenticación local con Better Auth](0008-local-authentication.md): Aceptada.
+
+- [0009 — Reservaciones individuales y exclusividad por espacio](0009-individual-reservations.md): Propuesta; implementación evaluable de Reservations I, pendiente de ratificación.

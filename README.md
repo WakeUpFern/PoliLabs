@@ -2,7 +2,7 @@
 
 Base de una plataforma de gestión académica y operativa para laboratorios. Primera implementación prevista: Laboratorio de Pesados, UPIITA-IPN. Proyecto de servicio social universitario.
 
-Esta entrega contiene los fundamentos técnicos, autenticación local con Better Auth, autorización por laboratorio y el catálogo espacial básico. Incluye login, logout, cambio de contraseña, selección de laboratorios, espacios, ubicaciones jerárquicas y recursos físicos individuales. No implementa inventario, reservaciones, planos, mantenimiento, gestión académica ni Giussepe.
+Esta entrega contiene los fundamentos técnicos, autenticación local con Better Auth, autorización por laboratorio y el catálogo espacial básico. Incluye login, logout, cambio de contraseña, selección de laboratorios, espacios, ubicaciones jerárquicas y recursos físicos individuales. Reservations I añade servicios backend de disponibilidad, creación individual, consulta propia y cancelación con protección concurrente. No implementa UI de reservaciones, inventario, planos, mantenimiento, gestión académica ni Giussepe.
 
 ## Requisitos
 
@@ -48,6 +48,7 @@ El esquema contiene las tablas de autenticación y el primer modelo aprobado de 
 - `0001_reflective_shriek.sql`: laboratorio, membresías y autorización de aplicación.
 - `0002_ancient_blue_marvel.sql`: catálogo de espacios y permisos de Spatial I.
 - `0003_strange_red_hulk.sql`: ubicaciones, recursos y permisos de Spatial II.
+- `0004_skinny_morg.sql`: reservaciones individuales, asociaciones del mismo Space, permisos y triggers de concurrencia.
 
 Para cambios posteriores:
 
@@ -104,6 +105,7 @@ Consulta [validación de la inicialización](docs/architecture/validation.md) pa
 - [Arquitectura](docs/architecture/README.md): módulos, relaciones, estado implementado y decisiones pendientes.
 - [Identity y Authorization](docs/architecture/identity-authorization.md): esquema, permisos, bootstrap y validación del primer flujo.
 - [Shell autenticado](docs/architecture/authenticated-shell.md): login, sesión, selección de laboratorio, cambio de contraseña y protección de rutas.
+- [Reservations I](docs/architecture/reservations.md): modelo, tiempo, propiedad, conflictos, revisión SQL y validación.
 - [ADR](docs/decisions/README.md): decisiones aceptadas y propuestas.
 - [Instrucciones permanentes](AGENTS.md): continuidad del desarrollo.
 

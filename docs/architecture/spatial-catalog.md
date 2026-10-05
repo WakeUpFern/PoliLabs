@@ -17,7 +17,7 @@ Laboratory
 
 `Location` tiene UUID, nombre, espacio, padre opcional, estado activo y marcas de tiempo. No necesita slug porque no participa en rutas ni existe otro caso de uso que lo requiera. `Resource` representa únicamente la identidad física individual necesaria para saber qué existe y dónde está: UUID, nombre, espacio, ubicación opcional, estado activo y marcas de tiempo. Los nombres no son únicos; la identidad estable es el UUID.
 
-Siguen fuera clasificación y reservabilidad de `Space`, reservabilidad de `Resource`, planos, coordenadas, disponibilidad, horarios, reservaciones e inventario. En particular, Spatial II no decide todavía si un `Resource` será también un activo o tendrá relación con `InventoryItem`.
+Spatial conserva fuera clasificación, reservabilidad configurable, planos, coordenadas, horarios e inventario. [Reservations I](reservations.md) incorpora disponibilidad y reservaciones individuales; utiliza Space/Resource activos como elegibles en este corte sin introducir lógica temporal en Spatial. En particular, Spatial II no decide todavía si un `Resource` será también un activo o tendrá relación con `InventoryItem`.
 
 ## Autorización y escritura
 
@@ -47,3 +47,5 @@ Desactivar una ubicación con hijos activos o recursos activos se rechaza. No ha
 ## Validación
 
 Las pruebas unitarias cubren normalización y entradas inválidas. Las pruebas de integración cubren jerarquía válida, asociaciones opcionales, edición, movimientos, desactivación lógica, política de dependientes, permisos de lectura/escritura, aislamiento por laboratorio, manipulación de identificadores y FKs/checks/trigger ejecutados en PostgreSQL real.
+
+Reservations I añade únicamente el índice UNIQUE `(id, space_id)` de Resource, necesario para la FK compuesta de sus asociaciones; no altera las reglas ni servicios de Spatial.

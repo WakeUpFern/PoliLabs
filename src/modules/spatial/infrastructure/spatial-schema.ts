@@ -108,6 +108,7 @@ export const resources = pgTable(
     ...spatialTimestamps(),
   },
   (table) => [
+    uniqueIndex("resources_id_space_unique_idx").on(table.id, table.spaceId),
     index("resources_space_idx").on(table.spaceId),
     index("resources_location_idx").on(table.locationId),
     foreignKey({

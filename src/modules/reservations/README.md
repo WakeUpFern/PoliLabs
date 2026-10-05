@@ -1,7 +1,10 @@
-# reservations
+# Reservations
 
-Estado: pendiente de implementación; este directorio delimita responsabilidades.
+Reservations I implementa servicios backend de disponibilidad, creación individual,
+detalle/listado propios y cancelación lógica. Usa Space y Resource de Spatial y
+AuthorizationService de Identity, sin duplicar entidades físicas ni permisos.
 
-Disponibilidad, reservaciones, asignaciones, recurrencias y bloqueos (SRS §13). Una reservación puede asignar múltiples recursos de su espacio y referenciar práctica o sesión.
-
-Al iniciar el módulo, crear `domain/` para reglas puras y `application/` para casos de uso, autorización, validación y coordinación transaccional. Añadir adaptadores de persistencia solo cuando exista un caso de uso. No importar React, Next.js ni SDK de IA en el dominio.
+Consultar [arquitectura y validación](../../../docs/architecture/reservations.md) y
+[ADR 0009 propuesto](../../../docs/decisions/0009-individual-reservations.md).
+La UI corresponde a Reservations II. No incluye recurrencia, aprobación, Academic,
+Inventory, Notifications ni Giussepe.

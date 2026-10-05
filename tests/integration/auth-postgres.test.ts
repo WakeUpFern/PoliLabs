@@ -74,7 +74,7 @@ test("the approved Better Auth schema works against PostgreSQL", async () => {
          from drizzle.__drizzle_migrations`,
     );
 
-    assert.equal(migrations.rows[0]?.migration_count, 4);
+    assert.equal(migrations.rows[0]?.migration_count, 5);
 
     const response = await auth.handler(
       new Request("http://localhost:3000/api/auth/sign-in/email", {
