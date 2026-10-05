@@ -43,6 +43,13 @@
       "when": 1791239492400,
       "tag": "0005_foamy_the_anarchist",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791243089096,
+      "tag": "0006_academic_i",
+      "breakpoints": true
     }
   ]
 }

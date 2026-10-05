@@ -130,3 +130,11 @@ Consulta [validación de la inicialización](docs/architecture/validation.md) pa
 - [Instrucciones permanentes](AGENTS.md): continuidad del desarrollo.
 
 Inventory I fue seleccionado explícitamente. Las siguientes ampliaciones deben seleccionarse por separado; esta entrega no autoriza préstamos, activos, planos ni otros módulos operativos.
+
+## Academic I — prácticas y sesiones
+
+Se seleccionó e implementó el siguiente incremento de la propuesta compartida: crear, editar, publicar y cerrar prácticas; programar, consultar, abrir, cerrar y cancelar sesiones; registrar participantes previstos del mismo laboratorio. Acceso desde **Prácticas** en la ficha del laboratorio. Se reutilizan Identity y Space, con servicios autorizados y eventos transaccionales.
+
+Una sesión no reserva automáticamente un espacio; inscripción no significa asistencia ni uso de maquinaria. Usage I será el siguiente puente entre contexto académico, reservaciones y posteriores incidencias. Grupos, periodos, asistencia, préstamos, Incidents, Maintenance y Knowledge quedan fuera de este corte. Ver [Academic I](docs/architecture/academic.md) y [ADR 0011 — Propuesta](docs/decisions/0011-academic-sessions.md): las reglas específicas de permisos, estados y participación quedan documentadas para revisión, sin atribuirles aceptación institucional.
+
+La migración versionada `0006_academic_i.sql` añade las tablas y permisos de este flujo. Las instalaciones existentes reciben los permisos académicos en `laboratory_responsible` al ejecutar `pnpm db:migrate`. No es necesario repetir bootstrap. Las demás membresías requieren permisos asignados explícitamente; no hay altas públicas ni asignación automática de roles por inscripción.

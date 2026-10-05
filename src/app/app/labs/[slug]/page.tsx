@@ -81,7 +81,8 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
           Spatial I y II habilitan espacios, ubicaciones jerárquicas y recursos
           físicos. Reservaciones permite consultar disponibilidad y gestionar
           tus reservaciones individuales. Inventario permite consultar
-          materiales, herramientas y movimientos.
+          materiales, herramientas y movimientos. Prácticas permite gestionar
+          instrucciones, sesiones y participantes.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link
@@ -102,7 +103,13 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
           >
             Inventario
           </Link>
-          {["Prácticas", "Mantenimiento"].map((item) => (
+          <Link
+            href={`/app/labs/${slug}/academic`}
+            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
+          >
+            Prácticas
+          </Link>
+          {["Mantenimiento"].map((item) => (
             <span
               key={item}
               aria-disabled="true"

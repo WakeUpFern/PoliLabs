@@ -70,6 +70,18 @@ export const INITIAL_PERMISSIONS = {
     description:
       "Registrar entradas, consumos, daños, pérdidas y ajustes del laboratorio.",
   },
+  academicRead: {
+    key: "academic.read",
+    name: "Consultar prácticas y sesiones",
+    description:
+      "Consultar prácticas publicadas y sesiones propias del laboratorio.",
+  },
+  academicManage: {
+    key: "academic.manage",
+    name: "Administrar prácticas y sesiones",
+    description:
+      "Gestionar prácticas, sesiones y participantes sin modificar la propia participación.",
+  },
   reservationRead: {
     key: "reservation.read",
     name: "Consultar reservaciones propias",

@@ -8,3 +8,5 @@ export * from "@/modules/spatial/infrastructure/spatial-schema";
 export * from "@/modules/reservations/infrastructure/reservation-schema";
 
 export * from "@/modules/inventory/infrastructure/inventory-schema";
+
+export * from "@/modules/academic/infrastructure/academic-schema";

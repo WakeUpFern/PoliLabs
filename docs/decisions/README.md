@@ -13,3 +13,5 @@ Aceptada no implica implementada. Las decisiones iniciales se fundamentan en el 
 - [0009 — Reservaciones individuales y exclusividad por espacio](0009-individual-reservations.md): Aceptada; implementación actual de Reservations I aprobada explícitamente.
 
 - [0010 — Inventario por cantidad y movimientos trazables](0010-quantity-inventory.md): Aceptada; alcance de Inventory I aprobado explícitamente.
+
+- [0011 — Prácticas, sesiones y participación académica](0011-academic-sessions.md): Propuesta; Academic I seleccionado, políticas concretas pendientes de revisión.

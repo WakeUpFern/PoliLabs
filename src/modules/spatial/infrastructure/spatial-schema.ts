@@ -39,6 +39,10 @@ export const spaces = pgTable(
       table.laboratoryId,
       table.slug,
     ),
+    uniqueIndex("spaces_id_laboratory_unique_idx").on(
+      table.id,
+      table.laboratoryId,
+    ),
     index("spaces_laboratory_idx").on(table.laboratoryId),
     check(
       "spaces_slug_format_check",
