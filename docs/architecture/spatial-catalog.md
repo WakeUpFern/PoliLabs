@@ -35,7 +35,7 @@ Las migraciones de cada incremento agregan sus permisos al catálogo y los asign
 
 PostgreSQL protege la clave foránea de cada entidad, nombres no vacíos, autopadre y asociaciones dentro del mismo espacio mediante FKs compuestas. Un trigger recorre ancestros e impide ciclos; un advisory lock transaccional por espacio serializa cambios jerárquicos concurrentes. Los servicios sólo aceptan padres y ubicaciones activas.
 
-Desactivar una ubicación con hijos activos o recursos activos se rechaza. No hay cascada: el actor debe mover o desactivar primero esos dependientes. Desactivar ubicaciones y recursos conserva sus filas y relaciones históricas.
+Desactivar una ubicación con hijos activos o recursos activos se rechaza. Inventory I añade una guarda PostgreSQL que también impide desactivar una Location o Space con saldo positivo de inventario; los servicios traducen el rechazo a un mensaje operativo. Con saldo cero se conserva la relación histórica. Ver [Inventory I](inventory.md). No hay cascada: el actor debe mover o desactivar primero esos dependientes. Desactivar ubicaciones y recursos conserva sus filas y relaciones históricas.
 
 ## Casos de uso e interfaz
 

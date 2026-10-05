@@ -1,10 +1,11 @@
-# Reservations I
+# Reservations I y Reservations II
+
+## Reservations I — backend
 
 ## Alcance y modelo
 
 Flujo backend implementado: CheckAvailability, CreateReservation, GetReservation,
-ListMyReservations y CancelReservation. Sin rutas, Server Actions ni UI; la
-integración web corresponde a Reservations II. La composición de servidor está en
+ListMyReservations y CancelReservation. Reservations I se mantiene como backend reutilizable; la integración web de Reservations II se describe al final. La composición de servidor está en
 `src/modules/reservations/infrastructure/services.ts`. Los contratos de aplicación
 no dependen de React, HTTP, Next.js ni IA.
 
@@ -23,8 +24,12 @@ al consultar/crear; Maintenance y estado operativo detallado quedan pendientes.
 ## Tiempo, estado y propiedad
 
 Entradas: ISO 8601 con segundos y offset explícito o Z. Las futuras interfaces
-interpretarán entradas locales en `America/Mexico_City`; el backend rechaza horas
-locales ambiguas. No se asume timezone del proceso o servidor PostgreSQL.
+usarán `America/Mexico_City` como política inicial de interfaz/despliegue para
+interpretar entradas locales; el backend rechaza horas locales ambiguas. Esta
+política no restringe permanentemente a futuros laboratorios en otras zonas
+horarias: podrán usar otra zona en su interfaz/despliegue, conservando instantes
+con offset y almacenamiento timestamptz. La configuración por laboratorio queda
+pendiente y no se implementa en este corte. No se asume timezone del proceso o servidor PostgreSQL.
 Persistencia: `timestamptz`, instantes absolutos; representación usual UTC.
 Intervalos finitos `[inicio, fin)`, inicio estrictamente menor que fin; límites
 contiguos no entran en conflicto. La creación exige inicio estrictamente futuro,
@@ -116,10 +121,16 @@ persistir exactamente una reserva y devolver un conflicto, tanto para Resource
 como Space y exclusividad contra recurso. También se verifica SQL directo y
 estado final diferido sin depender de mocks.
 
-El ADR [0009](../decisions/0009-individual-reservations.md) está **Propuesta**.
-El SRS no determina la política exacta de reservabilidad, timezone, inicio futuro,
-propiedad ni cancelación; aquí se explicitan para evaluación del incremento.
-Pendiente ratificación y UI para Reservations II. También quedan pendientes
+El ADR [0009](../decisions/0009-individual-reservations.md) está **Aceptada** por
+aprobación explícita del responsable con la implementación actual. Se conservan
+como decisiones aprobadas la elegibilidad de Space/Resource activos para este
+corte, la propiedad del creador para lectura/cancelación y la serialización por
+Space en READ COMMITTED. El SRS no determina la política exacta de reservabilidad,
+timezone, inicio futuro, propiedad ni cancelación; estas reglas quedan resueltas
+por la decisión de proyecto aprobada. America/Mexico_City es sólo la política
+inicial de interfaz/despliegue, extensible a otras zonas horarias.
+Reservations II implementa la UI individual descrita abajo. Sigue pendiente la configuración de zona horaria por laboratorio.
+También quedan pendientes
 paginación del listado, reservabilidad configurable, estado operativo detallado,
 aprobaciones y permisos para terceros cuando exista un flujo autorizado.
 Recurrencia, Academic, FloorPlan, Inventory, Notifications, auditoría general,
@@ -148,7 +159,10 @@ Giussepe y AWS siguen fuera de alcance.
   incluida compilación TypeScript y generación de rutas de producción.
 - No se añadió UI; no se ejecutaron pruebas de navegador de un flujo nuevo. El
   incremento es backend y su flujo completo se validó mediante servicios y base real.
-- SRS sin modificaciones; ningún ADR fue marcado Aceptada durante este incremento.
+- SRS sin modificaciones. Durante la implementación el ADR 0009 quedó Propuesta;
+  posteriormente el responsable aprobó explícitamente la implementación actual y
+  su política inicial de zona horaria, y el ADR pasó a Aceptada mediante una
+  actualización exclusivamente documental.
 
 ## Archivos de este incremento
 
@@ -179,3 +193,126 @@ Modificados:
 - `docs/architecture/README.md`
 - `docs/architecture/spatial-catalog.md`
 - `docs/decisions/README.md`
+
+## Reservations II — integración web individual
+
+Implementa el flujo seleccionado: login → Laboratory → Reservaciones → seleccionar
+Space/Resources → consultar disponibilidad → crear → listado propio → detalle →
+cancelar. Reutiliza el App Shell, Tailwind y componentes propios existentes; no se
+instala shadcn/ui ni una suite E2E nueva.
+
+### Rutas, navegación y adaptador
+
+- `/app/labs/[slug]/reservations`: `ListMyReservations`, listado vacío explicativo,
+  próximas/en curso e historial pasado/cancelado. Sin estadísticas ni paginación.
+- `/app/labs/[slug]/reservations/new`: formulario responsivo con Space primero,
+  modalidad exclusiva o uno/varios Resources del mismo Space y fecha/hora inicial/final.
+- `/app/labs/[slug]/reservations/[reservationId]`: `GetReservation`, modalidad,
+  Space/Resources, Locations visibles como contexto, intervalo, estado y marcas de
+  creación/cancelación. Inexistente/ajena/no autorizada conserva respuesta uniforme.
+- La navegación del laboratorio añade Reservaciones. `loading.tsx` y `error.tsx`
+  presentan carga y recuperación sin SQLSTATE ni excepciones internas.
+
+`ReservationWeb` (`src/modules/reservations/web/reservation-web.ts`) adapta los
+formularios y compone servicios; no consulta tablas. `web/services.ts` conecta
+`requireCurrentActor`, `GetLaboratoryBySlug`, `AuthorizationService`, los servicios
+Spatial y los cinco servicios de Reservations I. Cada operación resuelve el actor
+validado y autoriza el slug actual. Ningún actor, permiso o laboratorio autoritativo
+se acepta del formulario. Las páginas/acciones conservan las redirecciones de sesión
+mediante la propagación de los errores internos de Next.js.
+
+`reservationFormAction` invoca CheckAvailability o CreateReservation según el botón
+pulsado. `cancelReservationAction` invoca CancelReservation. Creación revalida el
+listado y redirige al detalle con feedback; cancelación revalida listado/detalle,
+conservando el historial. Los formularios impiden envíos mientras están pendientes.
+Cancelar requiere una confirmación visual sencilla; el servicio sigue decidiendo
+si la operación es válida o idempotente.
+
+### Catálogo, permisos e historial
+
+ListSpaces proporciona espacios activos autorizados. ListResources proporciona
+únicamente recursos activos del espacio; ListLocations añade ubicación cuando el
+actor tiene `location.read`. No tener `resource.read` permite el formulario exclusivo,
+pero no ofrece selección de recursos. No tener `space.read` impide el formulario.
+El adaptador vuelve a consultar el catálogo autorizado al enviar; el servicio de
+Reservations I revalida target/actividad/relaciones dentro de su operación. Cambiar
+Space limpia la selección de recursos en React; manipular el formulario sigue siendo
+rechazado por adaptador/servicio, sin confiar en React.
+
+Listado y detalle exigen `reservation.read`; muestran únicamente registros devueltos
+por ListMyReservations/GetReservation. Los permisos de creación/cancelación controlan
+la presentación de botones, mientras los servicios exigen sus permisos en servidor.
+No se combinan laboratorios ni se añaden permisos. La autorización Spatial para
+etiquetas es independiente: la falta de permiso no elimina historial propio. Cuando
+una entidad fue desactivada o no es visible por los servicios de catálogo actuales,
+se muestra «fuera del catálogo visible» y su identificador de la reserva propia.
+No se añade una lectura SQL alternativa de entidades históricas ni de reservas ajenas.
+Las etiquetas/Locations corresponden al catálogo actual, no a una instantánea histórica.
+
+### Tiempo y disponibilidad
+
+Los inputs `datetime-local` reciben fecha y hora local hasta minutos. `web/time.ts`
+usa Intl con la zona IANA `America/Mexico_City` explícita, obtiene offsets alrededor
+de la fecha y verifica la conversión de ida/vuelta. Rechaza fechas imposibles y horas
+históricas inexistentes/ambiguas. Envía ISO UTC con `Z`; no parsea timestamps locales
+con la timezone del proceso o navegador. El formato de listado/detalle también fija
+la zona explícitamente. Se reutiliza Intl de Node.js 24; no hay nueva dependencia.
+Se mantienen timestamptz, intervalos `[inicio, fin)` y validación backend de inicio
+futuro para creación conforme al ADR 0009.
+
+CheckAvailability muestra sólo «Disponible» o «No disponible para el intervalo
+seleccionado», sin datos de reservas bloqueantes. Su mensaje se vincula a todos los
+campos consultados y desaparece al cambiar selección/horario. CreateReservation
+siempre ejecuta su validación transaccional; nunca recibe una autorización derivada
+del check. ReservationConflictError posterior al check muestra un mensaje para
+escoger otro horario. Entradas/targets inválidos, falta de permisos, inexistencia y
+cancelación iniciada/pasada tienen mensajes públicos. Errores inesperados se propagan
+al límite de error; se recomienda revisar el listado antes de repetir una creación.
+
+### Pruebas y validación del incremento
+
+- `tests/reservation-web.test.ts`: cuatro pruebas de conversión independiente de TZ,
+  offsets históricos, fechas inválidas/gaps/ambigüedades, mensajes públicos y vigencia
+  del feedback de disponibilidad.
+- `tests/integration/reservation-web.test.ts`: 17 escenarios del adaptador con servicios
+  reales y PostgreSQL separado. Cubren ausencia de sesión, permisos, catálogo activo,
+  Space/uno/varios Resources, target manipulado, disponibilidad, creación, conflicto
+  tras check, propiedad/listado/detalle, idempotencia/historial, cancelación iniciada,
+  laboratorio manipulado, permisos Spatial y entidades desactivadas.
+- Se conserva íntegra la suite Reservations I y sus seis carreras PostgreSQL;
+  las pruebas web no reemplazan sus garantías transaccionales.
+- `pnpm check`: correcto, 32 pruebas unitarias/configuración más lint, TypeScript y formato.
+- `pnpm test:integration`: correcto, 70 resultados; sin mocks de garantías PostgreSQL.
+- `pnpm build`: bloqueado por EPERM del worker PostCSS/Turbopack al enlazar un puerto,
+  igual al límite ya registrado para Reservations I.
+- `pnpm exec next build --webpack`: correcto sobre el código final; incluye las tres
+  rutas nuevas y la compilación TypeScript.
+- Navegador integrado contra build de producción en `localhost:3001` y base local
+  separada `_test`: sesión ausente redirige al login; login, selección de Laboratory,
+  navegación Reservaciones, carga/listado vacío, disponibilidad, creación exclusiva
+  de Space, creación de varios Resources, Locations visibles, listado propio,
+  detalle y cancelación confirmada con estado/fecha e historial actualizado.
+- Navegador: conflicto al confirmar un intervalo ya ocupado devuelve feedback
+  público. El caso de una operación que gana entre check/create se verifica con
+  servicios reales en la integración automatizada, además de las carreras de I.
+- Formulario a 390 × 844: sin desbordamiento horizontal ni overlay. Se comprobó
+  visualmente el formulario de recursos y el detalle; no se añadió infraestructura E2E.
+- La verificación detectó y corrigió la captura de `datetime-local` mediante `input`
+  y el reset automático de React después de consultar disponibilidad. Se conservan
+  las entradas para confirmar y se invalida feedback al cambiarlas.
+- Hubo un `Failed to fetch` durante el cierre/reinicio del servidor temporal; se
+  repitió login y se completó el flujo con la fixture mantenida hasta finalizar.
+  Los datos sintéticos fueron limpiados, verificando cero usuarios/reservas de esa
+  fixture. No se usaron credenciales reales ni se alteró la base de desarrollo.
+
+### Alcance conservado y pendientes
+
+Reservations II no añade migraciones, permisos, tablas, dependencias ni cambios de
+reglas de dominio. SRS y ADR aceptados se conservan sin edición por este incremento.
+Los cambios documentales previos de aceptación del ADR 0009 se preservan.
+
+Quedan pendientes paginación según volumen real, nombres históricos de entidades
+fuera del catálogo visible, configuración de timezone por laboratorio, reservabilidad
+configurable y calendarios avanzados. Recurrencia, aprobaciones, reservas de terceros,
+override, FloorPlan, Inventory, Maintenance, Academic, Notifications, email, Giussepe,
+RAG, AWS y auditoría general siguen fuera de alcance.

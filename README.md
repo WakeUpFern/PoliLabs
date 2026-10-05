@@ -2,7 +2,7 @@
 
 Base de una plataforma de gestión académica y operativa para laboratorios. Primera implementación prevista: Laboratorio de Pesados, UPIITA-IPN. Proyecto de servicio social universitario.
 
-Esta entrega contiene los fundamentos técnicos, autenticación local con Better Auth, autorización por laboratorio y el catálogo espacial básico. Incluye login, logout, cambio de contraseña, selección de laboratorios, espacios, ubicaciones jerárquicas y recursos físicos individuales. Reservations I añade servicios backend de disponibilidad, creación individual, consulta propia y cancelación con protección concurrente. No implementa UI de reservaciones, inventario, planos, mantenimiento, gestión académica ni Giussepe.
+Esta entrega contiene los fundamentos técnicos, autenticación local con Better Auth, autorización por laboratorio y el catálogo espacial básico. Incluye login, logout, cambio de contraseña, selección de laboratorios, espacios, ubicaciones jerárquicas y recursos físicos individuales. Reservations I añade servicios backend de disponibilidad, creación individual, consulta propia y cancelación con protección concurrente. Reservations II expone esas capacidades en el flujo web individual: formulario de Space/Resources, disponibilidad, creación, listado propio, detalle y cancelación. Inventory I incorpora catálogo por cantidad, búsqueda, existencias con ubicación opcional, movimientos, edición, desactivación e historial. Préstamos, activos individualizados, planos, mantenimiento, gestión académica y Giussepe siguen pendientes.
 
 ## Requisitos
 
@@ -49,6 +49,7 @@ El esquema contiene las tablas de autenticación y el primer modelo aprobado de 
 - `0002_ancient_blue_marvel.sql`: catálogo de espacios y permisos de Spatial I.
 - `0003_strange_red_hulk.sql`: ubicaciones, recursos y permisos de Spatial II.
 - `0004_skinny_morg.sql`: reservaciones individuales, asociaciones del mismo Space, permisos y triggers de concurrencia.
+- `0005_foamy_the_anarchist.sql`: Inventory I, saldos/movimientos/eventos, permisos y protección transaccional e integración con desactivación espacial.
 
 Para cambios posteriores:
 
@@ -82,6 +83,24 @@ Después del bootstrap, inicia `pnpm dev`, abre `/login` y usa el correo y la co
 
 Consulta [shell autenticado](docs/architecture/authenticated-shell.md) para los límites de seguridad y decisiones de implementación.
 
+## Reservaciones individuales en la web
+
+Después de iniciar sesión, entra a un laboratorio y abre **Reservaciones**:
+
+- `/app/labs/[slug]/reservations`: reservaciones propias, próximas/en curso e historial.
+- `/app/labs/[slug]/reservations/new`: Space completo o uno/varios Resources activos del mismo Space, fecha/hora, disponibilidad y confirmación.
+- `/app/labs/[slug]/reservations/[reservationId]`: detalle propio y cancelación antes del inicio, según los permisos existentes.
+
+La interfaz interpreta y muestra horarios en `America/Mexico_City`, independientemente de la zona del navegador/Node. Las acciones envían instantes UTC con `Z` a los servicios de Reservations I. Consultar disponibilidad no garantiza la confirmación: un conflicto posterior muestra feedback para seleccionar otro intervalo. El backend revalida permiso, target, tiempo y concurrencia.
+
+El formulario consulta Spatial mediante servicios autorizados (`space.read`, `resource.read` y `location.read` para el contexto opcional). El listado/detalle conservan historial cuando el catálogo cambia; entidades desactivadas o fuera del catálogo visible aparecen con una etiqueta explícita y su identificador propio. No hay paginación ni calendario avanzado. Reservations II no añade permisos, dependencias ni migraciones.
+
+## Inventario en la web
+
+Entra a un laboratorio y abre **Inventario**. Busca artículos por nombre, filtra consumibles/herramientas y registra entradas o salidas desde su detalle. El alta permite saldo cero o existencia inicial trazable, con ubicación opcional. Tipo y unidad quedan fijos tras el primer movimiento; desactivar requiere saldo cero y conserva el historial. Herramientas no admiten consumo ni préstamos todavía.
+
+Rutas: `/app/labs/[slug]/inventory`, `/inventory/new` y `/inventory/[itemId]` dentro del mismo laboratorio. Permisos locales: `inventory.read`, `inventory.manage`, `inventory.adjust`; la migración los asigna al responsable inicial. Consulta [Inventory I](docs/architecture/inventory.md) y sus [resultados de validación](docs/architecture/inventory-validation.md).
+
 ## Validación
 
 ```bash
@@ -105,8 +124,9 @@ Consulta [validación de la inicialización](docs/architecture/validation.md) pa
 - [Arquitectura](docs/architecture/README.md): módulos, relaciones, estado implementado y decisiones pendientes.
 - [Identity y Authorization](docs/architecture/identity-authorization.md): esquema, permisos, bootstrap y validación del primer flujo.
 - [Shell autenticado](docs/architecture/authenticated-shell.md): login, sesión, selección de laboratorio, cambio de contraseña y protección de rutas.
-- [Reservations I](docs/architecture/reservations.md): modelo, tiempo, propiedad, conflictos, revisión SQL y validación.
+- [Reservations I y II](docs/architecture/reservations.md): backend, integración web individual, tiempo, propiedad, conflictos y validación.
+- [Inventory I](docs/architecture/inventory.md): alcance, cantidades, movimientos, permisos y políticas.
 - [ADR](docs/decisions/README.md): decisiones aceptadas y propuestas.
 - [Instrucciones permanentes](AGENTS.md): continuidad del desarrollo.
 
-El siguiente incremento funcional debe seleccionarse explícitamente; esta entrega no autoriza módulos operativos ni amplía el catálogo de permisos por anticipado.
+Inventory I fue seleccionado explícitamente. Las siguientes ampliaciones deben seleccionarse por separado; esta entrega no autoriza préstamos, activos, planos ni otros módulos operativos.

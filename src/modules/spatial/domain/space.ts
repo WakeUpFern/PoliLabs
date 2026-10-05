@@ -49,3 +49,10 @@ export function normalizeSpaceInput(input: {
 
   return { name, slug, capacity };
 }
+
+export class SpaceHasInventoryStockError extends Error {
+  constructor() {
+    super("The space still has inventory stock.");
+    this.name = "SpaceHasInventoryStockError";
+  }
+}

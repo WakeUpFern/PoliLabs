@@ -1,7 +1,9 @@
 # inventory
 
-Estado: pendiente de implementación; este directorio delimita responsabilidades.
+Estado: Inventory I implementado.
 
-Ítems, existencias por ubicación, movimientos y préstamos (SRS §14). Distinguir cantidad, unidad, identidad individual y préstamo temporal.
+Catálogo por Laboratory, consumibles y herramientas reutilizables por cantidad, existencia principal con Location opcional y movimientos trazables. Dominio independiente, servicios autorizados con transacciones PostgreSQL y flujo web de búsqueda/alta/detalle/movimientos/edición/desactivación.
 
-Al iniciar el módulo, crear `domain/` para reglas puras y `application/` para casos de uso, autorización, validación y coordinación transaccional. Añadir adaptadores de persistencia solo cuando exista un caso de uso. No importar React, Next.js ni SDK de IA en el dominio.
+Préstamos, devoluciones, múltiples saldos, transferencias, activos individualizados y planos permanecen pendientes. Resource no se duplica.
+
+Ver [arquitectura y políticas](../../../docs/architecture/inventory.md), [ADR 0010](../../../docs/decisions/0010-quantity-inventory.md) y [validación](../../../docs/architecture/inventory-validation.md).

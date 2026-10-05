@@ -53,6 +53,23 @@ export const INITIAL_PERMISSIONS = {
     description:
       "Permite crear, editar y desactivar recursos físicos de los espacios del laboratorio autorizado.",
   },
+  inventoryRead: {
+    key: "inventory.read",
+    name: "Consultar inventario",
+    description:
+      "Consultar artículos, existencias e historial del laboratorio.",
+  },
+  inventoryManage: {
+    key: "inventory.manage",
+    name: "Administrar artículos",
+    description: "Crear, editar y desactivar artículos del laboratorio.",
+  },
+  inventoryAdjust: {
+    key: "inventory.adjust",
+    name: "Registrar movimientos",
+    description:
+      "Registrar entradas, consumos, daños, pérdidas y ajustes del laboratorio.",
+  },
   reservationRead: {
     key: "reservation.read",
     name: "Consultar reservaciones propias",
@@ -78,7 +95,7 @@ export const INITIAL_RESPONSIBLE_ROLE = {
   key: "laboratory_responsible",
   name: "Responsable de laboratorio",
   description:
-    "Responsable inicial con las capacidades de identidad, catálogo espacial y reservaciones propias del laboratorio.",
+    "Responsable inicial con las capacidades de identidad, catálogo espacial, inventario y reservaciones propias del laboratorio.",
 } as const;
 
 export const INITIAL_PERMISSION_LIST = Object.values(INITIAL_PERMISSIONS);

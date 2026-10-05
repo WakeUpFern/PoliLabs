@@ -1,3 +1,5 @@
+import { LocationHasActiveDependentsError } from "../domain/location";
+import { isInventoryStockGuard } from "./inventory-stock-guard";
 import { and, asc, eq } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { PermissionKey } from "@/modules/identity/domain/access-catalog";
@@ -230,56 +232,62 @@ export class DrizzleSpatialOrganizationRepository
   async deactivateLocation(
     input: Parameters<LocationWriter["deactivateLocation"]>[0],
   ): Promise<LocationWriteResult> {
-    return this.database.transaction(async (transaction) => {
-      if (!(await canWrite(transaction, input)))
-        return { status: "unauthorized" as const };
-      const [location] = await transaction
-        .select({ id: locations.id })
-        .from(locations)
-        .where(
-          and(
-            eq(locations.id, input.locationId),
-            eq(locations.spaceId, input.spaceId),
-            eq(locations.isActive, true),
-          ),
-        )
-        .limit(1)
-        .for("update");
-      if (!location) return { status: "not-found" as const };
+    try {
+      return await this.database.transaction(async (transaction) => {
+        if (!(await canWrite(transaction, input)))
+          return { status: "unauthorized" as const };
+        const [location] = await transaction
+          .select({ id: locations.id })
+          .from(locations)
+          .where(
+            and(
+              eq(locations.id, input.locationId),
+              eq(locations.spaceId, input.spaceId),
+              eq(locations.isActive, true),
+            ),
+          )
+          .limit(1)
+          .for("update");
+        if (!location) return { status: "not-found" as const };
 
-      const [activeChild] = await transaction
-        .select({ id: locations.id })
-        .from(locations)
-        .where(
-          and(
-            eq(locations.spaceId, input.spaceId),
-            eq(locations.parentId, location.id),
-            eq(locations.isActive, true),
-          ),
-        )
-        .limit(1)
-        .for("update");
-      const [activeResource] = await transaction
-        .select({ id: resources.id })
-        .from(resources)
-        .where(
-          and(
-            eq(resources.spaceId, input.spaceId),
-            eq(resources.locationId, location.id),
-            eq(resources.isActive, true),
-          ),
-        )
-        .limit(1)
-        .for("update");
-      if (activeChild || activeResource)
-        return { status: "has-active-dependents" as const };
+        const [activeChild] = await transaction
+          .select({ id: locations.id })
+          .from(locations)
+          .where(
+            and(
+              eq(locations.spaceId, input.spaceId),
+              eq(locations.parentId, location.id),
+              eq(locations.isActive, true),
+            ),
+          )
+          .limit(1)
+          .for("update");
+        const [activeResource] = await transaction
+          .select({ id: resources.id })
+          .from(resources)
+          .where(
+            and(
+              eq(resources.spaceId, input.spaceId),
+              eq(resources.locationId, location.id),
+              eq(resources.isActive, true),
+            ),
+          )
+          .limit(1)
+          .for("update");
+        if (activeChild || activeResource)
+          return { status: "has-active-dependents" as const };
 
-      await transaction
-        .update(locations)
-        .set({ isActive: false, updatedAt: new Date() })
-        .where(eq(locations.id, location.id));
-      return { status: "deactivated" as const };
-    });
+        await transaction
+          .update(locations)
+          .set({ isActive: false, updatedAt: new Date() })
+          .where(eq(locations.id, location.id));
+        return { status: "deactivated" as const };
+      });
+    } catch (error) {
+      if (isInventoryStockGuard(error))
+        throw new LocationHasActiveDependentsError();
+      throw error;
+    }
   }
 
   async createResource(

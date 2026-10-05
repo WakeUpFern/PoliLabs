@@ -1,3 +1,5 @@
+import { SpaceHasInventoryStockError } from "../domain/space";
+import { isInventoryStockGuard } from "./inventory-stock-guard";
 import { and, asc, eq } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type {
@@ -170,24 +172,29 @@ export class DrizzleSpaceRepository implements SpaceReader, SpaceWriter {
   async deactivate(
     input: Parameters<SpaceWriter["deactivate"]>[0],
   ): Promise<SpaceWriteResult> {
-    return this.database.transaction(async (transaction) => {
-      if (!(await canManage(transaction, input)))
-        return { status: "unauthorized" as const };
+    try {
+      return await this.database.transaction(async (transaction) => {
+        if (!(await canManage(transaction, input)))
+          return { status: "unauthorized" as const };
 
-      const updated = await transaction
-        .update(spaces)
-        .set({ isActive: false, updatedAt: new Date() })
-        .where(
-          and(
-            eq(spaces.laboratoryId, input.laboratoryId),
-            eq(spaces.slug, input.slug),
-            eq(spaces.isActive, true),
-          ),
-        )
-        .returning({ id: spaces.id });
-      return updated.length > 0
-        ? { status: "deactivated" as const }
-        : { status: "not-found" as const };
-    });
+        const updated = await transaction
+          .update(spaces)
+          .set({ isActive: false, updatedAt: new Date() })
+          .where(
+            and(
+              eq(spaces.laboratoryId, input.laboratoryId),
+              eq(spaces.slug, input.slug),
+              eq(spaces.isActive, true),
+            ),
+          )
+          .returning({ id: spaces.id });
+        return updated.length > 0
+          ? { status: "deactivated" as const }
+          : { status: "not-found" as const };
+      });
+    } catch (error) {
+      if (isInventoryStockGuard(error)) throw new SpaceHasInventoryStockError();
+      throw error;
+    }
   }
 }

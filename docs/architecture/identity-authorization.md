@@ -109,3 +109,7 @@ Validación histórica del incremento Identity ejecutada el 24 de septiembre de 
 - `pnpm exec next build --webpack`: correcto; compilación de producción y Route Handler de Better Auth válidos.
 - `pnpm build` con Turbopack no concluyó en el entorno aislado porque PostCSS recibió `EPERM` al intentar enlazar un puerto local. No alcanzó un error del código y el build equivalente con Webpack sí finalizó.
 - Este incremento no modificó `docs/srs/PoliLabs-SRS.tex` ni alteró las decisiones de los ADR aceptados.
+
+## Permisos de Inventory I
+
+Inventory I añade `inventory.read`, `inventory.manage` e `inventory.adjust`, con alcance por Laboratory. La migración 0005 los incorpora al responsable inicial y el bootstrap los incluye para instalaciones nuevas. Las transacciones reutilizan AuthorizationService y protegen la ruta de autorización contra revocaciones concurrentes; ver [Inventory I](inventory.md).

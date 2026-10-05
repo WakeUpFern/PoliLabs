@@ -79,7 +79,9 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
         <h2 className="text-lg font-semibold">Navegación del laboratorio</h2>
         <p className="mt-2 text-sm leading-6 text-stone-600">
           Spatial I y II habilitan espacios, ubicaciones jerárquicas y recursos
-          físicos. Los demás módulos se incorporarán en incrementos posteriores.
+          físicos. Reservaciones permite consultar disponibilidad y gestionar
+          tus reservaciones individuales. Inventario permite consultar
+          materiales, herramientas y movimientos.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link
@@ -88,17 +90,27 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
           >
             Espacios
           </Link>
-          {["Prácticas", "Reservaciones", "Inventario", "Mantenimiento"].map(
-            (item) => (
-              <span
-                key={item}
-                aria-disabled="true"
-                className="cursor-not-allowed rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-400"
-              >
-                {item}
-              </span>
-            ),
-          )}
+          <Link
+            href={`/app/labs/${slug}/reservations`}
+            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
+          >
+            Reservaciones
+          </Link>
+          <Link
+            href={`/app/labs/${slug}/inventory`}
+            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
+          >
+            Inventario
+          </Link>
+          {["Prácticas", "Mantenimiento"].map((item) => (
+            <span
+              key={item}
+              aria-disabled="true"
+              className="cursor-not-allowed rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-400"
+            >
+              {item}
+            </span>
+          ))}
         </div>
         <div className="mt-8 border-t border-stone-200 pt-6">
           <LogoutButton />

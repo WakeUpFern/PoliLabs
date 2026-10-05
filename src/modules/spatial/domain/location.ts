@@ -30,7 +30,9 @@ export class LocationCycleError extends Error {
 
 export class LocationHasActiveDependentsError extends Error {
   constructor() {
-    super("The location still has active children or resources.");
+    super(
+      "The location still has active children, resources or inventory stock.",
+    );
     this.name = "LocationHasActiveDependentsError";
   }
 }

@@ -12,6 +12,7 @@ import {
 import {
   DuplicateSpaceSlugError,
   SpaceInputError,
+  SpaceHasInventoryStockError,
   SpaceNotFoundError,
 } from "@/modules/spatial/domain/space";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
@@ -26,6 +27,11 @@ function readCapacity(formData: FormData): number | null {
 }
 
 function actionError(error: unknown): SpaceActionState {
+  if (error instanceof SpaceHasInventoryStockError)
+    return {
+      message:
+        "El espacio tiene existencias de inventario. Resuelve su ubicación o saldo antes de desactivarlo.",
+    };
   if (error instanceof DuplicateSpaceSlugError)
     return { message: "Ya existe un espacio con ese slug en el laboratorio." };
   if (error instanceof SpaceInputError)

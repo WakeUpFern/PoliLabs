@@ -78,7 +78,7 @@ function failure(error: unknown): OrganizationActionState {
     return {
       status: "error",
       message:
-        "Mueve o desactiva primero las ubicaciones hijas y los recursos activos.",
+        "La ubicación tiene hijos, recursos activos o existencias. Resuelve esas dependencias antes de desactivarla.",
     };
   if (error instanceof ResourceInputError)
     return {

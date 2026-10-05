@@ -6,3 +6,5 @@ export * from "@/modules/spatial/infrastructure/spatial-schema";
 // increment and migration.
 
 export * from "@/modules/reservations/infrastructure/reservation-schema";
+
+export * from "@/modules/inventory/infrastructure/inventory-schema";
