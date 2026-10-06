@@ -52,6 +52,7 @@ El esquema contiene las tablas de autenticación y el primer modelo aprobado de 
 - `0005_foamy_the_anarchist.sql`: Inventory I, saldos/movimientos/eventos, permisos y protección transaccional e integración con desactivación espacial.
 - `0006_academic_i.sql`: prácticas, sesiones, participantes y eventos académicos.
 - `0007_attendance_i.sql`: asistencia única, contexto de ubicación, eventos y permisos.
+- `0008_usage_i.sql`: uso efectivo por recurso/contexto, eventos y permisos.
 
 Para cambios posteriores:
 
@@ -137,12 +138,14 @@ Inventory I fue seleccionado explícitamente. Las siguientes ampliaciones deben 
 
 Se seleccionó e implementó el siguiente incremento de la propuesta compartida: crear, editar, publicar y cerrar prácticas; programar, consultar, abrir, cerrar y cancelar sesiones; registrar participantes previstos del mismo laboratorio. Acceso desde **Prácticas** en la ficha del laboratorio. Se reutilizan Identity y Space, con servicios autorizados y eventos transaccionales.
 
-Una sesión no reserva automáticamente un espacio; inscripción no significa asistencia ni uso de maquinaria. Usage I será el siguiente puente entre contexto académico, reservaciones y posteriores incidencias. Grupos, periodos, asistencia, préstamos, Incidents, Maintenance y Knowledge quedan fuera de este corte. Ver [Academic I](docs/architecture/academic.md) y [ADR 0011 — Propuesta](docs/decisions/0011-academic-sessions.md): las reglas específicas de permisos, estados y participación quedan documentadas para revisión, sin atribuirles aceptación institucional.
+Una sesión no reserva automáticamente un espacio; inscripción no significa asistencia ni uso de maquinaria. Usage I aporta el puente entre contexto académico, reservaciones y posteriores incidencias; ver su alcance incremental más abajo. Grupos, periodos, asistencia, préstamos, Incidents, Maintenance y Knowledge quedan fuera de este corte. Ver [Academic I](docs/architecture/academic.md) y [ADR 0011 — Propuesta](docs/decisions/0011-academic-sessions.md): las reglas específicas de permisos, estados y participación quedan documentadas para revisión, sin atribuirles aceptación institucional.
 
 La migración versionada `0006_academic_i.sql` añade las tablas y permisos de este flujo. Las instalaciones existentes reciben los permisos académicos en `laboratory_responsible` al ejecutar `pnpm db:migrate`. No es necesario repetir bootstrap. Las demás membresías requieren permisos asignados explícitamente; no hay altas públicas ni asignación automática de roles por inscripción.
 
-## Attendance I
+## Attendance I y Usage I
 
 Asistencia: `/app/labs/[slug]/attendance` y entrada estable `/check-in/[slug]/[locationId]`. Autocaptura en sesión abierta, preselección contextual, unicidad y padrón/corrección con historial. La vista espacial ofrece el deep-link; generación visual de QR pendiente.
 
-Ver [Attendance I](docs/architecture/attendance.md) y [ADR 0012 — Propuesta](docs/decisions/0012-attendance-checkin.md). Aplicar la migración versionada con `pnpm db:migrate`; no usar schema push. Alumnos necesitan permisos mínimos asignados por la administración autorizada existente.
+Uso de maquinaria: `/app/labs/[slug]/usage`. Inicio y fin explícitos por recurso, bajo sesión abierta propia o reservación propia vigente; historial propio y trazabilidad autorizada por recurso. Asistencia y reservación no acreditan uso efectivo ni atribuyen responsabilidad.
+
+Ver [Attendance I](docs/architecture/attendance.md), [Usage I](docs/architecture/usage.md), [validación](docs/architecture/attendance-usage-validation.md) y ADR 0012/0013 (Propuesta). Aplicar migraciones versionadas con `pnpm db:migrate`; no usar schema push. Alumnos necesitan permisos mínimos asignados por la administración autorizada existente; no se crean roles institucionales ni se conceden permisos por inscripción.

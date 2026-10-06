@@ -261,6 +261,14 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                       </span>
                     </div>
                     {resourceCatalog.canManage ? (
+                      <Link
+                        className="mt-3 inline-block text-sm font-semibold text-[#7a1731]"
+                        href={`/app/labs/${slug}/usage/resources/${resource.id}`}
+                      >
+                        Historial de uso
+                      </Link>
+                    ) : null}
+                    {resourceCatalog.canManage ? (
                       <div className="mt-4 border-t border-stone-100 pt-4">
                         <details>
                           <summary className="cursor-pointer text-sm font-semibold text-[#7a1731]">

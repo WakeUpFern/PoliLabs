@@ -57,6 +57,13 @@
       "when": 1791302957934,
       "tag": "0007_attendance_i",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791303313710,
+      "tag": "0008_usage_i",
+      "breakpoints": true
     }
   ]
 }

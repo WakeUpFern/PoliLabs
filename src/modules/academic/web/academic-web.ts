@@ -77,6 +77,7 @@ export class AcademicWeb {
       canManage: grant.permissionKeys.includes("academic.manage"),
       canCheckIn: grant.permissionKeys.includes("attendance.checkin"),
       canManageAttendance: grant.permissionKeys.includes("attendance.manage"),
+      canRecordUsage: grant.permissionKeys.includes("usage.record"),
     };
   }
   async list(slug: string) {

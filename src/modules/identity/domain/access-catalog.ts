@@ -86,6 +86,22 @@ export const INITIAL_PERMISSIONS = {
     description:
       "Consultar y corregir asistencia sin intervenir en sesiones propias.",
   },
+  usage_read: {
+    key: "usage.read",
+    name: "Consultar uso propio",
+    description: "Consultar el historial propio de uso efectivo.",
+  },
+  usage_record: {
+    key: "usage.record",
+    name: "Registrar uso propio",
+    description: "Iniciar y terminar uso propio en un contexto autorizado.",
+  },
+  usage_trace: {
+    key: "usage.trace",
+    name: "Consultar trazabilidad de uso",
+    description:
+      "Consultar usos previos de recursos del laboratorio sin inferir responsabilidad.",
+  },
   academicRead: {
     key: "academic.read",
     name: "Consultar prácticas y sesiones",

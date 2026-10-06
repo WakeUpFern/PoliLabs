@@ -44,6 +44,8 @@ export async function operationFixture() {
     "academic.read",
     "attendance.read",
     "attendance.checkin",
+    "usage.read",
+    "usage.record",
     "reservation.read",
     "reservation.create",
     "reservation.cancel",
@@ -146,6 +148,20 @@ export async function operationFixture() {
           .delete(schema.attendance)
           .where(inArray(schema.attendance.sessionId, ids));
       }
+      const usages = await tx
+        .select({ id: schema.resourceUsage.id })
+        .from(schema.resourceUsage)
+        .where(inArray(schema.resourceUsage.userId, userIds));
+      if (usages.length)
+        await tx.delete(schema.usageEvents).where(
+          inArray(
+            schema.usageEvents.usageId,
+            usages.map((u) => u.id),
+          ),
+        );
+      await tx
+        .delete(schema.resourceUsage)
+        .where(inArray(schema.resourceUsage.userId, userIds));
       const reservations = await tx
         .select({ id: schema.reservations.id })
         .from(schema.reservations)

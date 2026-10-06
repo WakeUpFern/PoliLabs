@@ -49,3 +49,5 @@ La automatización de pruebas de navegador no está instalada: el recorrido E2E 
 ## Próximo puente operativo
 
 Usage I deberá registrar quién utilizó realmente un Resource e intervalo efectivo con contexto de Reservation o LabSession verificado, manteniendo identidades separadas. Incidents consumirá esa trazabilidad para localizar usos previos, sin inferir culpa (RF29, §16, RB12). Este incremento prepara LabSession y participantes; no crea tablas anticipadas de Usage ni enlaces ficticios a préstamos de inventario por cantidad.
+
+Attendance I y Usage I fueron seleccionados posteriormente y se implementan en módulos concretos que reutilizan las identidades, participación y orden transaccional de Academic. Ver [Attendance](attendance.md) y [Usage](usage.md). No rediseñan prácticas ni conectan sesiones automáticamente a disponibilidad.

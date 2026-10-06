@@ -12,3 +12,5 @@ export * from "@/modules/inventory/infrastructure/inventory-schema";
 export * from "@/modules/academic/infrastructure/academic-schema";
 
 export * from "@/modules/attendance/infrastructure/attendance-schema";
+
+export * from "@/modules/usage/infrastructure/usage-schema";

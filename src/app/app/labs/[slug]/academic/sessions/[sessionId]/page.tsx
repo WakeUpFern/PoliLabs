@@ -79,11 +79,19 @@ export default async function SessionPage({
             Consultar asistencia de la sesión
           </Link>
         ) : null}
+        {data.canRecordUsage ? (
+          <Link
+            className="font-semibold text-[#7a1731]"
+            href={`/app/labs/${slug}/usage`}
+          >
+            Registrar uso de maquinaria
+          </Link>
+        ) : null}
       </div>
       {data.isParticipant ? (
         <p className="mt-6 rounded-xl bg-stone-100 p-5">
-          Estás registrado como participante. Confirma tu asistencia; el uso de
-          maquinaria se registrará por separado en Usage I.
+          Estás registrado como participante. Confirma tu asistencia y registra
+          por separado el uso efectivo de maquinaria.
         </p>
       ) : null}
       {data.canManage ? (

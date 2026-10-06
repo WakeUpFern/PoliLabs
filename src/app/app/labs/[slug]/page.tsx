@@ -115,6 +115,12 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
           >
             Asistencia
           </Link>
+          <Link
+            href={`/app/labs/${slug}/usage`}
+            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
+          >
+            Uso de maquinaria
+          </Link>
           {["Mantenimiento"].map((item) => (
             <span
               key={item}

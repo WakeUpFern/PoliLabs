@@ -28,4 +28,4 @@ Migración `0007_attendance_i.sql`: dos tablas (11 y 8 columnas), dos PK UUID, U
 
 Ver pruebas `tests/attendance.test.ts`, `tests/integration/attendance.test.ts` y fixture compartida `tests/integration/operation-fixture.ts`. Incluyen estados, preselección, identidad de servidor, contexto manipulado, permisos, roles acumulados, correcciones, UNIQUE/FK y carreras check-in/cierre y correcciones. La base de integración termina en `_test`; no usa datos personales reales.
 
-Pendientes: QR visual/imprimible, taxonomía institucional aprobada, edición de hora real con evidencia, padrón paginado, reportes y Audit global. Mantener las políticas concretas del ADR como Propuesta.
+Pendientes: QR visual/imprimible, taxonomía institucional aprobada, edición de hora real con evidencia, padrón paginado, reportes y Audit global. Mantener las políticas concretas del ADR como Propuesta. Resultados finales de comandos y navegador se registran en [validación de ambos incrementos](attendance-usage-validation.md).
