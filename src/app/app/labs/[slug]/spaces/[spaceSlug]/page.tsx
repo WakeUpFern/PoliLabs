@@ -169,6 +169,12 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                     <p className="mt-1 text-xs text-stone-500">
                       {locationPath(location, locationsById)}
                     </p>
+                    <Link
+                      className="mt-3 inline-block text-sm font-semibold text-[#7a1731]"
+                      href={`/check-in/${slug}/${location.id}`}
+                    >
+                      Enlace estable de asistencia
+                    </Link>
                     {locationCatalog.canManage ? (
                       <div className="mt-4 border-t border-stone-100 pt-4">
                         <details>

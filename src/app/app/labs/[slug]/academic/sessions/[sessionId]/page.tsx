@@ -62,10 +62,28 @@ export default async function SessionPage({
           disponibilidad del espacio se gestiona en Reservaciones.
         </p>
       </section>
+      <div className="mt-6 flex flex-wrap gap-4">
+        {data.canCheckIn ? (
+          <Link
+            className="font-semibold text-[#7a1731]"
+            href={`/app/labs/${slug}/attendance`}
+          >
+            Registrar mi asistencia
+          </Link>
+        ) : null}
+        {data.canManageAttendance ? (
+          <Link
+            className="font-semibold text-[#7a1731]"
+            href={`/app/labs/${slug}/attendance/sessions/${s.id}`}
+          >
+            Consultar asistencia de la sesión
+          </Link>
+        ) : null}
+      </div>
       {data.isParticipant ? (
         <p className="mt-6 rounded-xl bg-stone-100 p-5">
-          Estás registrado como participante. Aún no se registra asistencia ni
-          uso de maquinaria en este flujo.
+          Estás registrado como participante. Confirma tu asistencia; el uso de
+          maquinaria se registrará por separado en Usage I.
         </p>
       ) : null}
       {data.canManage ? (

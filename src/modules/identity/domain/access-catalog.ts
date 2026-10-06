@@ -70,6 +70,22 @@ export const INITIAL_PERMISSIONS = {
     description:
       "Registrar entradas, consumos, daños, pérdidas y ajustes del laboratorio.",
   },
+  attendance_read: {
+    key: "attendance.read",
+    name: "Consultar asistencia propia",
+    description: "Consultar únicamente la asistencia propia.",
+  },
+  attendance_checkin: {
+    key: "attendance.checkin",
+    name: "Registrar asistencia propia",
+    description: "Confirmar asistencia propia en sesiones abiertas.",
+  },
+  attendance_manage: {
+    key: "attendance.manage",
+    name: "Gestionar asistencia",
+    description:
+      "Consultar y corregir asistencia sin intervenir en sesiones propias.",
+  },
   academicRead: {
     key: "academic.read",
     name: "Consultar prácticas y sesiones",

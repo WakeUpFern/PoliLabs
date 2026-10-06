@@ -50,6 +50,13 @@
       "when": 1791243089096,
       "tag": "0006_academic_i",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791302957934,
+      "tag": "0007_attendance_i",
+      "breakpoints": true
     }
   ]
 }

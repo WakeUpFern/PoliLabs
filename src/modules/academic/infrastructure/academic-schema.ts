@@ -83,6 +83,7 @@ export const labSessions = pgTable(
     ...timestamps(),
   },
   (t) => [
+    uniqueIndex("lab_sessions_id_space_idx").on(t.id, t.spaceId),
     uniqueIndex("lab_sessions_id_laboratory_idx").on(t.id, t.laboratoryId),
     uniqueIndex("lab_sessions_id_practice_laboratory_idx").on(
       t.id,

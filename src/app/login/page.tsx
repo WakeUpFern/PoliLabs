@@ -3,10 +3,11 @@ import { headers } from "next/headers";
 import { auth } from "@/modules/identity/infrastructure/auth";
 import { getCurrentUser } from "@/modules/identity/infrastructure/services";
 import { InactiveUserError } from "@/modules/identity/domain/access-errors";
+import { safeReturnPath } from "@/modules/identity/domain/return-path";
 import { LoginForm } from "./login-form";
 
 type LoginPageProps = {
-  searchParams: Promise<{ reason?: string }>;
+  searchParams: Promise<{ reason?: string; next?: string }>;
 };
 
 const messages: Record<string, string> = {
@@ -27,7 +28,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   if (session) {
     try {
       await getCurrentUser.execute(session.user.id);
-      redirect("/app");
+      redirect(safeReturnPath(query.next));
     } catch (error) {
       if (!(error instanceof InactiveUserError)) throw error;
       clearExistingSession = true;
@@ -71,6 +72,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             laboratorio.
           </p>
           <LoginForm
+            returnPath={safeReturnPath(query.next)}
             initialMessage={reason ? messages[reason] : undefined}
             clearExistingSession={clearExistingSession}
           />

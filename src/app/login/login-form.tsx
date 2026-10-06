@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/modules/identity/infrastructure/auth-client";
 
 type LoginFormProps = {
+  returnPath?: string;
   initialMessage?: string;
   clearExistingSession?: boolean;
 };
 
 export function LoginForm({
+  returnPath = "/app",
   initialMessage,
   clearExistingSession = false,
 }: LoginFormProps) {
@@ -43,7 +45,7 @@ export function LoginForm({
       return;
     }
 
-    router.replace("/app");
+    router.replace(returnPath);
     router.refresh();
   }
 

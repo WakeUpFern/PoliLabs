@@ -15,3 +15,5 @@ Aceptada no implica implementada. Las decisiones iniciales se fundamentan en el 
 - [0010 — Inventario por cantidad y movimientos trazables](0010-quantity-inventory.md): Aceptada; alcance de Inventory I aprobado explícitamente.
 
 - [0011 — Prácticas, sesiones y participación académica](0011-academic-sessions.md): Propuesta; Academic I seleccionado, políticas concretas pendientes de revisión.
+
+- [0012 — Asistencia contextual y correcciones trazables](0012-attendance-checkin.md): Propuesta; incremento autorizado, políticas concretas pendientes de ratificación.
