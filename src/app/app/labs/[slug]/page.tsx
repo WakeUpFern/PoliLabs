@@ -2,6 +2,7 @@ import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
 import { maintenanceWeb } from "@/modules/maintenance/web/services";
 import { loansWeb } from "@/modules/loans/web/services";
+import { reportsWeb } from "@/modules/reports/web/services";
 import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { LogoutButton } from "@/app/_components/logout-button";
@@ -36,11 +37,13 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
     throw error;
   }
 
-  const [incidentAccess, maintenanceAccess, loanAccess] = await Promise.all([
-    incidentsWeb.access(slug),
-    maintenanceWeb.access(slug),
-    loansWeb.access(slug),
-  ]);
+  const [incidentAccess, maintenanceAccess, loanAccess, reports] =
+    await Promise.all([
+      incidentsWeb.access(slug),
+      maintenanceWeb.access(slug),
+      loansWeb.access(slug),
+      reportsWeb.catalog(slug),
+    ]);
   return (
     <div>
       <Link
@@ -159,6 +162,14 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
               className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
             >
               Préstamos
+            </Link>
+          ) : null}
+          {reports.length ? (
+            <Link
+              href={`/app/labs/${slug}/reports`}
+              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
+            >
+              Reportes
             </Link>
           ) : null}
         </div>
