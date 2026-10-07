@@ -156,3 +156,9 @@ Ver [Attendance I](docs/architecture/attendance.md), [Usage I](docs/architecture
 Acceso desde **Incidencias** en el laboratorio, catálogo espacial, sesión o uso de maquinaria. Reporte sobre recurso, espacio o sesión, sin exigir Usage ni horario de clase; asociación propia opcional y contexto espacial conservado. Seguimiento y resolución con notas e historial, lectura propia o del laboratorio según permisos, y usos previos con autorización adicional sin inferir responsabilidad.
 
 Ver [arquitectura](docs/architecture/incidents.md), [validación](docs/architecture/incidents-validation.md) y [ADR 0014 — Aceptada](docs/decisions/0014-operational-incidents.md). La migración añade cuatro permisos al responsable inicial; otras membresías requieren asignación autorizada. No bloquea equipos, cancela reservas ni crea Maintenance automáticamente.
+
+## Maintenance I
+
+Acceso desde **Mantenimiento** en el laboratorio o desde cada recurso del catálogo espacial. Bitácora por recurso con tipo, fecha de realización, responsable, descripción, estado resultante, próximo mantenimiento, incidencia relacionada y materiales consumidos del inventario, todo en una sola transacción. Un recurso en mantenimiento o fuera de servicio no se ofrece para nuevas reservaciones ni usos; las reservaciones y usos existentes no se cancelan automáticamente.
+
+Ver [arquitectura](docs/architecture/maintenance.md), [validación](docs/architecture/maintenance-validation.md) y [ADR 0015 — Aceptada](docs/decisions/0015-maintenance-logs.md). La migración `0010_maintenance_i.sql` añade `maintenance.read` y `maintenance.create` al responsable inicial; registrar materiales requiere además `inventory.adjust`. Aplicar con `pnpm db:migrate`.

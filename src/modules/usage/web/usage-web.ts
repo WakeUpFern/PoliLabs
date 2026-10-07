@@ -24,6 +24,8 @@ export function usageActionError(error: unknown): UsageActionState {
           "El recurso debe estar activo y pertenecer al contexto seleccionado.",
         conflict:
           "Ya tienes un uso activo de este recurso en otro contexto. Termínalo antes de iniciar otro.",
+        unavailable:
+          "El recurso está en mantenimiento o fuera de servicio y no puede usarse.",
       }[error.code],
     };
   throw error;

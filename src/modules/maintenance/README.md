@@ -1,7 +1,5 @@
 # maintenance
 
-Estado: pendiente de implementación; este directorio delimita responsabilidades.
+Maintenance I implementa la bitácora por recurso, el estado operativo resultante y los materiales consumidos (SRS §15) mediante dominio puro, MaintenanceService, adaptadores PostgreSQL y web.
 
-Bitácoras por recurso y materiales utilizados (SRS §15). Cambios de estado afectan disponibilidad; coordinación con consumos pendiente de definir.
-
-Al iniciar el módulo, crear `domain/` para reglas puras y `application/` para casos de uso, autorización, validación y coordinación transaccional. Añadir adaptadores de persistencia solo cuando exista un caso de uso. No importar React, Next.js ni SDK de IA en el dominio.
+Ver [arquitectura](../../../docs/architecture/maintenance.md), [validación](../../../docs/architecture/maintenance-validation.md) y [ADR 0015 — Aceptada](../../../docs/decisions/0015-maintenance-logs.md). El estado operativo pertenece a `Resource` (Spatial) y sólo cambia mediante una entrada de bitácora. No crea órdenes ni bloqueos por intervalo, ni cancela reservaciones o usos existentes.

@@ -130,6 +130,7 @@ export function ReservationForm({
                       type="checkbox"
                       name="resourceIds"
                       value={resource.id}
+                      disabled={!resource.available}
                       checked={resourceIds.includes(resource.id)}
                       onChange={(event) =>
                         setResourceIds((ids) =>
@@ -141,6 +142,11 @@ export function ReservationForm({
                     />
                     <span>
                       {resource.name}
+                      {!resource.available && (
+                        <span className="block text-sm text-[#7a1731]">
+                          No disponible: en mantenimiento o fuera de servicio
+                        </span>
+                      )}
                       {resource.location && (
                         <span className="block text-sm text-stone-500">
                           Ubicación: {resource.location}

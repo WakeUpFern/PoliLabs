@@ -20,3 +20,4 @@ Aceptada no implica implementada. Las decisiones iniciales se fundamentan en el 
 - [0013 — Uso efectivo con contexto académico o reservación](0013-resource-usage.md): Aceptada; incremento y políticas concretas aprobados explícitamente el 7 de octubre de 2026.
 
 - [0014 — Incidencias operativas y trazabilidad contextual](0014-operational-incidents.md): Aceptada; Incidents I y sus políticas concretas aprobados explícitamente el 7 de octubre de 2026.
+- [0015 — Bitácora de mantenimiento y estado operativo de recursos](0015-maintenance-logs.md): Aceptada; Maintenance I y las decisiones D1–D6 aprobados explícitamente el 7 de octubre de 2026.

@@ -123,6 +123,18 @@ export const INITIAL_PERMISSIONS = {
     name: "Gestionar y resolver incidencias",
     description: "Revisar y resolver incidencias con notas trazables.",
   },
+  maintenanceRead: {
+    key: "maintenance.read",
+    name: "Consultar mantenimiento",
+    description:
+      "Consultar estado operativo y bitácoras de mantenimiento del laboratorio.",
+  },
+  maintenanceCreate: {
+    key: "maintenance.create",
+    name: "Registrar mantenimiento",
+    description:
+      "Registrar entradas de mantenimiento y el estado operativo resultante de recursos.",
+  },
   academicRead: {
     key: "academic.read",
     name: "Consultar prácticas y sesiones",

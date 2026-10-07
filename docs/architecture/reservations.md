@@ -316,3 +316,5 @@ fuera del catálogo visible, configuración de timezone por laboratorio, reserva
 configurable y calendarios avanzados. Recurrencia, aprobaciones, reservas de terceros,
 override, FloorPlan, Inventory, Maintenance, Academic, Notifications, email, Giussepe,
 RAG, AWS y auditoría general siguen fuera de alcance.
+
+Maintenance I (ADR 0015) añade RB5: los recursos que no están `operational` se rechazan al crear reservaciones de recursos, en el servicio y en la validación diferida de PostgreSQL; la reservación exclusiva del espacio no cambia. Ver [Maintenance I](maintenance.md).

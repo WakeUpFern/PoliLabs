@@ -4,7 +4,7 @@ export type UsageContextKind = "academic" | "reservation";
 export class UsageError extends Error {
   constructor(
     public readonly code:
-      "input" | "not-found" | "state" | "relation" | "conflict",
+      "input" | "not-found" | "state" | "relation" | "conflict" | "unavailable",
   ) {
     super(`Usage rejected: ${code}`);
     this.name = "UsageError";

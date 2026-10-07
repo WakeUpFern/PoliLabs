@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
+import { maintenanceWeb } from "@/modules/maintenance/web/services";
 import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { LogoutButton } from "@/app/_components/logout-button";
@@ -34,7 +35,10 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
     throw error;
   }
 
-  const incidentAccess = await incidentsWeb.access(slug);
+  const [incidentAccess, maintenanceAccess] = await Promise.all([
+    incidentsWeb.access(slug),
+    maintenanceWeb.access(slug),
+  ]);
   return (
     <div>
       <Link
@@ -139,15 +143,14 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
               Incidencias
             </Link>
           ) : null}
-          {["Mantenimiento"].map((item) => (
-            <span
-              key={item}
-              aria-disabled="true"
-              className="cursor-not-allowed rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-400"
+          {maintenanceAccess.canRead ? (
+            <Link
+              href={`/app/labs/${slug}/maintenance`}
+              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
             >
-              {item}
-            </span>
-          ))}
+              Mantenimiento
+            </Link>
+          ) : null}
         </div>
         <div className="mt-8 border-t border-stone-200 pt-6">
           <LogoutButton />

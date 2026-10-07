@@ -109,6 +109,7 @@ export const inventoryMovements = pgTable(
       foreignColumns: [inventoryItems.id, inventoryItems.laboratoryId],
     }).onDelete("restrict"),
     index("inventory_movements_item_idx").on(t.itemId, t.createdAt),
+    uniqueIndex("inventory_movements_id_lab_idx").on(t.id, t.laboratoryId),
     check(
       "inventory_movement_type_check",
       sql`${t.type} in ('initial','purchase','entry','consumption','damage','loss','adjustment_in','adjustment_out')`,

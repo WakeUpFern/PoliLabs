@@ -41,7 +41,12 @@ type Services = {
 export type ReservationSpaceOption = {
   id: string;
   name: string;
-  resources: { id: string; name: string; location: string | null }[];
+  resources: {
+    id: string;
+    name: string;
+    location: string | null;
+    available: boolean;
+  }[];
   canReadResources: boolean;
 };
 export type ReservationView = Omit<
@@ -72,7 +77,7 @@ export function reservationActionError(error: unknown): ReservationActionState {
     return {
       status: "error",
       message:
-        "El espacio o los recursos seleccionados ya no están disponibles en este catálogo. Selecciona recursos activos del mismo espacio.",
+        "El espacio o los recursos seleccionados ya no están disponibles en este catálogo. Selecciona recursos activos y en operación del mismo espacio.",
     };
   if (error instanceof ReservationCancellationError)
     return {
@@ -142,6 +147,7 @@ export class ReservationWeb {
             location:
               locations.find((location) => location.id === resource.locationId)
                 ?.name ?? null,
+            available: resource.operationalStatus === "operational",
           })),
         };
       }),
