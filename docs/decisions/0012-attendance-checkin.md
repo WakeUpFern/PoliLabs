@@ -1,12 +1,12 @@
 # 0012 — Asistencia contextual y correcciones trazables
 
-Estado: **Propuesta**
+Estado: **Aceptada**
 
 ## Contexto
 
 El responsable autorizó implementar Attendance I y luego Usage I el 6 de octubre de 2026. RF5, §17.3 y RB1 requieren asistencia habilitada, hora, estado y correcciones autorizadas. Academic I ya separa participantes previstos de asistencia y ADR 0011 define apertura manual y restricciones de gestión propia. El SRS no prescribe QR, taxonomía de estados ni política detallada de corrección histórica.
 
-## Decisión propuesta e implementada en este corte
+## Decisión
 
 Attendance pertenece a Academic conceptualmente y se organiza como módulo concreto para aislar sus servicios, permisos y eventos. Una fila por usuario/sesión; FK al participante, sesión/espacio y ubicación/espacio. Space se repite para proteger la Location mediante FKs compuestas; Laboratory se deriva de la sesión.
 
@@ -29,8 +29,12 @@ Permisos attendance.read (propio), attendance.checkin (propio), attendance.manag
 
 Transacciones READ COMMITTED, autorización bloqueada hasta commit y orden Practice → LabSession → Space → Location/participante. La sesión serializa check-in/cierre y correcciones. UNIQUE protege duplicados; expectedVersion rechaza correcciones basadas en una versión obsoleta. Eventos no admiten UPDATE; no hay API de borrado. No sustituye Audit global.
 
-La aprobación del incremento no se interpreta como ratificación institucional de cada política concreta. Este ADR conserva Propuesta hasta aprobación explícita. Pendientes: taxonomía institucional, QR imprimible, edición del tiempo de llegada con evidencia y correcciones sobre cancelaciones.
+Las políticas concretas de Attendance I quedan aceptadas como decisiones del proyecto mediante aprobación explícita del responsable el 7 de octubre de 2026. No se presentan como requisitos institucionales adicionales del SRS. Pendientes: taxonomía institucional, QR imprimible, edición del tiempo de llegada con evidencia y correcciones sobre cancelaciones.
 
 ## Referencias SRS
 
 RF1, RF5, RNF3–5, RNF8–9, RNF11–12; §§17.3, 23–25, 33–34; RB1; ADR 0006 y 0011. El SRS original se conserva.
+
+## Historial
+
+El ADR se registró inicialmente como Propuesta durante la implementación. El 7 de octubre de 2026, el responsable aprobó explícitamente los ADR 0012 y 0013 y sus políticas concretas. Se actualiza a Aceptada sin ampliar el alcance ni aprobar las ampliaciones pendientes.

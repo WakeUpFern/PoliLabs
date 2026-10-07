@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { incidentsWeb } from "@/modules/incidents/web/services";
 import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { LogoutButton } from "@/app/_components/logout-button";
@@ -33,6 +34,7 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
     throw error;
   }
 
+  const incidentAccess = await incidentsWeb.access(slug);
   return (
     <div>
       <Link
@@ -121,6 +123,22 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
           >
             Uso de maquinaria
           </Link>
+          {incidentAccess.canReadOwn ||
+          incidentAccess.canReview ||
+          incidentAccess.canCreate ? (
+            <Link
+              href={
+                incidentAccess.canReadOwn
+                  ? `/app/labs/${slug}/incidents`
+                  : incidentAccess.canReview
+                    ? `/app/labs/${slug}/incidents?scope=laboratory`
+                    : `/app/labs/${slug}/incidents/new`
+              }
+              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
+            >
+              Incidencias
+            </Link>
+          ) : null}
           {["Mantenimiento"].map((item) => (
             <span
               key={item}

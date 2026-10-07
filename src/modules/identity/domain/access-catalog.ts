@@ -102,6 +102,27 @@ export const INITIAL_PERMISSIONS = {
     description:
       "Consultar usos previos de recursos del laboratorio sin inferir responsabilidad.",
   },
+  incidentCreate: {
+    key: "incident.create",
+    name: "Reportar incidencias",
+    description:
+      "Reportar problemas sobre recursos, espacios o sesiones autorizadas.",
+  },
+  incidentRead: {
+    key: "incident.read",
+    name: "Consultar incidencias propias",
+    description: "Consultar reportes propios y su seguimiento.",
+  },
+  incidentReview: {
+    key: "incident.review",
+    name: "Revisar incidencias del laboratorio",
+    description: "Consultar reportes y seguimiento del laboratorio.",
+  },
+  incidentResolve: {
+    key: "incident.resolve",
+    name: "Gestionar y resolver incidencias",
+    description: "Revisar y resolver incidencias con notas trazables.",
+  },
   academicRead: {
     key: "academic.read",
     name: "Consultar prácticas y sesiones",

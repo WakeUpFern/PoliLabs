@@ -1,7 +1,5 @@
-# incidents
+# Incidents
 
-Estado: pendiente de implementación; este directorio delimita responsabilidades.
+Incidents I implementa reportes sobre Resource, Space o LabSession, Usage propio opcional, seguimiento y resolución con eventos transaccionales. Usa identidad y permisos del laboratorio; el historial previo no determina culpabilidad.
 
-Reportes, severidad, seguimiento y resolución (SRS §16). Asociación a recurso, espacio o sesión; el historial no determina culpabilidad.
-
-Al iniciar el módulo, crear `domain/` para reglas puras y `application/` para casos de uso, autorización, validación y coordinación transaccional. Añadir adaptadores de persistencia solo cuando exista un caso de uso. No importar React, Next.js ni SDK de IA en el dominio.
+Ver [arquitectura](../../../docs/architecture/incidents.md), [validación](../../../docs/architecture/incidents-validation.md) y [ADR 0014 — Propuesta](../../../docs/decisions/0014-operational-incidents.md). Dominio puro, IncidentService, adaptadores PostgreSQL y web; no crea bloqueos de disponibilidad ni mantenimiento automáticamente.

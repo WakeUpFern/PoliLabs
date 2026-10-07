@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { incidentsWeb } from "@/modules/incidents/web/services";
 import { academicWeb } from "@/modules/academic/web/services";
 import { SESSION_LABELS } from "@/modules/academic/web/academic-web";
 import {
@@ -18,6 +19,7 @@ export default async function SessionPage({
     academicWeb.session(slug, sessionId),
   );
   const s = data.session;
+  const incidentAccess = await incidentsWeb.access(slug);
   return (
     <div>
       <Link
@@ -63,6 +65,15 @@ export default async function SessionPage({
         </p>
       </section>
       <div className="mt-6 flex flex-wrap gap-4">
+        {incidentAccess.canCreate ? (
+          <Link
+            className="font-semibold text-[#7a1731]"
+            href={`/app/labs/${slug}/incidents/new?target=session:${s.id}`}
+          >
+            Reportar problema de la sesión
+          </Link>
+        ) : null}
+
         {data.canCheckIn ? (
           <Link
             className="font-semibold text-[#7a1731]"

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { incidentsWeb } from "@/modules/incidents/web/services";
 import { usageWeb } from "@/modules/usage/web/services";
 import { formatAcademicTime } from "@/modules/academic/web/time";
 import { UsageForm } from "./usage-form";
@@ -9,7 +10,10 @@ export default async function UsagePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { options, history } = await usagePageData(() => usageWeb.page(slug));
+  const [{ options, history }, incidentAccess] = await Promise.all([
+    usagePageData(() => usageWeb.page(slug)),
+    incidentsWeb.access(slug),
+  ]);
   return (
     <div>
       <Link href={`/app/labs/${slug}`}>← Laboratorio</Link>
@@ -84,6 +88,14 @@ export default async function UsagePage({
                   Ver reservación
                 </Link>
               )}
+              {incidentAccess.canCreate ? (
+                <Link
+                  className="mt-3 block font-semibold text-[#7a1731]"
+                  href={`/app/labs/${slug}/incidents/new?target=resource:${u.resourceId}${!u.endedAt ? `&usage=${u.id}` : ""}`}
+                >
+                  Reportar problema
+                </Link>
+              ) : null}
               {!u.endedAt ? (
                 <div className="mt-4">
                   <UsageForm

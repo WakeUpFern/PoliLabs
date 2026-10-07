@@ -9,7 +9,7 @@ Fecha: 6 de octubre de 2026. Node.js 24.19.0, pnpm y lockfile existente; sin nue
 - Integración en navegación del laboratorio, sesión académica y catálogo espacial; retorno seguro desde login.
 - Catálogo de seis permisos y helper de autorización transaccional en Identity; único índice compuesto adicional de LabSession en esquema Academic. No se cambian sus ciclos ni participantes.
 - Migraciones 0007/0008 con snapshots y journal nuevos; ninguna migración anterior se reescribe. La prueba de autenticación actualiza su expectativa de siete a nueve migraciones.
-- Pruebas unitarias e integración, fixture de navegador reproducible, documentación de arquitectura y ADR 0012/0013 en Propuesta. Next.js actualiza automáticamente `next-env.d.ts` al generar tipos de producción.
+- Pruebas unitarias e integración, fixture de navegador reproducible, documentación de arquitectura y ADR 0012/0013 inicialmente en Propuesta; aceptadas explícitamente el 7 de octubre de 2026. Next.js actualiza automáticamente `next-env.d.ts` al generar tipos de producción.
 
 ## Modelo y reglas comprobadas
 
@@ -67,7 +67,7 @@ Fixture: `pnpm exec node --import tsx tests/e2e/attendance-usage-browser-fixture
 
 ## Limitaciones y decisiones pendientes
 
-- ADR 0012 y 0013 permanecen Propuesta: se autorizó el incremento, sin ratificar automáticamente taxonomía institucional, correcciones históricas detalladas o exclusividad operacional.
+- ADR 0012 y 0013 fueron aprobadas explícitamente el 7 de octubre de 2026 como decisiones del proyecto. La aprobación conserva el alcance implementado y las ampliaciones pendientes; no acredita una taxonomía institucional ni añade exclusividad operacional o correcciones históricas fuera del corte.
 - Se entrega deep-link estable, con generación visual/imprimible de QR pendiente. Un QR copiado puede abrirse remotamente.
 - No editar hora original desde UI, crear asistencia retroactiva en sesión cerrada ni corregir canceladas. Registros de ausencia corregidos pueden no tener evidencia temporal de llegada.
 - Uso requiere inicio/fin explícitos; no hay cierre automático ni cierre por personal de usos de cuentas revocadas.

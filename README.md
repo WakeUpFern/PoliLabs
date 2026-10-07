@@ -53,6 +53,7 @@ El esquema contiene las tablas de autenticación y el primer modelo aprobado de 
 - `0006_academic_i.sql`: prácticas, sesiones, participantes y eventos académicos.
 - `0007_attendance_i.sql`: asistencia única, contexto de ubicación, eventos y permisos.
 - `0008_usage_i.sql`: uso efectivo por recurso/contexto, eventos y permisos.
+- `0009_incidents_i.sql`: reportes, seguimiento, resolución, contexto histórico y permisos.
 
 Para cambios posteriores:
 
@@ -148,4 +149,10 @@ Asistencia: `/app/labs/[slug]/attendance` y entrada estable `/check-in/[slug]/[l
 
 Uso de maquinaria: `/app/labs/[slug]/usage`. Inicio y fin explícitos por recurso, bajo sesión abierta propia o reservación propia vigente; historial propio y trazabilidad autorizada por recurso. Asistencia y reservación no acreditan uso efectivo ni atribuyen responsabilidad.
 
-Ver [Attendance I](docs/architecture/attendance.md), [Usage I](docs/architecture/usage.md), [validación](docs/architecture/attendance-usage-validation.md) y ADR 0012/0013 (Propuesta). Aplicar migraciones versionadas con `pnpm db:migrate`; no usar schema push. Alumnos necesitan permisos mínimos asignados por la administración autorizada existente; no se crean roles institucionales ni se conceden permisos por inscripción.
+Ver [Attendance I](docs/architecture/attendance.md), [Usage I](docs/architecture/usage.md), [validación](docs/architecture/attendance-usage-validation.md) y ADR 0012/0013 (Aceptadas). Aplicar migraciones versionadas con `pnpm db:migrate`; no usar schema push. Alumnos necesitan permisos mínimos asignados por la administración autorizada existente; no se crean roles institucionales ni se conceden permisos por inscripción.
+
+## Incidents I
+
+Acceso desde **Incidencias** en el laboratorio, catálogo espacial, sesión o uso de maquinaria. Reporte sobre recurso, espacio o sesión, sin exigir Usage ni horario de clase; asociación propia opcional y contexto espacial conservado. Seguimiento y resolución con notas e historial, lectura propia o del laboratorio según permisos, y usos previos con autorización adicional sin inferir responsabilidad.
+
+Ver [arquitectura](docs/architecture/incidents.md), [validación](docs/architecture/incidents-validation.md) y [ADR 0014 — Propuesta](docs/decisions/0014-operational-incidents.md). La migración añade cuatro permisos al responsable inicial; otras membresías requieren asignación autorizada. No bloquea equipos, cancela reservas ni crea Maintenance automáticamente.

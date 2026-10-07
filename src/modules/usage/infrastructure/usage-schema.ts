@@ -41,6 +41,11 @@ export const resourceUsage = pgTable(
     uniqueIndex("resource_usage_active_user_resource_idx")
       .on(t.userId, t.resourceId)
       .where(sql`${t.endedAt} is null`),
+    uniqueIndex("resource_usage_id_resource_space_idx").on(
+      t.id,
+      t.resourceId,
+      t.spaceId,
+    ),
     index("resource_usage_resource_time_idx").on(t.resourceId, t.startedAt),
     index("resource_usage_user_idx").on(t.userId),
     foreignKey({

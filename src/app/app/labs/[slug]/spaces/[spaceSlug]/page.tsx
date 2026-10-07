@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { incidentsWeb } from "@/modules/incidents/web/services";
 import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
@@ -82,6 +83,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
     throw error;
   }
 
+  const incidentAccess = await incidentsWeb.access(slug);
   const locationsById = new Map(
     locationCatalog.locations.map((location) => [location.id, location]),
   );
@@ -103,6 +105,14 @@ export default async function SpaceOrganizationPage({ params }: Props) {
         <span aria-hidden="true">←</span> Espacios
       </Link>
 
+      {incidentAccess.canCreate ? (
+        <Link
+          className="mt-4 block font-semibold text-[#7a1731]"
+          href={`/app/labs/${slug}/incidents/new?target=space:${space.id}`}
+        >
+          Reportar problema del espacio
+        </Link>
+      ) : null}
       <header className="mt-6 rounded-3xl bg-[#641229] p-7 text-white shadow-lg shadow-[#641229]/10 sm:p-10">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#e2c68f]">
           Spatial II · {laboratory.name}
@@ -260,6 +270,14 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                         {location ? location.name : "Sin ubicación específica"}
                       </span>
                     </div>
+                    {incidentAccess.canCreate ? (
+                      <Link
+                        className="mt-3 inline-block text-sm font-semibold text-[#7a1731]"
+                        href={`/app/labs/${slug}/incidents/new?target=resource:${resource.id}`}
+                      >
+                        Reportar problema
+                      </Link>
+                    ) : null}
                     {resourceCatalog.canManage ? (
                       <Link
                         className="mt-3 inline-block text-sm font-semibold text-[#7a1731]"

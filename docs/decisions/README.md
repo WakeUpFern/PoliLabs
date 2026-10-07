@@ -16,5 +16,7 @@ Aceptada no implica implementada. Las decisiones iniciales se fundamentan en el 
 
 - [0011 — Prácticas, sesiones y participación académica](0011-academic-sessions.md): Propuesta; Academic I seleccionado, políticas concretas pendientes de revisión.
 
-- [0012 — Asistencia contextual y correcciones trazables](0012-attendance-checkin.md): Propuesta; incremento autorizado, políticas concretas pendientes de ratificación.
-- [0013 — Uso efectivo con contexto académico o reservación](0013-resource-usage.md): Propuesta; incremento autorizado, políticas concretas pendientes de ratificación.
+- [0012 — Asistencia contextual y correcciones trazables](0012-attendance-checkin.md): Aceptada; incremento y políticas concretas aprobados explícitamente el 7 de octubre de 2026.
+- [0013 — Uso efectivo con contexto académico o reservación](0013-resource-usage.md): Aceptada; incremento y políticas concretas aprobados explícitamente el 7 de octubre de 2026.
+
+- [0014 — Incidencias operativas y trazabilidad contextual](0014-operational-incidents.md): Propuesta; Incidents I y los ajustes de alcance autorizados, políticas concretas restantes documentadas para revisión.

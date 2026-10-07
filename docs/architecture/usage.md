@@ -2,7 +2,7 @@
 
 ## Alcance y modelo
 
-Segundo corte autorizado después de Attendance I. Registrar inicio/fin de uso real de un Resource con contexto de LabSession o Reservation validado. RF23, RF29, §16 y RB12 sustentan el flujo; [ADR 0013](../decisions/0013-resource-usage.md) conserva Propuesta para las políticas detalladas.
+Segundo corte autorizado después de Attendance I. Registrar inicio/fin de uso real de un Resource con contexto de LabSession o Reservation validado. RF23, RF29, §16 y RB12 sustentan el flujo; [ADR 0013](../decisions/0013-resource-usage.md) registra las políticas detalladas aceptadas explícitamente el 7 de octubre de 2026.
 
 `resource_usage`: id, userId, resourceId, spaceId, sessionId nullable, reservationId nullable, startedAt, endedAt nullable, createdAt. Laboratory se deriva de Space; FKs compuestas conservan Resource/contexto del mismo Space y participación académica. Exactamente un contexto mediante CHECK XOR; instantes finitos, fin >= inicio. UNIQUE parcial por usuario/recurso con fin nulo. `usage_events`: actor, origen y snapshot de inicio/finalización, sin UPDATE público ni borrado en servicios.
 

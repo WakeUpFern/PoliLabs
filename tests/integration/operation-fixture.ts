@@ -3,6 +3,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "../../src/infrastructure/database/schema";
+import { INITIAL_PERMISSION_LIST } from "../../src/modules/identity/domain/access-catalog";
 import { prepareIntegrationDatabase } from "./database";
 import { AcademicService } from "../../src/modules/academic/application/academic";
 import { DrizzleAcademicStore } from "../../src/modules/academic/infrastructure/academic-store";
@@ -12,6 +13,10 @@ export async function operationFixture() {
     max: 10,
   });
   const db = drizzle(pool, { schema });
+  await db
+    .insert(schema.permissions)
+    .values(INITIAL_PERMISSION_LIST)
+    .onConflictDoNothing();
   const suffix = randomUUID(),
     labIds = [randomUUID(), randomUUID()],
     userIds = [randomUUID(), randomUUID(), randomUUID()],
@@ -44,6 +49,8 @@ export async function operationFixture() {
     "academic.read",
     "attendance.read",
     "attendance.checkin",
+    "incident.create",
+    "incident.read",
     "usage.read",
     "usage.record",
     "reservation.read",
@@ -127,6 +134,25 @@ export async function operationFixture() {
   }
   async function cleanup() {
     await db.transaction(async (tx) => {
+      const reports = await tx
+        .select({ id: schema.incidentReports.id })
+        .from(schema.incidentReports)
+        .where(inArray(schema.incidentReports.laboratoryId, labIds));
+      if (reports.length) {
+        await tx.delete(schema.incidentEvents).where(
+          inArray(
+            schema.incidentEvents.incidentId,
+            reports.map((r) => r.id),
+          ),
+        );
+        await tx.delete(schema.incidentReports).where(
+          inArray(
+            schema.incidentReports.id,
+            reports.map((r) => r.id),
+          ),
+        );
+      }
+
       const ss = await tx
         .select({ id: schema.labSessions.id })
         .from(schema.labSessions)

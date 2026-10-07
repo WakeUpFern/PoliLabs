@@ -14,3 +14,5 @@ export * from "@/modules/academic/infrastructure/academic-schema";
 export * from "@/modules/attendance/infrastructure/attendance-schema";
 
 export * from "@/modules/usage/infrastructure/usage-schema";
+
+export * from "@/modules/incidents/infrastructure/incident-schema";

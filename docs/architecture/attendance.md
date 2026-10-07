@@ -2,7 +2,7 @@
 
 ## Objetivo y modelo
 
-Flujo seleccionado después de Academic I, antes de Usage I. Implementa RF5 y §17.3, con reglas concretas propuestas en [ADR 0012](../decisions/0012-attendance-checkin.md). SessionParticipant representa participación prevista, Attendance constancia de asistencia y ResourceUsage operación efectiva. Ninguno crea automáticamente a otro.
+Flujo seleccionado después de Academic I, antes de Usage I. Implementa RF5 y §17.3, con reglas concretas aceptadas el 7 de octubre de 2026 en [ADR 0012](../decisions/0012-attendance-checkin.md). SessionParticipant representa participación prevista, Attendance constancia de asistencia y ResourceUsage operación efectiva. Ninguno crea automáticamente a otro.
 
 `attendance`: id, sessionId, userId, spaceId, checkInAt nullable, locationId nullable, status, recordedBy, version, createdAt, updatedAt. Laboratory se deriva de LabSession; spaceId permite FKs de sesión y Location del mismo espacio. UNIQUE(session_id,user_id) y FK al participante protegen unicidad y relaciones. `attendance_events` guarda actor, source, acción, motivo y snapshot antes/después; inmutable ante UPDATE. Sin servicio de borrado ni Audit global.
 
@@ -28,4 +28,4 @@ Migración `0007_attendance_i.sql`: dos tablas (11 y 8 columnas), dos PK UUID, U
 
 Ver pruebas `tests/attendance.test.ts`, `tests/integration/attendance.test.ts` y fixture compartida `tests/integration/operation-fixture.ts`. Incluyen estados, preselección, identidad de servidor, contexto manipulado, permisos, roles acumulados, correcciones, UNIQUE/FK y carreras check-in/cierre y correcciones. La base de integración termina en `_test`; no usa datos personales reales.
 
-Pendientes: QR visual/imprimible, taxonomía institucional aprobada, edición de hora real con evidencia, padrón paginado, reportes y Audit global. Mantener las políticas concretas del ADR como Propuesta. Resultados finales de comandos y navegador se registran en [validación de ambos incrementos](attendance-usage-validation.md).
+Pendientes: QR visual/imprimible, taxonomía institucional aprobada, edición de hora real con evidencia, padrón paginado, reportes y Audit global. Las políticas concretas del ADR están aceptadas como decisiones del proyecto. Resultados finales de comandos y navegador se registran en [validación de ambos incrementos](attendance-usage-validation.md).

@@ -1,12 +1,12 @@
 # 0013 — Uso efectivo con contexto académico o reservación
 
-Estado: **Propuesta**
+Estado: **Aceptada**
 
 ## Contexto
 
 El responsable autorizó Usage I después de Attendance I el 6 de octubre de 2026. RF23 requiere uso de maquinaria por alumno/sesión cuando aplique; RF29, §16 y RB12 requieren recuperar usos previos sin inferir responsabilidad. Academic I y Reservations mantienen contextos distintos de uso real. El SRS no fija el ciclo temporal exacto ni la exclusividad del uso registrado.
 
-## Decisión propuesta e implementada en este corte
+## Decisión
 
 ResourceUsage registra un usuario, un Resource, inicio real del servidor y fin opcional. Cada fila tiene exactamente uno de dos contextos: LabSession o Reservation. No crea Attendance ni Reservation, y esas entidades tampoco crean usos. Usar varios recursos se representa mediante registros individuales, sin un nuevo agregado UsageSession.
 
@@ -29,8 +29,12 @@ Permisos usage.read (historial propio), usage.record (inicio/fin propios), usage
 
 FKs compuestas impiden relaciones entre espacios; FK de participante protege identidad académica; CHECK XOR protege contexto único e intervalo finito. UNIQUE parcial protege uso activo por usuario/recurso. READ COMMITTED con autorización bloqueada; académico bloquea Practice → LabSession → Space → Resource; reserva Space → Reservation → asociación → Resource. Finalizar sólo bloquea la fila propia de uso, sin invertir el orden del contexto. Ninguna escritura depende del resultado previo de options.
 
-Estas políticas concretas son propuestas de implementación, no decisiones institucionales aprobadas. Mantener Propuesta hasta ratificación explícita. Pendientes: caducidad automática, corrección del historial con evidencia, cierre por personal de cuentas desactivadas, exclusividad de operación, paginación y consumo por Incidents. No implementar Incidents ni Maintenance en este corte.
+Las políticas concretas de Usage I quedan aceptadas como decisiones del proyecto mediante aprobación explícita del responsable el 7 de octubre de 2026. No se presentan como requisitos institucionales adicionales del SRS. Pendientes: caducidad automática, corrección del historial con evidencia, cierre por personal de cuentas desactivadas, exclusividad de operación, paginación y consumo por Incidents. No implementar Incidents ni Maintenance en este corte.
 
 ## Referencias SRS
 
 RF23, RF29; RNF3–5, RNF8–9, RNF11–12; §§16, 23–25, 30–31; RB11–12; ADR 0006, 0009, 0011 y 0012. El SRS no se modifica.
+
+## Historial
+
+El ADR se registró inicialmente como Propuesta durante la implementación. El 7 de octubre de 2026, el responsable aprobó explícitamente los ADR 0012 y 0013 y sus políticas concretas. Se actualiza a Aceptada sin ampliar el alcance ni aprobar las ampliaciones pendientes.
