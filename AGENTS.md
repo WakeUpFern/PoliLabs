@@ -26,6 +26,8 @@ Implement only the requested scope and explain significant architectural changes
 
 Use `pnpm`, Node.js 24 and the committed lockfile. Run `pnpm check` and `pnpm build` for applicable changes. Use unit tests for rules and validation, integration tests against PostgreSQL for transactions/constraints/concurrency, and end-to-end tests for implemented user flows. Never describe unexecuted checks as passed. No placeholder tests merely to fill module directories.
 
+End-to-end tests use Playwright (`pnpm test:e2e`, see `docs/architecture/e2e.md`). Every new or changed user flow adds or updates a spec in `tests/e2e/` that seeds its own synthetic laboratory through `tests/e2e/support/seed.ts` and runs only against the guarded `_test` database. Prefer accessible selectors (role, label). Do not disable the sign-in rate limit or other protections to make tests pass.
+
 Review generated SQL before applying migrations; version migrations with the feature. Do not use schema push as a substitute for migrations or run destructive operations without explicit approval.
 
 Maintain architecture documentation in the same changeset as material architectural changes. ADRs use consecutive numbers and include title, status (Propuesta/Aceptada/Reemplazada/Rechazada), context, decision, alternatives, consequences and SRS references. Accept only explicit SRS/project decisions or user approvals; keep pending choices proposed. Add replacement ADRs and cross-link old decisions; preserve history and update the index. Do not write an ADR for every implementation detail.
