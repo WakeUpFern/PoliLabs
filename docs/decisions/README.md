@@ -22,3 +22,4 @@ Aceptada no implica implementada. Las decisiones iniciales se fundamentan en el 
 - [0014 — Incidencias operativas y trazabilidad contextual](0014-operational-incidents.md): Aceptada; Incidents I y sus políticas concretas aprobados explícitamente el 7 de octubre de 2026.
 - [0015 — Bitácora de mantenimiento y estado operativo de recursos](0015-maintenance-logs.md): Aceptada; Maintenance I y las decisiones D1–D6 aprobados explícitamente el 7 de octubre de 2026.
 - [0016 — Documentos, almacenamiento de objetos y evidencia de mantenimiento](0016-documents-object-storage.md): Aceptada; Documents I aprobado explícitamente el 7 de octubre de 2026 con subida por route handler y EXIF como pendiente.
+- [0017 — Préstamos temporales de herramientas reutilizables](0017-tool-loans.md): Aceptada; Loans I y las decisiones D1–D5 aprobados explícitamente el 7 de octubre de 2026.

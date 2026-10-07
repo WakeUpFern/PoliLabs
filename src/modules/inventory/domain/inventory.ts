@@ -23,7 +23,8 @@ export type InventoryErrorCode =
   | "has-stock"
   | "immutable-unit"
   | "inactive"
-  | "tool-consumption";
+  | "tool-consumption"
+  | "loaned-stock";
 export class InventoryError extends Error {
   constructor(public readonly code: InventoryErrorCode) {
     super(`Inventory operation rejected: ${code}`);

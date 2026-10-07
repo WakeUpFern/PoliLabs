@@ -64,3 +64,13 @@ pnpm dev
 ```
 
 La migración es aditiva, pero instala guardas sobre desactivaciones espaciales; debe desplegarse con el código del mismo incremento. Requiere PostgreSQL local y la configuración existente de `.env.example`; no introduce variables nuevas.
+
+## Actualización: Loans I
+
+Loans I ([arquitectura](loans.md), [validación](loans-validation.md), [ADR 0017 — Aceptada](../decisions/0017-tool-loans.md)) cubre RF20 para herramientas reutilizables. La descripción anterior de este documento corresponde al corte Inventory I y se conserva como historial. Desde Loans I:
+
+- El detalle de una herramienta muestra existencia, prestadas y disponibles (existencia − pendiente activo). El préstamo no genera movimientos ni modifica el saldo.
+- Se conceden `inventory.loan` e `inventory.loan.read` a `laboratory_responsible` por migración y bootstrap.
+- Un trigger diferido nuevo sobre `inventory_stocks` impide que cualquier movimiento deje la existencia por debajo de lo prestado (error `loaned-stock`). Desactivar un artículo con préstamos activos sigue rechazándose porque exige saldo cero. No se redefinieron funciones de `0005`.
+- Una devolución con daño o pérdida genera el movimiento `damage`/`loss` correspondiente en la misma transacción.
+- La «devolución» de §14.4 no es el regreso de un préstamo: una devolución a proveedor se registra con `adjustment_out`.

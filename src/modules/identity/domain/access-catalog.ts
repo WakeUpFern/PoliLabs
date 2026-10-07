@@ -70,6 +70,17 @@ export const INITIAL_PERMISSIONS = {
     description:
       "Registrar entradas, consumos, daños, pérdidas y ajustes del laboratorio.",
   },
+  inventoryLoan: {
+    key: "inventory.loan",
+    name: "Registrar préstamos",
+    description:
+      "Registrar préstamos y devoluciones de herramientas y consultar los préstamos del laboratorio.",
+  },
+  inventoryLoanRead: {
+    key: "inventory.loan.read",
+    name: "Consultar préstamos propios",
+    description: "Consultar únicamente los préstamos propios.",
+  },
   attendance_read: {
     key: "attendance.read",
     name: "Consultar asistencia propia",
