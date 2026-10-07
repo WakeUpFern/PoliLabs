@@ -4,7 +4,6 @@ import { documentsWeb } from "@/modules/documents/web/services";
 import {
   assertSameOrigin,
   documentResult,
-  readLimitedBody,
 } from "@/modules/documents/web/documents-web";
 export const runtime = "nodejs";
 // Dedicated upload endpoint: Server Actions keep their default body limit.
@@ -15,8 +14,11 @@ export async function POST(
   const { slug } = await params;
   try {
     assertSameOrigin(request.headers, readAppOrigin(process.env));
-    const bytes = await readLimitedBody(request.headers, request.body);
-    const document = await documentsWeb.upload(slug, request.headers, bytes);
+    const document = await documentsWeb.upload(
+      slug,
+      request.headers,
+      request.body,
+    );
     revalidatePath(`/app/labs/${slug}`, "layout");
     return Response.json(
       { status: "success", message: "Archivo guardado.", id: document.id },

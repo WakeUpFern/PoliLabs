@@ -152,11 +152,18 @@ export class DocumentsWeb {
     ]);
     return { access, evidence };
   }
-  // Called by the upload route after the origin and body size checks.
-  async upload(slug: string, headers: Headers, bytes: Uint8Array<ArrayBuffer>) {
+  // Called by the upload route after the origin check. The session and
+  // laboratory are resolved before reading up to 10 MB of request body.
+  async upload(
+    slug: string,
+    headers: Headers,
+    body: ReadableStream<Uint8Array> | null,
+  ) {
     const type = headers.get("content-type") ?? "";
     if (!type.toLowerCase().startsWith("multipart/form-data"))
       throw new UploadRejectedError("format");
+    const context = await this.context(slug);
+    const bytes = await readLimitedBody(headers, body);
     let form: FormData;
     try {
       form = await new Response(bytes, {
@@ -168,7 +175,6 @@ export class DocumentsWeb {
     const file = form.get("file");
     if (!(file instanceof Blob)) throw new DocumentError("input");
     if (file.size > MAX_DOCUMENT_BYTES) throw new DocumentError("too-large");
-    const context = await this.context(slug);
     return this.services.documents.upload({
       ...context,
       source: "WEB",
