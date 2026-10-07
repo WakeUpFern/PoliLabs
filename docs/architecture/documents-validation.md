@@ -47,3 +47,7 @@ La primera ejecución dejó vivo el proceso `next-server` (nieto de `pnpm start`
 ## Límites
 
 Sin S3, URLs prefirmadas, documentos de prácticas, evidencia de incidencias, versionado, purga, antivirus, miniaturas, auditoría persistente ni Giussepe. Las fotos conservan EXIF (posible ubicación GPS). Los PDF se sirven sin `CSP sandbox`.
+
+## Pruebas e2e automatizadas
+
+`tests/e2e/documents.spec.ts` sustituye la fixture y la guía manual: cubre la subida real por el route handler, cabeceras de descarga, rechazo por firma de bytes y por origen ajeno (403), evidencia añadida a la entrada sin modificarla, archivado con 404 posterior y 404 uniformes para un miembro sin permisos, en escritorio y móvil. Ver [pruebas end-to-end](e2e.md).

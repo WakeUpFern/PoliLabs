@@ -49,3 +49,7 @@ El envío del formulario mediante Server Action no se ejercitó en navegador; qu
 ## Límites
 
 Fuera de alcance: órdenes y programación, bloqueos por intervalo, mantenimiento automático desde incidencias, notificaciones, alertas de stock, reportes/exportación, adjuntos, Giussepe, activos individualizados y paginación. Las reservaciones exclusivas de espacio no se cuentan en el impacto.
+
+## Pruebas e2e automatizadas
+
+`tests/e2e/maintenance.spec.ts` sustituye la fixture y la guía manual: cubre el envío real del formulario (Server Action), el consumo de aceite, el rechazo por existencia insuficiente sin escritura, el 404 del alumno, el recurso deshabilitado al reservar y su vuelta a operación, en escritorio y móvil (Pixel 7) y sin desbordamiento horizontal. Ver [pruebas end-to-end](e2e.md).

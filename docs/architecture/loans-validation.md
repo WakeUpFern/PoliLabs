@@ -83,3 +83,7 @@ Fuera de alcance: activos individualizados, préstamos entre laboratorios, notif
 ## Integración con Documents I
 
 Al rebasear sobre Documents I (que introdujo `0011_documents_i.sql`), la migración de Loans se renumeró a `0012_loans_i.sql`. Se regeneraron snapshot y journal con `pnpm db:generate`; las 15 sentencias generadas coinciden con las del SQL revisado original, que se conserva íntegro (índices únicos antes de sus FKs y 13 sentencias manuales). El conteo esperado en `auth-postgres.test.ts` pasa a 13.
+
+## Pruebas e2e automatizadas
+
+`tests/e2e/loans.spec.ts` sustituye la fixture y la guía manual: cubre el préstamo real por Server Action (existencia sin cambio, disponibilidad descontada), la devolución con daño y su cierre, y la vista restringida a préstamos propios, en escritorio y móvil. El filtro «Vencidos» con un préstamo realmente vencido sigue cubierto sólo por integración. Ver [pruebas end-to-end](e2e.md).

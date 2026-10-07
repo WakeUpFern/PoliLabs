@@ -16,6 +16,7 @@
     "format:check": "prettier --check .",
     "test": "tsx --test tests/*.test.ts",
     "test:integration": "tsx --test --test-concurrency=1 tests/integration/*.test.ts",
+    "test:e2e": "playwright test",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm format:check",
     "bootstrap:development": "tsx scripts/bootstrap-development.ts",
     "auth:schema": "auth generate --config ./src/modules/identity/infrastructure/auth-schema.config.ts --output ./src/modules/identity/infrastructure/auth-schema.ts --yes",
@@ -36,6 +37,7 @@
     "server-only": "0.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "^24.13.6",
     "@types/pg": "8.23.1",

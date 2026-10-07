@@ -132,3 +132,7 @@ Metadatos en `documents` y binarios fuera de la base mediante el puerto `ObjectS
 ## Loans I
 
 Préstamo y devolución temporales de herramientas reutilizables a miembros activos del laboratorio, con devoluciones parciales, fecha compromiso opcional, vencidos calculados al consultar y sesión académica opcional. La disponibilidad es existencia − pendiente activo; el préstamo no es consumo (RB4). Una devolución con daño o pérdida genera el movimiento de inventario vinculado en la misma transacción. Un trigger diferido nuevo garantiza existencia ≥ prestado sin redefinir funciones de Inventory I. Una migración aditiva (`0012_loans_i.sql` en `feat/loans-i`) añade dos tablas y los permisos `inventory.loan` e `inventory.loan.read`. Ver [arquitectura](loans.md), [validación](loans-validation.md) y [ADR 0017 — Aceptada](../decisions/0017-tool-loans.md).
+
+## Pruebas end-to-end
+
+Playwright con Chromium en escritorio y móvil, contra la base `_test` y un laboratorio sintético por spec. Cubre Maintenance, Documents y Loans; las guías manuales anteriores quedan por migrar. Ver [pruebas end-to-end](e2e.md).
