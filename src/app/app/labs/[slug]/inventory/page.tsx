@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReportDownloads } from "../reports/report-downloads";
 import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { InventoryError } from "@/modules/inventory/domain/inventory";
@@ -55,6 +56,10 @@ export default async function InventoryPage({
           </Link>
         )}
       </div>
+      <ReportDownloads
+        slug={slug}
+        reports={["inventory-stock", "inventory-movements"]}
+      />
       <form className="mt-8 flex flex-wrap items-end gap-4 rounded-2xl border border-stone-200 bg-white p-5">
         <label className="min-w-48 flex-1 font-medium">
           ¿Qué buscas?

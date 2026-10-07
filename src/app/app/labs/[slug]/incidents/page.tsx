@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReportDownloads } from "../reports/report-downloads";
 import { incidentsWeb } from "@/modules/incidents/web/services";
 import { formatAcademicTime } from "@/modules/academic/web/time";
 import { incidentPageData } from "./page-data";
@@ -40,6 +41,9 @@ export default async function IncidentsPage({
       <h2 className="mt-6 text-xl font-semibold">
         {scope === "own" ? "Mis reportes" : "Reportes del laboratorio"}
       </h2>
+      {scope === "laboratory" ? (
+        <ReportDownloads slug={slug} reports={["incidents"]} />
+      ) : null}
       <div className="mt-4 space-y-4">
         {entries.map((i) => (
           <article

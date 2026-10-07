@@ -33,6 +33,7 @@ La primera prueba de Maintenance entra por el formulario de login real. Las dem�
 | `maintenance.spec.ts` | Entrada fuera de servicio con material, existencia insuficiente sin escritura, 404 sin permiso, recurso deshabilitado al reservar y vuelta a operación (RB5). |
 | `documents.spec.ts`   | Subida por route handler, cabeceras de descarga, firma de bytes, origen ajeno, evidencia en bitácora inmutable, archivado y 404 uniformes.                    |
 | `loans.spec.ts`       | Préstamo sin cambio de existencia, devolución con daño y cierre, vista de préstamos propios.                                                                  |
+| `reports.spec.ts`     | Catálogo por permisos, descarga CSV con contenido exacto y PDF válido, panel de exportación en Inventario, periodo inválido con alerta y 404 sin permisos.    |
 
 Todas comprueban ausencia de desbordamiento horizontal donde aplica. Las guías manuales de Academic, Attendance/Usage e Incidents siguen en `tests/e2e/*.md`; migrarlas a specs con `maintenance.spec.ts` como plantilla.
 
