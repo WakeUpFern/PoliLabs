@@ -123,6 +123,36 @@ export const INITIAL_PERMISSIONS = {
     name: "Gestionar y resolver incidencias",
     description: "Revisar y resolver incidencias con notas trazables.",
   },
+  maintenanceRead: {
+    key: "maintenance.read",
+    name: "Consultar mantenimiento",
+    description:
+      "Consultar estado operativo y bitácoras de mantenimiento del laboratorio.",
+  },
+  maintenanceCreate: {
+    key: "maintenance.create",
+    name: "Registrar mantenimiento",
+    description:
+      "Registrar entradas de mantenimiento y el estado operativo resultante de recursos.",
+  },
+  documentRead: {
+    key: "document.read",
+    name: "Consultar documentos",
+    description:
+      "Consultar y descargar manuales y documentos de los recursos del laboratorio.",
+  },
+  documentUpload: {
+    key: "document.upload",
+    name: "Subir documentos",
+    description:
+      "Subir manuales a recursos y, con permiso de mantenimiento, evidencia a sus entradas.",
+  },
+  documentArchive: {
+    key: "document.archive",
+    name: "Archivar documentos",
+    description:
+      "Archivar documentos del laboratorio con motivo, sin borrar el archivo ni su historial.",
+  },
   academicRead: {
     key: "academic.read",
     name: "Consultar prácticas y sesiones",

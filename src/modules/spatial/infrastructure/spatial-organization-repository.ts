@@ -42,6 +42,7 @@ const resourceSelection = {
   locationId: resources.locationId,
   name: resources.name,
   isActive: resources.isActive,
+  operationalStatus: resources.operationalStatus,
 };
 
 async function canWrite(

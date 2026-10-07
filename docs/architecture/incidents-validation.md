@@ -48,6 +48,6 @@ Captura de evidencia de reporte resuelto guardada en el directorio de visualizac
 
 ## Límites y decisiones pendientes
 
-ADR 0014 permanece Propuesta para las políticas concretas nuevas restantes; el incremento y los ajustes revisados están autorizados. ADR 0012/0013 siguen Aceptadas. Objetivos activos al reportar, Usage propio todavía abierto si se vincula, severidad/objetivo/descripción sin edición posterior, sin notas adicionales fuera de transición ni reapertura. El contexto temporal es la hora de registro, no el momento demostrado de la falla.
+ADR 0014 fue aceptado explícitamente por el responsable el 7 de octubre de 2026, igual que ADR 0012/0013. Políticas aceptadas: objetivos activos al reportar, Usage propio todavía abierto si se vincula, severidad/objetivo/descripción sin edición posterior, sin notas adicionales fuera de transición ni reapertura. El contexto temporal es la hora de registro, no el momento demostrado de la falla.
 
 Mostrar hasta 50 usos previos recientes, con aviso de historial adicional. No inferir que un único usuario es anterior o responsable ni que registros abiertos implican uso físico continuo. Historial de usuarios muestra nombres actuales, ubicación histórica de usos no reconstruida. Sin adjuntos, paginación, CSV/PDF, notificaciones, bloqueo de equipos, cancelación de reservas, Maintenance, movimientos de inventario, Audit global, Giussepe ni AWS. Revisar esas ampliaciones en incrementos explícitos.

@@ -21,12 +21,21 @@ export class InvalidResourceLocationError extends Error {
   }
 }
 
+// Changed only through Maintenance log entries; isActive is catalog membership.
+export const OPERATIONAL_STATUSES = [
+  "operational",
+  "in_maintenance",
+  "out_of_service",
+] as const;
+export type OperationalStatus = (typeof OPERATIONAL_STATUSES)[number];
+
 export type ResourceDetails = {
   id: string;
   spaceId: string;
   locationId: string | null;
   name: string;
   isActive: boolean;
+  operationalStatus: OperationalStatus;
 };
 
 export function normalizeResourceInput(input: {

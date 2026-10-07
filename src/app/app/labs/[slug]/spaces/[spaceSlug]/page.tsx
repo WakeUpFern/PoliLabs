@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
+import { maintenanceWeb } from "@/modules/maintenance/web/services";
+import { documentsWeb } from "@/modules/documents/web/services";
+import { operationalStatusLabels, statusTone } from "../../maintenance/labels";
 import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
@@ -83,7 +86,13 @@ export default async function SpaceOrganizationPage({ params }: Props) {
     throw error;
   }
 
-  const incidentAccess = await incidentsWeb.access(slug);
+  const [incidentAccess, maintenanceAccess, documentAccess] = await Promise.all(
+    [
+      incidentsWeb.access(slug),
+      maintenanceWeb.access(slug),
+      documentsWeb.access(slug),
+    ],
+  );
   const locationsById = new Map(
     locationCatalog.locations.map((location) => [location.id, location]),
   );
@@ -265,7 +274,20 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                     className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm"
                   >
                     <div className="flex items-start justify-between gap-4">
-                      <p className="font-semibold">{resource.name}</p>
+                      <div>
+                        <p className="font-semibold">{resource.name}</p>
+                        {resource.operationalStatus !== "operational" ? (
+                          <span
+                            className={`mt-1 inline-block rounded-full px-3 py-1 text-xs font-semibold ${statusTone(resource.operationalStatus)}`}
+                          >
+                            {
+                              operationalStatusLabels[
+                                resource.operationalStatus
+                              ]
+                            }
+                          </span>
+                        ) : null}
+                      </div>
                       <span className="rounded-full bg-stone-100 px-3 py-1 text-xs text-stone-600">
                         {location ? location.name : "Sin ubicación específica"}
                       </span>
@@ -276,6 +298,22 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                         href={`/app/labs/${slug}/incidents/new?target=resource:${resource.id}`}
                       >
                         Reportar problema
+                      </Link>
+                    ) : null}
+                    {maintenanceAccess.canRead ? (
+                      <Link
+                        className="mt-3 ml-4 inline-block text-sm font-semibold text-[#7a1731]"
+                        href={`/app/labs/${slug}/maintenance/resources/${resource.id}`}
+                      >
+                        Mantenimiento
+                      </Link>
+                    ) : null}
+                    {documentAccess.canRead ? (
+                      <Link
+                        className="mt-3 ml-4 inline-block text-sm font-semibold text-[#7a1731]"
+                        href={`/app/labs/${slug}/resources/${resource.id}/documents`}
+                      >
+                        Documentos
                       </Link>
                     ) : null}
                     {resourceCatalog.canManage ? (

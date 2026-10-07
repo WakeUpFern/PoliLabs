@@ -8,6 +8,7 @@ import {
   jsonb,
   check,
   index,
+  uniqueIndex,
   foreignKey,
 } from "drizzle-orm/pg-core";
 import { users } from "@/modules/identity/infrastructure/auth-schema";
@@ -62,6 +63,7 @@ export const incidentReports = pgTable(
     ),
     index("incident_reports_reporter_idx").on(t.reportedBy, t.laboratoryId),
     index("incident_reports_resource_idx").on(t.resourceId),
+    uniqueIndex("incident_reports_id_resource_idx").on(t.id, t.resourceId),
     foreignKey({
       name: "incident_reports_space_laboratory_fk",
       columns: [t.spaceId, t.laboratoryId],

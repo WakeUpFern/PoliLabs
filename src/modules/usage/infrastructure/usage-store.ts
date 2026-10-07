@@ -60,6 +60,7 @@ class DrizzleUsageTransaction implements UsageTransaction {
           eq(practices.status, "published"),
           eq(spaces.isActive, true),
           eq(resources.isActive, true),
+          eq(resources.operationalStatus, "operational"),
         ),
       )
       .orderBy(asc(labSessions.startsAt), asc(resources.name));
@@ -80,6 +81,7 @@ class DrizzleUsageTransaction implements UsageTransaction {
           eq(spaces.laboratoryId, context.laboratoryId),
           eq(spaces.isActive, true),
           eq(resources.isActive, true),
+          eq(resources.operationalStatus, "operational"),
           eq(reservations.createdBy, context.actorUserId),
           eq(reservations.status, "confirmed"),
           sql`${reservations.startsAt} <= clock_timestamp() and clock_timestamp() < ${reservations.endsAt}`,
@@ -228,6 +230,9 @@ class DrizzleUsageTransaction implements UsageTransaction {
       )
       .for("share");
     if (!resource) throw new UsageError("relation");
+    // RB5: the SHARE lock serializes with maintenance status changes.
+    if (resource.operationalStatus !== "operational")
+      throw new UsageError("unavailable");
     // Recheck reservation time after waiting for all locks.
     const now = new Date();
     if (kind === "reservation") {

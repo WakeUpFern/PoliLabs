@@ -14,9 +14,11 @@ Aceptada no implica implementada. Las decisiones iniciales se fundamentan en el 
 
 - [0010 — Inventario por cantidad y movimientos trazables](0010-quantity-inventory.md): Aceptada; alcance de Inventory I aprobado explícitamente.
 
-- [0011 — Prácticas, sesiones y participación académica](0011-academic-sessions.md): Propuesta; Academic I seleccionado, políticas concretas pendientes de revisión.
+- [0011 — Prácticas, sesiones y participación académica](0011-academic-sessions.md): Aceptada; Academic I y sus políticas concretas aprobados explícitamente el 6 de octubre de 2026.
 
 - [0012 — Asistencia contextual y correcciones trazables](0012-attendance-checkin.md): Aceptada; incremento y políticas concretas aprobados explícitamente el 7 de octubre de 2026.
 - [0013 — Uso efectivo con contexto académico o reservación](0013-resource-usage.md): Aceptada; incremento y políticas concretas aprobados explícitamente el 7 de octubre de 2026.
 
-- [0014 — Incidencias operativas y trazabilidad contextual](0014-operational-incidents.md): Propuesta; Incidents I y los ajustes de alcance autorizados, políticas concretas restantes documentadas para revisión.
+- [0014 — Incidencias operativas y trazabilidad contextual](0014-operational-incidents.md): Aceptada; Incidents I y sus políticas concretas aprobados explícitamente el 7 de octubre de 2026.
+- [0015 — Bitácora de mantenimiento y estado operativo de recursos](0015-maintenance-logs.md): Aceptada; Maintenance I y las decisiones D1–D6 aprobados explícitamente el 7 de octubre de 2026.
+- [0016 — Documentos, almacenamiento de objetos y evidencia de mantenimiento](0016-documents-object-storage.md): Aceptada; Documents I aprobado explícitamente el 7 de octubre de 2026 con subida por route handler y EXIF como pendiente.

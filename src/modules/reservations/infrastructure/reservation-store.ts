@@ -70,6 +70,8 @@ class DrizzleReservationSession implements ReservationSession {
         and(
           eq(resources.spaceId, input.spaceId),
           eq(resources.isActive, true),
+          // RB5: maintenance status, rechecked by the deferred PostgreSQL validation.
+          eq(resources.operationalStatus, "operational"),
           inArray(resources.id, [...input.resourceIds]),
         ),
       )

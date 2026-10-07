@@ -1,12 +1,12 @@
 # 0014 — Incidencias operativas y trazabilidad contextual
 
-Estado: **Propuesta**
+Estado: **Aceptada**
 
 ## Contexto
 
 El responsable autorizó Incidents I el 7 de octubre de 2026, incluyendo los ajustes revisados: Resource, Space o LabSession como objetivo; Usage opcional; contexto espacial conservado; usos relevantes sin identificar un culpable; permisos separados y ciclo open → in_review → resolved. ADR 0012/0013 ya están aceptadas. RF28–29, §16 y RB11–12 sustentan reporte, clasificación, seguimiento, resolución y trazabilidad. El SRS no fija severidades, matriz exacta de permisos ni elegibilidad detallada del vínculo de uso.
 
-## Decisión propuesta e implementada
+## Decisión
 
 Un único IncidentReport pertenece a Laboratory y conserva Space obligatorio como relación contextual protegida. targetKind distingue exactamente un objetivo afectado: recurso, espacio o sesión. Resource y LabSession tienen FKs compuestas del mismo Space, y Space del mismo Laboratory. Para un objetivo Resource, la sesión o reservación de un Usage vinculado son contexto, no objetivos adicionales.
 
@@ -34,8 +34,12 @@ Trazabilidad: usos del mismo recurso iniciados antes o al reportar, ordenados po
 
 Dos tablas nuevas y cuatro permisos; único índice compuesto adicional en ResourceUsage para proteger el vínculo. Eventos transaccionales inmutables ante UPDATE con snapshots antes/después. READ COMMITTED y autorización bloqueada; reportar sesión sigue Practice → LabSession → Space, recurso Space → Resource → Location → Usage. Finalizar Usage sólo bloquea su fila; el bloqueo SHARE del reporte serializa la asociación con el fin. Transiciones bloquean sólo la incidencia, con versión optimista para conflictos concurrentes.
 
-La autorización del incremento y sus ajustes no se interpreta como ratificación de cada política nueva descrita aquí. Este ADR mantiene Propuesta para revisión de las restricciones concretas restantes. Pendientes: clasificación editable, notas adicionales sin transición, reapertura, adjuntos, reportes/exportaciones, fecha de detección con evidencia, objetivos desactivados, paginación, bloqueos de disponibilidad y Maintenance. No se modifica el SRS ni se aprovisiona infraestructura.
+Las políticas concretas descritas quedan aceptadas como decisiones del proyecto mediante aprobación explícita del responsable el 7 de octubre de 2026; no se presentan como requisitos institucionales del SRS. Pendientes: clasificación editable, notas adicionales sin transición, reapertura, adjuntos, reportes/exportaciones, fecha de detección con evidencia, objetivos desactivados, paginación, bloqueos de disponibilidad y Maintenance. No se modifica el SRS ni se aprovisiona infraestructura.
 
 ## Referencias SRS
 
 RF28–29; RNF3–9; §§16, 23–25, 30–31; RB11–12; ADR 0004, 0006, 0011–0013. Ver [arquitectura](../architecture/incidents.md).
+
+## Historial
+
+El ADR se registró inicialmente como Propuesta durante la implementación de Incidents I. El 7 de octubre de 2026, el responsable aprobó explícitamente el ADR 0014 y sus políticas concretas. Se actualiza a Aceptada sin ampliar su alcance ni aprobar los incrementos pendientes.

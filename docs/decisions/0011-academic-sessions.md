@@ -1,12 +1,12 @@
 # 0011 — Prácticas, sesiones y participación académica
 
-Estado: **Propuesta**
+Estado: **Aceptada**
 
 ## Contexto
 
 El responsable seleccionó Academic I de la propuesta compartida tras Inventory I: prácticas y sesiones pequeñas como base para Usage I y futuras incidencias trazables. [SRS](../srs/PoliLabs-SRS.tex) RF2, RF4, RF23, RF29, §§16–17, RB1, RB11–12 y ADR 0006 distinguen actividad académica, reservación y uso real. La selección del módulo está autorizada; el SRS no define ciclos concretos, elegibilidad docente ni todos los permisos y restricciones académicas.
 
-## Decisión propuesta
+## Decisión
 
 Mantener Practice y LabSession separados de Reservation y del futuro ResourceUsage. Modelar participantes mediante usuarios miembros del laboratorio, sin duplicar identidades ni equiparar inscripción a asistencia. Usar FKs compuestas para relaciones del mismo laboratorio, intervalos timestamptz finitos y participación única.
 
@@ -28,8 +28,12 @@ No conectar automáticamente sesiones a disponibilidad ni registrar uso efectivo
 
 Academic I funciona como corte independiente y conserva la identidad espacial existente. Las sesiones no bloquean reservas: integrar programación y disponibilidad requiere aprobación futura. Participantes previstos tampoco prueban uso real o responsabilidad sobre daños.
 
-Las políticas concretas implementadas quedan propuestas para revisión del responsable; no se califican como decisiones institucionales aceptadas. Quedan pendientes consulta histórica por alumnos, delegación docente, inscripción/autoinscripción, cambios después de apertura, reapertura, asistencia, grupos/periodos y vínculo con reservaciones. Ver [arquitectura y validación](../architecture/academic.md).
+Las políticas concretas implementadas quedan aceptadas como decisiones del proyecto mediante aprobación explícita del responsable el 6 de octubre de 2026; no se presentan como requisitos institucionales del SRS. Quedan pendientes consulta histórica por alumnos, delegación docente, ampliaciones de inscripción/autoinscripción, cambios después de apertura, reapertura, asistencia, grupos/periodos y vínculo con reservaciones. Ver [arquitectura y validación](../architecture/academic.md).
 
 ## Referencias SRS
 
 RF2–4, RF23, RF29; RNF3–9; §§16–17, 23–25, 30–31; RB1, RB11–12. El original no se edita.
+
+## Historial
+
+El ADR se registró inicialmente como Propuesta durante la implementación de Academic I. El 6 de octubre de 2026, el responsable aprobó explícitamente el ADR 0011 y sus políticas concretas para este incremento. Se actualiza a Aceptada sin ampliar su alcance ni aprobar los incrementos pendientes.

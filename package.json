@@ -22,7 +22,8 @@
     "auth:check": "auth check schema --config ./src/modules/identity/infrastructure/auth-schema.config.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:check": "tsx scripts/check-database.ts"
+    "db:check": "tsx scripts/check-database.ts",
+    "documents:sweep": "tsx scripts/documents-sweep.ts"
   },
   "dependencies": {
     "@next/env": "16.3.6",

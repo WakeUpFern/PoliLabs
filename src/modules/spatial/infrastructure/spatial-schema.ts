@@ -12,6 +12,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { laboratories } from "@/modules/identity/infrastructure/access-schema";
+import type { OperationalStatus } from "../domain/resource";
 
 export const spaces = pgTable(
   "spaces",
@@ -109,6 +110,10 @@ export const resources = pgTable(
     locationId: uuid("location_id"),
     name: text("name").notNull(),
     isActive: boolean("is_active").default(true).notNull(),
+    operationalStatus: text("operational_status")
+      .$type<OperationalStatus>()
+      .default("operational")
+      .notNull(),
     ...spatialTimestamps(),
   },
   (table) => [
@@ -121,5 +126,9 @@ export const resources = pgTable(
       foreignColumns: [locations.id, locations.spaceId],
     }).onDelete("restrict"),
     check("resources_name_not_blank_check", sql`btrim(${table.name}) <> ''`),
+    check(
+      "resources_operational_status_check",
+      sql`${table.operationalStatus} in ('operational','in_maintenance','out_of_service')`,
+    ),
   ],
 );

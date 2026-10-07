@@ -31,3 +31,5 @@ Migración `0008_usage_i.sql`: dos tablas (9 y 7 columnas), dos PK UUID, siete F
 Pruebas `tests/usage.test.ts` y `tests/integration/usage.test.ts`: estados, propiedad, reservas futuras/canceladas/vigentes, recursos incluidos/exclusivos, identidad/origen servidor, independencia de Attendance, relaciones PostgreSQL, idempotencia y concurrencia inicio/fin/cierre. Base separada `_test` y fixtures sintéticas.
 
 Pendientes: consultas paginadas, correcciones administrativas, exclusividad operacional, mecanismos de cierre de usos olvidados, consumo de trace por Incidents, Maintenance, préstamos e inventario individualizado. No convierte historial en prueba disciplinaria. Resultados finales en [validación](attendance-usage-validation.md).
+
+Maintenance I (ADR 0015) añade RB5: no se ofrece ni inicia Usage sobre recursos que no están `operational` (error `unavailable`, respaldado por un trigger); los usos abiertos no se cierran al cambiar el estado. Ver [Maintenance I](maintenance.md).

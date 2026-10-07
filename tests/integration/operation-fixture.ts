@@ -134,6 +134,37 @@ export async function operationFixture() {
   }
   async function cleanup() {
     await db.transaction(async (tx) => {
+      // Documents reference maintenance logs and resources; remove them first.
+      await tx
+        .delete(schema.documents)
+        .where(inArray(schema.documents.laboratoryId, labIds));
+      // Maintenance references incidents and inventory movements; remove it first.
+      await tx
+        .delete(schema.maintenanceMaterials)
+        .where(inArray(schema.maintenanceMaterials.laboratoryId, labIds));
+      await tx
+        .delete(schema.maintenanceLogs)
+        .where(inArray(schema.maintenanceLogs.laboratoryId, labIds));
+      const items = await tx
+        .select({ id: schema.inventoryItems.id })
+        .from(schema.inventoryItems)
+        .where(inArray(schema.inventoryItems.laboratoryId, labIds));
+      if (items.length) {
+        // Inventory history may only disappear together with its synthetic item.
+        const itemIds = items.map((i) => i.id);
+        await tx
+          .delete(schema.inventoryMovements)
+          .where(inArray(schema.inventoryMovements.itemId, itemIds));
+        await tx
+          .delete(schema.inventoryEvents)
+          .where(inArray(schema.inventoryEvents.itemId, itemIds));
+        await tx
+          .delete(schema.inventoryStocks)
+          .where(inArray(schema.inventoryStocks.itemId, itemIds));
+        await tx
+          .delete(schema.inventoryItems)
+          .where(inArray(schema.inventoryItems.id, itemIds));
+      }
       const reports = await tx
         .select({ id: schema.incidentReports.id })
         .from(schema.incidentReports)

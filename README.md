@@ -139,7 +139,7 @@ Inventory I fue seleccionado explícitamente. Las siguientes ampliaciones deben 
 
 Se seleccionó e implementó el siguiente incremento de la propuesta compartida: crear, editar, publicar y cerrar prácticas; programar, consultar, abrir, cerrar y cancelar sesiones; registrar participantes previstos del mismo laboratorio. Acceso desde **Prácticas** en la ficha del laboratorio. Se reutilizan Identity y Space, con servicios autorizados y eventos transaccionales.
 
-Una sesión no reserva automáticamente un espacio; inscripción no significa asistencia ni uso de maquinaria. Usage I aporta el puente entre contexto académico, reservaciones y posteriores incidencias; ver su alcance incremental más abajo. Grupos, periodos, asistencia, préstamos, Incidents, Maintenance y Knowledge quedan fuera de este corte. Ver [Academic I](docs/architecture/academic.md) y [ADR 0011 — Propuesta](docs/decisions/0011-academic-sessions.md): las reglas específicas de permisos, estados y participación quedan documentadas para revisión, sin atribuirles aceptación institucional.
+Una sesión no reserva automáticamente un espacio; inscripción no significa asistencia ni uso de maquinaria. Usage I aporta el puente entre contexto académico, reservaciones y posteriores incidencias; ver su alcance incremental más abajo. Grupos, periodos, asistencia, préstamos, Incidents, Maintenance y Knowledge quedan fuera de este corte. Ver [Academic I](docs/architecture/academic.md) y [ADR 0011 — Aceptada](docs/decisions/0011-academic-sessions.md): las reglas específicas de permisos, estados y participación fueron aprobadas explícitamente por el responsable el 6 de octubre de 2026 como decisiones del proyecto.
 
 La migración versionada `0006_academic_i.sql` añade las tablas y permisos de este flujo. Las instalaciones existentes reciben los permisos académicos en `laboratory_responsible` al ejecutar `pnpm db:migrate`. No es necesario repetir bootstrap. Las demás membresías requieren permisos asignados explícitamente; no hay altas públicas ni asignación automática de roles por inscripción.
 
@@ -155,4 +155,10 @@ Ver [Attendance I](docs/architecture/attendance.md), [Usage I](docs/architecture
 
 Acceso desde **Incidencias** en el laboratorio, catálogo espacial, sesión o uso de maquinaria. Reporte sobre recurso, espacio o sesión, sin exigir Usage ni horario de clase; asociación propia opcional y contexto espacial conservado. Seguimiento y resolución con notas e historial, lectura propia o del laboratorio según permisos, y usos previos con autorización adicional sin inferir responsabilidad.
 
-Ver [arquitectura](docs/architecture/incidents.md), [validación](docs/architecture/incidents-validation.md) y [ADR 0014 — Propuesta](docs/decisions/0014-operational-incidents.md). La migración añade cuatro permisos al responsable inicial; otras membresías requieren asignación autorizada. No bloquea equipos, cancela reservas ni crea Maintenance automáticamente.
+Ver [arquitectura](docs/architecture/incidents.md), [validación](docs/architecture/incidents-validation.md) y [ADR 0014 — Aceptada](docs/decisions/0014-operational-incidents.md). La migración añade cuatro permisos al responsable inicial; otras membresías requieren asignación autorizada. No bloquea equipos, cancela reservas ni crea Maintenance automáticamente.
+
+## Maintenance I
+
+Acceso desde **Mantenimiento** en el laboratorio o desde cada recurso del catálogo espacial. Bitácora por recurso con tipo, fecha de realización, responsable, descripción, estado resultante, próximo mantenimiento, incidencia relacionada y materiales consumidos del inventario, todo en una sola transacción. Un recurso en mantenimiento o fuera de servicio no se ofrece para nuevas reservaciones ni usos; las reservaciones y usos existentes no se cancelan automáticamente.
+
+Ver [arquitectura](docs/architecture/maintenance.md), [validación](docs/architecture/maintenance-validation.md) y [ADR 0015 — Aceptada](docs/decisions/0015-maintenance-logs.md). La migración `0010_maintenance_i.sql` añade `maintenance.read` y `maintenance.create` al responsable inicial; registrar materiales requiere además `inventory.adjust`. Aplicar con `pnpm db:migrate`.
