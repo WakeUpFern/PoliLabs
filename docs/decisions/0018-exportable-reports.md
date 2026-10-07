@@ -1,10 +1,10 @@
 # 0018 — Reportes exportables en CSV y PDF
 
-Estado: **Propuesta**
+Estado: **Aceptada** (7 de octubre de 2026; decisiones D1–D7 aprobadas explícitamente por el responsable)
 
 ## Contexto
 
-El responsable pidió el 7 de octubre de 2026 iniciar la implementación de los reportes exportables. Las decisiones D1–D7 de este ADR se tomaron como propuesta razonable para el primer corte (Reports I) y **requieren aprobación explícita** antes de pasar a Aceptada. El código ya implementa esta propuesta para poder revisarla funcionando.
+El responsable pidió el 7 de octubre de 2026 iniciar la implementación de los reportes exportables. Las decisiones D1–D7 de este ADR se tomaron como propuesta razonable para el primer corte (Reports I), el código la implementa y el responsable la aprobó explícitamente el 7 de octubre de 2026.
 
 [SRS](../srs/PoliLabs-SRS.tex) RF «generar reportes básicos por práctica, sesión, inventario, reservación, mantenimiento e incidencia» y «exportar información seleccionada en CSV y PDF»; §2 «consultar reportes y auditoría de acuerdo con permisos»; §32 lista nueve reportes mínimos; §33.15 exige «generar un reporte exportable». El SRS no define permisos, formato de columnas, límites ni periodicidad de los reportes. [ADR 0006](0006-laboratory-scope.md) exige acotar lecturas, listados y **exportaciones** al laboratorio y permisos del actor.
 

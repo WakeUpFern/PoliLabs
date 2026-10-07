@@ -44,4 +44,4 @@ End-to-end (`tests/e2e/reports.spec.ts`): enlace desde la ficha, catálogo limit
 - PDF con fuentes estándar: caracteres fuera de WinAnsi (emoji, algunos símbolos) se imprimen como `?`. El CSV conserva el texto completo.
 - Sin paginación del lado del servidor más allá del límite de 5000 filas.
 - Los reportes no se auditan (ADR 0018 D7).
-- Las decisiones D1–D7 siguen en estado Propuesta.
+- Las decisiones D1–D7 están Aceptadas desde el 7 de octubre de 2026 (ADR 0018).

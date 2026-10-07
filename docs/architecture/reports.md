@@ -1,6 +1,6 @@
 # Reports I — Reportes exportables
 
-Fecha: 7 de octubre de 2026. Estado: implementado; políticas en el [ADR 0018](../decisions/0018-exportable-reports.md) (**Propuesta**, pendiente de aprobación) y resultados en [validación](reports-validation.md). SRS RF de reportes y exportación, §32 y §33.15.
+Fecha: 7 de octubre de 2026. Estado: implementado; políticas en el [ADR 0018](../decisions/0018-exportable-reports.md) (**Aceptada**, aprobada el 7 de octubre de 2026) y resultados en [validación](reports-validation.md). SRS RF de reportes y exportación, §32 y §33.15.
 
 ## Alcance
 
