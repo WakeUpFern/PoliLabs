@@ -134,6 +134,10 @@ export async function operationFixture() {
   }
   async function cleanup() {
     await db.transaction(async (tx) => {
+      // Documents reference maintenance logs and resources; remove them first.
+      await tx
+        .delete(schema.documents)
+        .where(inArray(schema.documents.laboratoryId, labIds));
       // Maintenance references incidents and inventory movements; remove it first.
       await tx
         .delete(schema.maintenanceMaterials)

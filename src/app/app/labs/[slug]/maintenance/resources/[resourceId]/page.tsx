@@ -14,6 +14,9 @@ import {
 } from "../../labels";
 import { statusLabels as incidentStatusLabels } from "../../../incidents/labels";
 import { MaintenanceForm } from "./maintenance-form";
+import { documentsWeb } from "@/modules/documents/web/services";
+import { DocumentList } from "../../../documents/document-list";
+import { UploadForm } from "../../../documents/upload-form";
 export default async function MaintenanceResourcePage({
   params,
 }: {
@@ -23,6 +26,9 @@ export default async function MaintenanceResourcePage({
   const { resource, logs, impact, access, options } = await maintenancePageData(
     () => maintenanceWeb.detail(slug, resourceId),
   );
+  const { access: documents, evidence } = await maintenancePageData(() =>
+    documentsWeb.evidence(slug, resourceId),
+  );
   const unavailable = resource.operationalStatus !== "operational";
   return (
     <div>
@@ -31,6 +37,14 @@ export default async function MaintenanceResourcePage({
         {resource.name}
       </h1>
       <p className="mt-2 text-stone-600">{resource.spaceName}</p>
+      {documents.canRead ? (
+        <Link
+          className="mt-2 inline-block text-sm font-semibold text-[#7a1731]"
+          href={`/app/labs/${slug}/resources/${resource.id}/documents`}
+        >
+          Manuales y documentos
+        </Link>
+      ) : null}
       <section className="mt-6 space-y-3 rounded-2xl border border-stone-200 bg-white p-6">
         <span
           className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${statusTone(resource.operationalStatus)}`}
@@ -111,6 +125,35 @@ export default async function MaintenanceResourcePage({
                 Ver incidencia relacionada
               </Link>
             ) : null}
+            <div className="mt-4 border-t border-stone-100 pt-4">
+              <h3 className="mb-2 font-semibold">Evidencia</h3>
+              <DocumentList
+                slug={slug}
+                documents={evidence.get(log.id) ?? []}
+                canArchive={documents.canArchive}
+                empty="Sin evidencia adjunta."
+              />
+              {documents.canAddEvidence ? (
+                <details className="mt-3">
+                  <summary className="cursor-pointer text-sm font-semibold text-[#7a1731]">
+                    Añadir evidencia
+                  </summary>
+                  <p className="mt-2 text-sm text-stone-600">
+                    La entrada no se modifica; la evidencia queda registrada a
+                    tu nombre.
+                  </p>
+                  <div className="mt-2">
+                    <UploadForm
+                      slug={slug}
+                      targetKind="maintenance-log"
+                      targetId={log.id}
+                      withTitle={false}
+                      label="Foto o documento"
+                    />
+                  </div>
+                </details>
+              ) : null}
+            </div>
             <p className="mt-2 text-sm text-stone-600">
               {log.performerName} · registrado{" "}
               {formatAcademicTime(log.createdAt)}

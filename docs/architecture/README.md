@@ -16,7 +16,7 @@ src/
   config/                      # Validación de configuración
   modules/
     academic/ attendance/ usage/ spatial/ reservations/ inventory/
-    maintenance/ incidents/ knowledge/ notifications/
+    maintenance/ incidents/ documents/ knowledge/ notifications/
     identity/ audit/            # Responsabilidades documentadas; sin lógica todavía
     <module>/domain/            # Reglas puras; identity tiene un README inicial
     <module>/application/       # Servicios; identity tiene un README inicial
@@ -43,7 +43,7 @@ Se prefiere `infrastructure/database` a duplicar `core/database` del esquema sug
 | Inventory     | Ítem → existencias y movimientos por ubicación opcional; préstamos temporales; unidades variables                                  | RF15–22, RB2–4, RB10, §14 |
 | Maintenance   | Recurso → bitácoras; materiales utilizados vinculados a consumos                                                                   | RF25–27, §15              |
 | Incidents     | Reporte → recurso/espacio/sesión conocidos; seguimiento y resolución                                                               | RF28–29, RB11–12, §16     |
-| Knowledge     | Documento → metadatos, permisos, clave de objeto y asociaciones                                                                    | RF24, §18                 |
+| Knowledge     | Documento → metadatos, permisos, clave de objeto y asociaciones (Documents I en `modules/documents`)                               | RF24, §18                 |
 | Notifications | Usuario → notificaciones, preferencias, entregas y suscripciones                                                                   | RF30–33, §19              |
 | Identity      | Usuario interno, perfil alumno opcional, roles compuestos por permisos e identidades externas futuras                              | RF1, §§23–24              |
 | Audit         | Actor, entidad, acción, origen e historial relevante                                                                               | RNF9, §25                 |
@@ -82,7 +82,7 @@ El primer corte de este modelo está implementado en tablas y servicios de aplic
 
 **Implementado:** App Router con una página informativa responsiva y un [shell autenticado](authenticated-shell.md); TypeScript estricto; Tailwind; configuración de lint, formato y pruebas; validación de URL de base de datos sin revelar secretos; cliente Drizzle de servidor; Compose para PostgreSQL local con la imagen `postgres:17-alpine`, volumen persistente, healthcheck y publicación en `127.0.0.1:5433`; script de lectura para comprobar conexión. Better Auth 1.7.6 está integrado con correo/contraseña, login, logout y cambio de contraseña; el registro público y borrado físico siguen deshabilitados. Las sesiones duran 12 horas sin renovación. Identity implementa laboratorios, membresías activables con varios roles, listado acotado al actor, autorización por slug mediante `AuthorizationService`, asignación acotada de roles y bootstrap controlado. Spatial I implementa `Space`; Spatial II implementa `Location` jerárquica y `Resource` físico individual con ubicación opcional. Las lecturas se acotan por laboratorio, las escrituras reautorizan dentro de transacciones y PostgreSQL protege relaciones del mismo espacio y ciclos. Reservations I añade disponibilidad, creación individual, detalle/listado propios y cancelación lógica mediante servicios reutilizables, con protección PostgreSQL contra conflictos concurrentes. Once migraciones versionadas cubren estos incrementos, incluidos Academic I, Attendance I, Usage I, Incidents I y Maintenance I. Reservations II integra el flujo web individual en el shell mediante páginas servidor, Server Actions y un adaptador que reutiliza los cinco servicios existentes. Inventory I implementa catálogo por Laboratory, una existencia principal opcional por Location y movimientos/eventos trazables, servicios transaccionales y búsqueda/alta/detalle/edición/desactivación web; ver [Inventory I](inventory.md), [validación](inventory-validation.md) y ADR 0010 (Aceptada). Ver [Reservations I y II](reservations.md) y ADR 0009 (Aceptada). Ver la [validación de autenticación](authentication-spike.md), el [primer flujo de autorización](identity-authorization.md) y el [catálogo espacial](spatial-catalog.md).
 
-**Posterior:** recuperación de contraseña y proveedor de correo, administración de cuentas/membresías, auditoría persistente, clasificación y reservabilidad configurable de espacios/recursos, planos y representación gráfica, horarios y calendarios avanzados de reservaciones, relación definitiva Resource/Inventory, archivos S3, PWA, push, reportes y Giussepe. AWS y Bedrock no están aprovisionados ni conectados. La interfaz actual usa Tailwind sin añadir una biblioteca de componentes.
+**Posterior:** recuperación de contraseña y proveedor de correo, administración de cuentas/membresías, auditoría persistente, clasificación y reservabilidad configurable de espacios/recursos, planos y representación gráfica, horarios y calendarios avanzados de reservaciones, relación definitiva Resource/Inventory, adaptador S3 de documentos, PWA, push, reportes y Giussepe. AWS y Bedrock no están aprovisionados ni conectados. La interfaz actual usa Tailwind sin añadir una biblioteca de componentes.
 
 ## Integridad y seguridad que guiarán los módulos
 
@@ -124,3 +124,7 @@ Reportes sobre Resource, Space o LabSession, con Usage propio opcional y context
 ## Maintenance I
 
 Bitácora inmutable por Resource y estado operativo `operational`/`in_maintenance`/`out_of_service` en `resources`, modificable sólo mediante una entrada. Materiales consumidos como movimientos `consumption` de Inventory en la misma transacción. RB5: recursos no operativos se rechazan en nuevas reservaciones de recursos y nuevos usos; lo existente no se cancela. Vínculo opcional a incidencia del mismo recurso. Ver [arquitectura](maintenance.md), [validación](maintenance-validation.md) y [ADR 0015 — Aceptada](../decisions/0015-maintenance-logs.md).
+
+## Documents I
+
+Metadatos en `documents` y binarios fuera de la base mediante el puerto `ObjectStorage`, con un único adaptador de disco local (`DOCUMENT_STORAGE_DIR`); S3 no está implementado ni aprovisionado. Manuales por Resource y evidencia añadida a entradas de mantenimiento sin editarlas. Tipo verificado por firma (PDF/PNG/JPEG/WebP), 10 MB, subida por route handler con `Origin` y corte de stream, descarga sólo por ruta autorizada, archivado lógico, compensación y barrido de huérfanos. Evidencia de incidencias y eliminación de EXIF pendientes. Ver [arquitectura](documents.md), [validación](documents-validation.md) y [ADR 0016 — Aceptada](../decisions/0016-documents-object-storage.md).

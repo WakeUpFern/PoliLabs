@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
 import { maintenanceWeb } from "@/modules/maintenance/web/services";
+import { documentsWeb } from "@/modules/documents/web/services";
 import { operationalStatusLabels, statusTone } from "../../maintenance/labels";
 import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
@@ -85,10 +86,13 @@ export default async function SpaceOrganizationPage({ params }: Props) {
     throw error;
   }
 
-  const [incidentAccess, maintenanceAccess] = await Promise.all([
-    incidentsWeb.access(slug),
-    maintenanceWeb.access(slug),
-  ]);
+  const [incidentAccess, maintenanceAccess, documentAccess] = await Promise.all(
+    [
+      incidentsWeb.access(slug),
+      maintenanceWeb.access(slug),
+      documentsWeb.access(slug),
+    ],
+  );
   const locationsById = new Map(
     locationCatalog.locations.map((location) => [location.id, location]),
   );
@@ -302,6 +306,14 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                         href={`/app/labs/${slug}/maintenance/resources/${resource.id}`}
                       >
                         Mantenimiento
+                      </Link>
+                    ) : null}
+                    {documentAccess.canRead ? (
+                      <Link
+                        className="mt-3 ml-4 inline-block text-sm font-semibold text-[#7a1731]"
+                        href={`/app/labs/${slug}/resources/${resource.id}/documents`}
+                      >
+                        Documentos
                       </Link>
                     ) : null}
                     {resourceCatalog.canManage ? (

@@ -18,3 +18,5 @@ export * from "@/modules/usage/infrastructure/usage-schema";
 export * from "@/modules/incidents/infrastructure/incident-schema";
 
 export * from "@/modules/maintenance/infrastructure/maintenance-schema";
+
+export * from "@/modules/documents/infrastructure/document-schema";
