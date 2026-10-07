@@ -350,6 +350,13 @@ test("the web adapter converts inclusive local dates and sets download headers",
     );
   const page = await adapter.page("lab");
   assert.deepEqual(page.defaults, { from: "2026-09-08", to: "2026-10-07" });
+  // Sections narrow the catalog without widening permissions.
+  assert.deepEqual(
+    (await adapter.page("lab", ["inventory-stock", "loans"])).reports.map(
+      (r) => r.key,
+    ),
+    ["inventory-stock"],
+  );
   const pdf = await adapter.download(
     "lab",
     "inventory-stock",

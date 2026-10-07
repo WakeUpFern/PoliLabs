@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReportDownloads } from "../reports/report-downloads";
 import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { LoanError } from "@/modules/loans/domain/loans";
@@ -55,6 +56,7 @@ export default async function LoansPage({
               Vencidos
             </Link>
           </nav>
+          <ReportDownloads slug={slug} reports={["loans"]} />
           <div className="mt-4 space-y-3">
             {data.laboratory.map((loan) => (
               <LoanCard

@@ -97,6 +97,21 @@ test("an inventory reader exports stock as CSV and PDF", async ({
   await context.close();
 });
 
+test("the inventory section offers its own exports", async ({
+  browser,
+}, testInfo) => {
+  const { context, page } = await openAs(browser, testInfo, lab.users.keeper);
+  await page.goto(`/app/labs/${lab.slug}/inventory`);
+  await page.getByText("Exportar CSV / PDF").click();
+  await expect(page.getByRole("region")).toHaveCount(2);
+  const csv = await download(page, "Stock actual de inventario", "CSV");
+  expect(csv.bytes.toString("utf8")).toContain(
+    "Pinzas e2e,Herramienta reutilizable,piezas,,5.000,0.000,5.000",
+  );
+  await expectNoHorizontalOverflow(page);
+  await context.close();
+});
+
 test("an invalid period returns to the form without exporting", async ({
   browser,
 }, testInfo) => {

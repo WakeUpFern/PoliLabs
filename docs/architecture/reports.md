@@ -40,6 +40,7 @@ El adaptador abre una transacción REPEATABLE READ, ejecuta `authorizeLocked` y 
 - **`/app/labs/[slug]/reports`**: una tarjeta por reporte permitido, con fechas Desde/Hasta (por defecto los últimos 30 días locales) cuando aplica y botones «Descargar CSV» y «Descargar PDF». Formulario GET nativo, sin JavaScript de cliente. Muestra el motivo si una descarga anterior se rechazó.
 - **`/app/labs/[slug]/reports/[report]`**: route handler de descarga (`attachment; filename="<reporte>-<fecha>.<csv|pdf>"`, `no-store`, `nosniff`, `same-origin`). Periodo inválido o reporte demasiado grande → 303 al formulario con `error`; sin permiso, laboratorio ajeno o reporte desconocido → 404.
 - **Ficha del laboratorio**: enlace «Reportes» si el catálogo no está vacío.
+- **Secciones**: Inventario (stock y movimientos), Préstamos (en «Préstamos del laboratorio»), Mantenimiento (atención y bitácora) e Incidencias (sólo en «Reportes del laboratorio») incluyen un panel plegable «Exportar CSV / PDF» con los mismos formularios (`ReportDownloads` → `ReportForm`) y la misma ruta de descarga. Sólo aparece si el usuario tiene el permiso de alguno de esos reportes. Un periodo inválido regresa a la página central con el motivo. Decisión del responsable del 7 de octubre de 2026: ofrecer ambos accesos.
 
 ## Despliegue
 

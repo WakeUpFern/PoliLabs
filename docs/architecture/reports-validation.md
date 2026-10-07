@@ -9,8 +9,8 @@ Fecha: 7 de octubre de 2026. Node.js 24.21.0, pnpm 11.19.0 y lockfile actualizad
 | `pnpm check`                              | Correcto: ESLint, TypeScript, 78 pruebas unitarias/configuración (67 previas + 11) y Prettier.      |
 | `pnpm test:integration`                   | Correcto: 168 resultados, cero fallos, PostgreSQL real en la base `_test` (162 previos + 6 nuevos). |
 | `pnpm build`                              | Correcto; incluye `/app/labs/[slug]/reports` y `/app/labs/[slug]/reports/[report]`.                 |
-| `pnpm test:e2e tests/e2e/reports.spec.ts` | Correcto: 6 pruebas (3 escenarios × escritorio y móvil).                                            |
-| `pnpm test:e2e`                           | Correcto: 30 pruebas; la ficha del laboratorio modificada no rompe Maintenance, Documents ni Loans. |
+| `pnpm test:e2e tests/e2e/reports.spec.ts` | Correcto: 8 pruebas (4 escenarios × escritorio y móvil).                                            |
+| `pnpm test:e2e`                           | Correcto: 32 pruebas; ficha y secciones modificadas no rompen Maintenance, Documents ni Loans.      |
 
 Además se generó y revisó visualmente un PDF de préstamos con 40 filas y 14 columnas: paginación (4 páginas), encabezado repetido, acentos, alineación numérica y ajuste de texto correctos.
 
@@ -37,7 +37,7 @@ Integración (`tests/integration/reports.test.ts`, PostgreSQL):
 - Otro laboratorio sólo ve sus propias filas.
 - Un miembro sin permisos de lectura obtiene catálogo vacío y `AuthorizationDeniedError`.
 
-End-to-end (`tests/e2e/reports.spec.ts`): enlace desde la ficha, catálogo limitado a los reportes de `inventory.read`, descarga CSV con contenido exacto (incluida una celda con coma y comillas), descarga PDF válida, periodo invertido que regresa con alerta accesible, y 404 en página y descarga para un miembro sin permisos. Sin desbordamiento horizontal en móvil.
+End-to-end (`tests/e2e/reports.spec.ts`): enlace desde la ficha, catálogo limitado a los reportes de `inventory.read`, descarga CSV con contenido exacto (incluida una celda con coma y comillas), descarga PDF válida, descarga desde el panel «Exportar CSV / PDF» de Inventario, periodo invertido que regresa con alerta accesible, y 404 en página y descarga para un miembro sin permisos. Sin desbordamiento horizontal en móvil.
 
 ## Limitaciones conocidas
 

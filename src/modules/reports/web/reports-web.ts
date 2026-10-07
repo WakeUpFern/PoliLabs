@@ -11,6 +11,7 @@ import {
   ReportError,
   reportFileName,
   reportFormat,
+  type ReportKey,
   type ReportTable,
 } from "../domain/reports";
 
@@ -56,10 +57,11 @@ export class ReportsWeb {
     });
     return { actorUserId, laboratoryId: lab.id };
   }
-  async page(slug: string) {
-    const reports = await this.services.reports.catalog(
-      await this.context(slug),
-    );
+  // Allowed reports, optionally narrowed to the ones a section offers.
+  async page(slug: string, only?: readonly ReportKey[]) {
+    const reports = (
+      await this.services.reports.catalog(await this.context(slug))
+    ).filter((report) => !only || only.includes(report.key));
     const today = reportDate(this.services.clock?.() ?? new Date());
     return { reports, defaults: { from: addDays(today, -29), to: today } };
   }

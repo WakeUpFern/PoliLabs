@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReportDownloads } from "../reports/report-downloads";
 import { maintenanceWeb } from "@/modules/maintenance/web/services";
 import { formatAcademicTime } from "@/modules/academic/web/time";
 import { maintenancePageData } from "./page-data";
@@ -21,6 +22,10 @@ export default async function MaintenancePage({
         mantenimiento o fuera de servicio no se ofrece para nuevas reservaciones
         ni usos.
       </p>
+      <ReportDownloads
+        slug={slug}
+        reports={["resource-attention", "maintenance"]}
+      />
       <div className="mt-6 space-y-4">
         {resources.map((r) => (
           <article
