@@ -18,7 +18,7 @@ Cada cambio persiste `academic_events` con actor autenticado, origen WEB/API/AGE
 
 ## Política inicial de implementación
 
-Las decisiones concretas que el SRS deja abiertas siguen **Propuestas** en [ADR 0011](../decisions/0011-academic-sessions.md), sin presentarlas como política institucional aceptada:
+Las decisiones concretas que el SRS deja abiertas están **Aceptadas** en [ADR 0011](../decisions/0011-academic-sessions.md), mediante aprobación explícita del responsable el 6 de octubre de 2026. Son políticas del proyecto para Academic I, no requisitos institucionales adicionales del SRS:
 
 - `academic.read`: prácticas publicadas; sesiones propias por participación. `academic.manage`: acceso a borradores, prácticas cerradas y listas de participantes; escritura académica. La migración incorpora ambos al rol inicial `laboratory_responsible`, siguiendo el bootstrap vigente. No se inventan roles profesor/alumno ni se modifica delegación. Las cuentas de alumno necesitan una membresía con `laboratory.read` y `academic.read` asignados por la administración autorizada.
 - El responsable docente debe ser usuario y miembro activo con `academic.manage`. Esto representa elegibilidad administrativa de este corte, no acredita condición institucional de profesor.

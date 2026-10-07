@@ -2,7 +2,7 @@
 
 ## Alcance y modelo
 
-Incidents I fue autorizado el 7 de octubre de 2026 tras Attendance I y Usage I. Reportar, clasificar, seguir y resolver anomalías del mismo laboratorio, dentro o fuera de clase. SRS RF28–29, §16 y RB11–12. Las decisiones concretas restantes se documentan como Propuesta en [ADR 0014](../decisions/0014-operational-incidents.md); ADR 0012/0013 permanecen Aceptadas.
+Incidents I fue autorizado el 7 de octubre de 2026 tras Attendance I y Usage I. Reportar, clasificar, seguir y resolver anomalías del mismo laboratorio, dentro o fuera de clase. SRS RF28–29, §16 y RB11–12. Las decisiones concretas están Aceptadas en [ADR 0014](../decisions/0014-operational-incidents.md) mediante aprobación explícita del responsable el 7 de octubre de 2026, junto con ADR 0012/0013.
 
 `incident_reports`: Laboratory, targetKind, Space contextual obligatorio, Resource o LabSession según objetivo, Usage opcional, autor, descripción, severidad, estado, snapshot espacial, resolución, versión y fechas. Resource/Space/Session son los tres objetivos posibles; no se duplican incidencias por procedencia académica o reservación. FK Space–Laboratory, Resource–Space, Session–Space y Usage–Resource–Space protegen redundancias. El laboratorio no procede de una ubicación opcional.
 

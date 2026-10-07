@@ -111,7 +111,7 @@ Inventory I fue seleccionado explícitamente e implementa el flujo aprobado de c
 
 ## Academic I seleccionado e implementado
 
-El responsable seleccionó Academic I como siguiente flujo tras Inventory I: prácticas, sesiones y participantes previstos. Incluye dominio, servicios autorizados, relaciones del mismo laboratorio protegidas por PostgreSQL, eventos transaccionales y UI. Ver [alcance y validación](academic.md) y [ADR 0011 (Propuesta)](../decisions/0011-academic-sessions.md) para las políticas concretas pendientes de revisión. Attendance I y Usage I se implementan posteriormente como módulos separados; su alcance se documenta más abajo. Sesión, reservación, asistencia y uso real conservan significados distintos.
+El responsable seleccionó Academic I como siguiente flujo tras Inventory I: prácticas, sesiones y participantes previstos. Incluye dominio, servicios autorizados, relaciones del mismo laboratorio protegidas por PostgreSQL, eventos transaccionales y UI. Ver [alcance y validación](academic.md) y [ADR 0011 (Aceptada)](../decisions/0011-academic-sessions.md) para las políticas concretas aprobadas explícitamente el 6 de octubre de 2026. El responsable seleccionó posteriormente Attendance I y después Usage I; ambos se documentan por separado. Sesión, reservación, asistencia y uso real conservan significados distintos.
 
 ## Attendance I y Usage I
 
@@ -119,4 +119,4 @@ Attendance I completa la constancia académica con deep-link estable de Location
 
 ## Incidents I
 
-Reportes sobre Resource, Space o LabSession, con Usage propio opcional y contexto espacial conservado al reportar. Seguimiento open → in_review → resolved, notas/eventos y consulta autorizada de usos previos sin atribuir responsabilidad. No requiere clase o reservación ni produce bloqueos o mantenimiento. Ver [arquitectura](incidents.md), [validación](incidents-validation.md) y [ADR 0014 — Propuesta](../decisions/0014-operational-incidents.md).
+Reportes sobre Resource, Space o LabSession, con Usage propio opcional y contexto espacial conservado al reportar. Seguimiento open → in_review → resolved, notas/eventos y consulta autorizada de usos previos sin atribuir responsabilidad. No requiere clase o reservación ni produce bloqueos o mantenimiento. Ver [arquitectura](incidents.md), [validación](incidents-validation.md) y [ADR 0014 — Aceptada](../decisions/0014-operational-incidents.md).
