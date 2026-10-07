@@ -262,6 +262,7 @@ export class DrizzleInventoryStore implements InventoryStore {
           "immutable-unit",
           "inactive",
           "tool-consumption",
+          "loaned-stock",
         ] as const;
         throw new InventoryError(
           known.find((value) => pg.message?.includes(value)) ?? "input",

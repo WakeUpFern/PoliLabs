@@ -152,6 +152,13 @@ export async function operationFixture() {
       if (items.length) {
         // Inventory history may only disappear together with its synthetic item.
         const itemIds = items.map((i) => i.id);
+        // Loan returns reference damage/loss movements; remove loans first.
+        await tx
+          .delete(schema.inventoryLoanReturns)
+          .where(inArray(schema.inventoryLoanReturns.laboratoryId, labIds));
+        await tx
+          .delete(schema.inventoryLoans)
+          .where(inArray(schema.inventoryLoans.laboratoryId, labIds));
         await tx
           .delete(schema.inventoryMovements)
           .where(inArray(schema.inventoryMovements.itemId, itemIds));

@@ -110,11 +110,12 @@ Rutas: `/app/labs/[slug]/inventory`, `/inventory/new` y `/inventory/[itemId]` de
 ```bash
 pnpm check
 pnpm test:integration
+pnpm test:e2e
 pnpm build
 pnpm start
 ```
 
-`check` agrupa ESLint, TypeScript, pruebas unitarias con `node:test`/`tsx` y revisión de formato. `pnpm test:integration` crea o reutiliza una base PostgreSQL local separada, aplica las migraciones y verifica autenticación, bootstrap, restricciones y aislamiento entre laboratorios. `pnpm format` aplica Prettier, excluyendo el SRS original. `pnpm build` genera la aplicación de producción; `pnpm start` la sirve después de compilar.
+`check` agrupa ESLint, TypeScript, pruebas unitarias con `node:test`/`tsx` y revisión de formato. `pnpm test:integration` crea o reutiliza una base PostgreSQL local separada, aplica las migraciones y verifica autenticación, bootstrap, restricciones y aislamiento entre laboratorios. `pnpm test:e2e` compila la app, la levanta contra la misma base separada y ejecuta las pruebas end-to-end de Playwright en escritorio y móvil; requiere una vez `pnpm exec playwright install chromium`. Ver [pruebas end-to-end](docs/architecture/e2e.md). `pnpm format` aplica Prettier, excluyendo el SRS original. `pnpm build` genera la aplicación de producción; `pnpm start` la sirve después de compilar.
 
 Las dependencias se declaran en `package.json`; `pnpm-lock.yaml` fija las versiones exactas resueltas. `pnpm-workspace.yaml` permite los scripts de instalación de esbuild y unrs-resolver, usados por las herramientas. TypeScript 5.9 se mantiene dentro de la rama compatible de las herramientas de lint elegidas; actualizarlo requiere verificar sus peer dependencies.
 

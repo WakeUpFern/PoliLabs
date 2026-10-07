@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
 import { maintenanceWeb } from "@/modules/maintenance/web/services";
+import { loansWeb } from "@/modules/loans/web/services";
 import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { LogoutButton } from "@/app/_components/logout-button";
@@ -35,9 +36,10 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
     throw error;
   }
 
-  const [incidentAccess, maintenanceAccess] = await Promise.all([
+  const [incidentAccess, maintenanceAccess, loanAccess] = await Promise.all([
     incidentsWeb.access(slug),
     maintenanceWeb.access(slug),
+    loansWeb.access(slug),
   ]);
   return (
     <div>
@@ -149,6 +151,14 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
               className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
             >
               Mantenimiento
+            </Link>
+          ) : null}
+          {loanAccess.canManage || loanAccess.canReadOwn ? (
+            <Link
+              href={`/app/labs/${slug}/loans`}
+              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
+            >
+              Préstamos
             </Link>
           ) : null}
         </div>

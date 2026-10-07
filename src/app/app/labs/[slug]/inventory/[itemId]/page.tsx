@@ -10,6 +10,7 @@ import {
   locationLabel,
 } from "@/modules/inventory/web/inventory-web";
 import { InventoryForm } from "../inventory-form";
+import { ItemLoans } from "../../loans/item-loans";
 export default async function InventoryDetailPage({
   params,
   searchParams,
@@ -61,11 +62,11 @@ export default async function InventoryDetailPage({
         <p className="mt-4">{locationLabel(item, data.locations)}</p>
         {item.type === "reusable_tool" && (
           <p className="mt-3 text-sm text-white/80">
-            Cantidad total registrada. Los préstamos y su disponibilidad se
-            incorporarán en otro incremento.
+            Cantidad total registrada, incluidas las piezas prestadas.
           </p>
         )}
       </section>
+      <ItemLoans slug={slug} itemId={item.id} />
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         {item.isActive && data.canAdjust && (
           <section className="rounded-2xl border border-stone-200 bg-white p-6">

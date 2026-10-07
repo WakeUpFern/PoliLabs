@@ -74,7 +74,9 @@ export function inventoryActionError(error: unknown): InventoryActionState {
       inactive:
         "El artículo está desactivado y conserva únicamente su historial.",
       "tool-consumption":
-        "Una herramienta reutilizable no admite consumo. Los préstamos y sus devoluciones se incorporarán posteriormente.",
+        "Una herramienta reutilizable no admite consumo. Registra un préstamo y su devolución desde el detalle del artículo.",
+      "loaned-stock":
+        "La existencia no puede quedar por debajo de las unidades prestadas. Registra primero la devolución (con daño o pérdida si corresponde).",
     };
     return { status: "error", message: messages[error.code] };
   }

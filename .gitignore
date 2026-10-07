@@ -7,3 +7,8 @@ coverage/
 *.tsbuildinfo
 .pnpm-store/
 .local-storage/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/

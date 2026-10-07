@@ -17,9 +17,11 @@ function quoteIdentifier(identifier: string) {
   return `"${identifier}"`;
 }
 
-async function prepare() {
-  const configuredUrl = process.env.TEST_DATABASE_URL;
-  const sourceUrl = new URL(readDatabaseUrl(process.env));
+// Synchronous so Playwright's config can point its web server at the same
+// guarded database. Never returns the development database.
+export function resolveTestDatabaseUrl(env = process.env) {
+  const configuredUrl = env.TEST_DATABASE_URL;
+  const sourceUrl = new URL(readDatabaseUrl(env));
   const testUrl = configuredUrl
     ? new URL(readDatabaseUrl({ DATABASE_URL: configuredUrl }))
     : new URL(sourceUrl);
@@ -36,6 +38,12 @@ async function prepare() {
       "Integration tests require a separate database whose name ends with _test.",
     );
   }
+  return { sourceUrl, testUrl };
+}
+
+async function prepare() {
+  const { sourceUrl, testUrl } = resolveTestDatabaseUrl();
+  const databaseName = testUrl.pathname.slice(1);
 
   const administrationUrl = new URL(sourceUrl);
   administrationUrl.pathname = "/postgres";

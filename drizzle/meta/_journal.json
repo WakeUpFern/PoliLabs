@@ -85,6 +85,13 @@
       "when": 1791396127987,
       "tag": "0011_documents_i",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791398048260,
+      "tag": "0012_loans_i",
+      "breakpoints": true
     }
   ]
 }
