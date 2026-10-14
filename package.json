@@ -24,7 +24,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:check": "tsx scripts/check-database.ts",
-    "documents:sweep": "tsx scripts/documents-sweep.ts"
+    "documents:sweep": "tsx scripts/documents-sweep.ts",
+    "notifications:dispatch": "tsx scripts/notifications-dispatch.ts"
   },
   "dependencies": {
     "@next/env": "16.3.6",

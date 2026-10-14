@@ -134,6 +134,25 @@ export async function operationFixture() {
   }
   async function cleanup() {
     await db.transaction(async (tx) => {
+      // Notifications reference users and laboratories; remove them first.
+      const sent = await tx
+        .select({ id: schema.notifications.id })
+        .from(schema.notifications)
+        .where(inArray(schema.notifications.laboratoryId, labIds));
+      if (sent.length) {
+        await tx.delete(schema.notificationDeliveries).where(
+          inArray(
+            schema.notificationDeliveries.notificationId,
+            sent.map((n) => n.id),
+          ),
+        );
+        await tx.delete(schema.notifications).where(
+          inArray(
+            schema.notifications.id,
+            sent.map((n) => n.id),
+          ),
+        );
+      }
       // Documents reference maintenance logs and resources; remove them first.
       await tx
         .delete(schema.documents)

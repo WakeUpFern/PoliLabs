@@ -22,3 +22,5 @@ export * from "@/modules/maintenance/infrastructure/maintenance-schema";
 export * from "@/modules/documents/infrastructure/document-schema";
 
 export * from "@/modules/loans/infrastructure/loan-schema";
+
+export * from "@/modules/notifications/infrastructure/notification-schema";

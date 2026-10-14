@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { LogoutButton } from "@/app/_components/logout-button";
+import { notificationsWeb } from "@/modules/notifications/web/services";
 
 export default async function ProtectedAppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const actor = await requireCurrentActor();
+  const unread = await notificationsWeb.unreadCount();
 
   return (
     <div className="min-h-screen bg-[#f6f3ee] text-stone-950">
@@ -37,7 +39,7 @@ export default async function ProtectedAppLayout({
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-6xl gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[13rem_minmax(0,1fr)] lg:py-10">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[13rem_minmax(0,1fr)] lg:py-10">
         <nav
           aria-label="Navegación principal"
           className="lg:sticky lg:top-8 lg:self-start"
@@ -48,6 +50,18 @@ export default async function ProtectedAppLayout({
               className="whitespace-nowrap rounded-xl bg-white px-4 py-3 text-sm font-semibold text-stone-800 shadow-sm ring-1 ring-stone-200 transition hover:ring-stone-300"
             >
               Mis laboratorios
+            </Link>
+            <Link
+              href="/app/notifications"
+              className="flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-3 text-sm font-medium text-stone-600 transition hover:bg-white hover:text-stone-950"
+            >
+              Notificaciones
+              {unread > 0 ? (
+                <span className="rounded-full bg-[#7a1731] px-2 py-0.5 text-xs font-bold text-white">
+                  {unread > 99 ? "99+" : unread}
+                  <span className="sr-only"> sin leer</span>
+                </span>
+              ) : null}
             </Link>
             <Link
               href="/app/account/security"

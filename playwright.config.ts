@@ -1,7 +1,10 @@
 import { loadEnvConfig } from "@next/env";
 import { defineConfig, devices } from "@playwright/test";
 import { resolveTestDatabaseUrl } from "./tests/integration/database";
-import { E2E_DOCUMENT_STORAGE_DIR } from "./tests/e2e/support/constants";
+import {
+  E2E_DOCUMENT_STORAGE_DIR,
+  E2E_EMAIL_OUTBOX_DIR,
+} from "./tests/e2e/support/constants";
 
 loadEnvConfig(process.cwd());
 
@@ -47,6 +50,8 @@ export default defineConfig({
       DATABASE_URL: testUrl.toString(),
       BETTER_AUTH_URL: baseURL,
       DOCUMENT_STORAGE_DIR: E2E_DOCUMENT_STORAGE_DIR,
+      EMAIL_TRANSPORT: "file",
+      EMAIL_OUTBOX_DIR: E2E_EMAIL_OUTBOX_DIR,
     },
   },
 });

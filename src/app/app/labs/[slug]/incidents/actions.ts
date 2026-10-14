@@ -1,5 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { dispatchPendingNotifications } from "@/modules/notifications/infrastructure/services";
 import { incidentsWeb } from "@/modules/incidents/web/services";
 import {
   incidentActionError,
@@ -13,7 +15,9 @@ export async function incidentAction(
 ): Promise<IncidentActionState> {
   try {
     const row = await incidentsWeb.submit(slug, operation, form);
-    revalidatePath(`/app/labs/${slug}`, "layout");
+    // Email leaves only after the response; the outbox row is already committed.
+    after(dispatchPendingNotifications);
+    revalidatePath("/app", "layout");
     return {
       status: "success",
       message:
