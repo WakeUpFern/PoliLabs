@@ -271,6 +271,19 @@ export async function operationFixture() {
       await tx
         .delete(schema.practices)
         .where(inArray(schema.practices.laboratoryId, labIds));
+      // Floor plan elements reference resources and locations.
+      await tx.delete(schema.floorPlanElements).where(
+        inArray(
+          schema.floorPlanElements.spaceId,
+          spaceRows.map((r) => r.id),
+        ),
+      );
+      await tx.delete(schema.floorPlans).where(
+        inArray(
+          schema.floorPlans.spaceId,
+          spaceRows.map((r) => r.id),
+        ),
+      );
       await tx.delete(schema.resources).where(
         inArray(
           schema.resources.id,

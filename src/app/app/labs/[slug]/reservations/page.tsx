@@ -41,14 +41,22 @@ export default async function ReservationsPage({
             America/Mexico_City.
           </p>
         </div>
-        {data.canCreate && (
+        <div className="flex flex-wrap gap-3">
           <Link
-            href={`/app/labs/${slug}/reservations/new`}
-            className="rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white"
+            href={`/app/labs/${slug}/reservations/calendar`}
+            className="rounded-xl border border-[#7a1731] px-5 py-3 font-semibold text-[#7a1731]"
           >
-            Nueva reservación
+            Calendario
           </Link>
-        )}
+          {data.canCreate && (
+            <Link
+              href={`/app/labs/${slug}/reservations/new`}
+              className="rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white"
+            >
+              Nueva reservación
+            </Link>
+          )}
+        </div>
       </div>
       {data.reservations.length === 0 ? (
         <p className="mt-8 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-8 text-stone-600">

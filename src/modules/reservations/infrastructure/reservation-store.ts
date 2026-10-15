@@ -21,6 +21,7 @@ import {
 } from "@/modules/spatial/infrastructure/spatial-schema";
 import {
   conflicts,
+  occupancyEntry,
   requireCancellable,
   requireFutureStart,
   ReservationConflictError,
@@ -28,6 +29,7 @@ import {
   ReservationNotFoundError,
   ReservationTargetError,
   type Reservation,
+  type ReservationInterval,
 } from "../domain/reservation";
 import type {
   ActorContext,
@@ -202,6 +204,36 @@ class DrizzleReservationSession implements ReservationSession {
       .where(eq(reservations.id, locked.id))
       .returning();
     return { ...row, resourceIds: locked.resourceIds };
+  }
+
+  async listOccupancy(
+    input: ActorContext & { spaceId: string } & ReservationInterval,
+  ) {
+    const [space] = await this.transaction
+      .select({ id: spaces.id })
+      .from(spaces)
+      .where(
+        and(
+          eq(spaces.id, input.spaceId),
+          eq(spaces.laboratoryId, input.laboratoryId),
+          eq(spaces.isActive, true),
+        ),
+      );
+    if (!space) throw new ReservationTargetError();
+    const rows = await this.transaction
+      .select()
+      .from(reservations)
+      .where(
+        and(
+          eq(reservations.spaceId, input.spaceId),
+          eq(reservations.status, "confirmed"),
+          sql`${reservations.startsAt} < ${input.endsAt} and ${reservations.endsAt} > ${input.startsAt}`,
+        ),
+      )
+      .orderBy(asc(reservations.startsAt), asc(reservations.id));
+    return (await this.hydrate(rows)).map((reservation) =>
+      occupancyEntry(reservation, input.actorUserId),
+    );
   }
 }
 

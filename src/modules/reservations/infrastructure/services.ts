@@ -6,6 +6,7 @@ import {
   CreateReservation,
   GetReservation,
   ListMyReservations,
+  ListSpaceOccupancy,
 } from "../application/reservations";
 import { DrizzleReservationStore } from "./reservation-store";
 const store = new DrizzleReservationStore(getDatabase());
@@ -14,3 +15,4 @@ export const createReservation = new CreateReservation(store);
 export const getReservation = new GetReservation(store);
 export const listMyReservations = new ListMyReservations(store);
 export const cancelReservation = new CancelReservation(store);
+export const listSpaceOccupancy = new ListSpaceOccupancy(store);

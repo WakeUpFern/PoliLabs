@@ -4,12 +4,18 @@ import { AuthorizationDeniedError } from "@/modules/identity/domain/access-error
 import { reservationWeb } from "@/modules/reservations/web/services";
 import { reservationFormAction } from "../actions";
 import { ReservationForm } from "../reservation-form";
+const LOCAL = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+const text = (value: string | string[] | undefined) =>
+  typeof value === "string" ? value : "";
+
 export default async function NewReservationPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { slug } = await params;
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
   let data;
   try {
     data = await reservationWeb.newForm(slug);
@@ -17,6 +23,21 @@ export default async function NewReservationPage({
     if (error instanceof AuthorizationDeniedError) notFound();
     throw error;
   }
+  // Prefill from the floor plan or calendar; the form still sends everything
+  // through the same availability and creation services.
+  const space = data.spaces.find((space) => space.id === text(query.space));
+  const resource = space?.resources.find(
+    (resource) => resource.id === text(query.resource) && resource.available,
+  );
+  const initial = space
+    ? {
+        spaceId: space.id,
+        mode: resource ? "resources" : "space",
+        resourceIds: resource ? [resource.id] : [],
+        startsLocal: LOCAL.test(text(query.start)) ? text(query.start) : "",
+        endsLocal: LOCAL.test(text(query.end)) ? text(query.end) : "",
+      }
+    : undefined;
   return (
     <div>
       <Link
@@ -34,6 +55,7 @@ export default async function NewReservationPage({
           <ReservationForm
             spaces={data.spaces}
             canCreate={data.canCreate}
+            initial={initial}
             action={reservationFormAction.bind(null, slug)}
           />
         ) : (

@@ -1,6 +1,6 @@
 # spatial
 
-Estado: Spatial I y Spatial II implementados.
+Estado: Spatial I, II y III implementados.
 
 Espacios, planos, ubicaciones jerárquicas y recursos físicos (SRS §12). Space puede ser reservable; Location organiza la posición física; Resource aporta identidad individual.
 
@@ -16,4 +16,6 @@ El dominio mantiene reglas puras; los servicios de aplicación coordinan autoriz
 
 Los casos de uso permiten listar, crear, editar, mover y desactivar con `location.read`, `location.manage`, `resource.read` y `resource.manage`. Una ubicación con hijos o recursos activos no se desactiva en cascada.
 
-Quedan fuera clasificación y reservabilidad, planos, coordenadas, horarios, disponibilidad, reservaciones y la relación definitiva entre `Resource`, activos e inventario.
+Spatial III añade planos (`FloorPlanService`); ver [planos y calendario](../../../docs/architecture/floor-plans-calendar.md).
+
+Quedan fuera clasificación y reservabilidad, horarios, disponibilidad, reservaciones y la relación definitiva entre `Resource`, activos e inventario.

@@ -15,6 +15,7 @@ import {
   listMyReservations,
   getReservation,
   cancelReservation,
+  listSpaceOccupancy,
 } from "../infrastructure/services";
 import { ReservationWeb } from "./reservation-web";
 export const reservationWeb = new ReservationWeb({
@@ -31,4 +32,5 @@ export const reservationWeb = new ReservationWeb({
   list: listMyReservations,
   get: getReservation,
   cancel: cancelReservation,
+  occupancy: listSpaceOccupancy,
 });

@@ -264,6 +264,12 @@ async function removeLaboratory(
             .where(inArray(s.reservations.id, reservationIds));
         }
         await tx
+          .delete(s.floorPlanElements)
+          .where(inArray(s.floorPlanElements.spaceId, spaceIds));
+        await tx
+          .delete(s.floorPlans)
+          .where(inArray(s.floorPlans.spaceId, spaceIds));
+        await tx
           .delete(s.resources)
           .where(inArray(s.resources.spaceId, spaceIds));
         await tx

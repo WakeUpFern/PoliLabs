@@ -1,8 +1,10 @@
 import type { ReservationTarget, IntervalInput } from "../domain/reservation";
 import {
   normalizeInterval,
+  normalizeOccupancyWindow,
   normalizeTarget,
   ReservationNotFoundError,
+  ReservationTargetError,
 } from "../domain/reservation";
 import { isSpatialId } from "@/modules/spatial/domain/spatial-id";
 import type { ActorContext, ReservationStore } from "./reservation-store";
@@ -57,6 +59,23 @@ export class CancelReservation {
     if (!isSpatialId(input.reservationId)) throw new ReservationNotFoundError();
     return this.store.run(input, "reservation.cancel", (session) =>
       session.cancel(input),
+    );
+  }
+}
+// Confirmed reservations of one Space overlapping a bounded window, for
+// calendars and floor plans. Same permission as availability (ADR 0020).
+export class ListSpaceOccupancy {
+  constructor(private readonly store: ReservationStore) {}
+  execute(input: ActorContext & { spaceId: string } & IntervalInput) {
+    if (!isSpatialId(input.spaceId)) throw new ReservationTargetError();
+    const window = normalizeOccupancyWindow(input);
+    return this.store.run(input, "reservation.read", (session) =>
+      session.listOccupancy({
+        actorUserId: input.actorUserId,
+        laboratoryId: input.laboratoryId,
+        spaceId: input.spaceId.toLowerCase(),
+        ...window,
+      }),
     );
   }
 }

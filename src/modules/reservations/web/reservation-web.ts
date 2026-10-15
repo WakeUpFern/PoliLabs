@@ -10,6 +10,7 @@ import type {
   GetReservation,
   ListMyReservations,
   CancelReservation,
+  ListSpaceOccupancy,
 } from "../application/reservations";
 import {
   ReservationInputError,
@@ -17,9 +18,19 @@ import {
   ReservationConflictError,
   ReservationNotFoundError,
   ReservationCancellationError,
+  resourceOccupancy,
+  type OccupancyEntry,
   type Reservation,
+  type ResourceOccupancyStatus,
 } from "../domain/reservation";
 import { localToInstant } from "./time";
+import {
+  calendarDays,
+  calendarWindow,
+  localDate,
+  parseCalendarQuery,
+  shiftCalendarDate,
+} from "./calendar";
 import {
   reservationFormFingerprint,
   type ReservationActionState,
@@ -37,6 +48,7 @@ type Services = {
   list: Pick<ListMyReservations, "execute">;
   get: Pick<GetReservation, "execute">;
   cancel: Pick<CancelReservation, "execute">;
+  occupancy: Pick<ListSpaceOccupancy, "execute">;
 };
 export type ReservationSpaceOption = {
   id: string;
@@ -60,6 +72,21 @@ export type ReservationView = Omit<
   spaceName: string;
   resources: { id: string; name: string; location: string | null }[];
 };
+export type OccupancyView = {
+  reservationId: string | null;
+  isMine: boolean;
+  isExclusive: boolean;
+  startsAt: string;
+  endsAt: string;
+  target: string;
+};
+export type CalendarQuery = {
+  space?: unknown;
+  resource?: unknown;
+  view?: unknown;
+  date?: unknown;
+};
+
 export function reservationActionError(error: unknown): ReservationActionState {
   if (error instanceof ReservationConflictError)
     return {
@@ -223,6 +250,124 @@ export class ReservationWeb {
       now: Date.now(),
       canCancel: grant.permissionKeys.includes("reservation.cancel"),
       reservation: this.view(reservation, catalog),
+    };
+  }
+  private occupancyView(
+    entry: OccupancyEntry,
+    space: ReservationSpaceOption,
+  ): OccupancyView {
+    const names = entry.resourceIds.map(
+      (id) =>
+        space.resources.find((resource) => resource.id === id)?.name ??
+        "Recurso fuera del catálogo visible",
+    );
+    return {
+      reservationId: entry.reservationId,
+      isMine: entry.isMine,
+      isExclusive: entry.isExclusive,
+      startsAt: entry.startsAt.toISOString(),
+      endsAt: entry.endsAt.toISOString(),
+      target: entry.isExclusive ? "Espacio completo" : names.join(", "),
+    };
+  }
+  // Calendar of one Space (optionally one Resource) for a day, week or month.
+  async calendar(slug: string, query: CalendarQuery) {
+    const { actor, laboratory } = await this.context(slug);
+    const grant = await this.services.authorization.authorize({
+      ...actor,
+      requiredPermission: "reservation.read",
+    });
+    const now = new Date();
+    const { view, date } = parseCalendarQuery(query, now);
+    const spaces = await this.displayCatalog(actor);
+    const space = spaces.find((space) => space.id === query.space) ?? spaces[0];
+    const resource =
+      space?.resources.find((resource) => resource.id === query.resource) ??
+      null;
+    const days = calendarDays(view, date);
+    const entries = space
+      ? await this.services.occupancy.execute({
+          ...actor,
+          spaceId: space.id,
+          ...calendarWindow(days),
+        })
+      : [];
+    return {
+      laboratory,
+      canCreate: grant.permissionKeys.includes("reservation.create"),
+      spaces,
+      space: space ?? null,
+      resource,
+      view,
+      date,
+      today: localDate(now),
+      previous: shiftCalendarDate(view, date, -1),
+      next: shiftCalendarDate(view, date, 1),
+      days,
+      entries: space
+        ? entries
+            .filter(
+              (entry) =>
+                !resource ||
+                entry.isExclusive ||
+                entry.resourceIds.includes(resource.id),
+            )
+            .map((entry) => this.occupancyView(entry, space))
+        : [],
+    };
+  }
+  // Occupancy of a Space for one interval, for its floor plan. Returns null
+  // when the actor cannot read reservations; the plan stays visible.
+  async occupancy(
+    slug: string,
+    spaceId: string,
+    interval: { startsLocal: string; endsLocal: string },
+  ): Promise<{
+    canCreate: boolean;
+    startsAt: string;
+    endsAt: string;
+    entries: OccupancyView[];
+    resources: Record<string, ResourceOccupancyStatus>;
+  } | null> {
+    const { actor } = await this.context(slug);
+    let grant;
+    try {
+      grant = await this.services.authorization.authorize({
+        ...actor,
+        requiredPermission: "reservation.read",
+      });
+    } catch (error) {
+      if (error instanceof AuthorizationDeniedError) return null;
+      throw error;
+    }
+    const startsAt = localToInstant(interval.startsLocal);
+    const endsAt = localToInstant(interval.endsLocal);
+    const space = (await this.displayCatalog(actor)).find(
+      (space) => space.id === spaceId,
+    );
+    if (!space) throw new ReservationTargetError();
+    const entries = await this.services.occupancy.execute({
+      ...actor,
+      spaceId,
+      startsAt,
+      endsAt,
+    });
+    const window = { startsAt: new Date(startsAt), endsAt: new Date(endsAt) };
+    return {
+      canCreate: grant.permissionKeys.includes("reservation.create"),
+      startsAt,
+      endsAt,
+      entries: entries.map((entry) => this.occupancyView(entry, space)),
+      resources: Object.fromEntries(
+        space.resources.map((resource) => [
+          resource.id,
+          resourceOccupancy(
+            { id: resource.id, operational: resource.available },
+            entries,
+            window,
+          ),
+        ]),
+      ),
     };
   }
   async newForm(slug: string) {
