@@ -16,6 +16,7 @@ import {
   sessionParticipants,
 } from "@/modules/academic/infrastructure/academic-schema";
 import { resourceUsage } from "@/modules/usage/infrastructure/usage-schema";
+import { recordNotificationEvent } from "@/modules/notifications/infrastructure/notification-outbox";
 import { incidentReports, incidentEvents } from "./incident-schema";
 import {
   IncidentError,
@@ -286,6 +287,15 @@ class DrizzleIncidentTransaction implements IncidentTransaction {
       snapshot: { after: row },
       createdAt: sql`clock_timestamp()`,
     });
+    await recordNotificationEvent(this.tx, {
+      type: "IncidentReported",
+      laboratoryId: row.laboratoryId,
+      incidentId: row.id,
+      reportedBy: row.reportedBy,
+      severity: row.severity,
+      targetName: snapshot.name,
+      spaceName: snapshot.spaceName,
+    });
     return this.get(row.id, "laboratory");
   }
   private async get(id: string, scope: IncidentScope) {
@@ -390,6 +400,16 @@ class DrizzleIncidentTransaction implements IncidentTransaction {
       snapshot: { before, after: row },
       createdAt: sql`clock_timestamp()`,
     });
+    if (status === "resolved")
+      await recordNotificationEvent(this.tx, {
+        type: "IncidentResolved",
+        laboratoryId: row.laboratoryId,
+        incidentId: id,
+        reportedBy: row.reportedBy,
+        resolvedBy: this.context.actorUserId,
+        targetName: row.targetSnapshot.name,
+        spaceName: row.targetSnapshot.spaceName,
+      });
     return this.get(id, "laboratory");
   }
   async trace(id: string) {

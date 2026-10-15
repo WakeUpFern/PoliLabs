@@ -18,7 +18,7 @@ pnpm exec playwright show-report        # reporte HTML del último run
 ## Aislamiento
 
 - `playwright.config.ts` arranca `pnpm build && pnpm start` en el puerto 3200 (`E2E_PORT`) con `DATABASE_URL` apuntando a la base protegida `_test`, resuelta con la misma regla que la integración (`resolveTestDatabaseUrl`): nunca la base de desarrollo.
-- `DOCUMENT_STORAGE_DIR` usa `.local-storage/e2e-documents`, que se borra al iniciar y al terminar.
+- `DOCUMENT_STORAGE_DIR` usa `.local-storage/e2e-documents` y `EMAIL_OUTBOX_DIR` usa `.local-storage/e2e-email-outbox` (con `EMAIL_TRANSPORT=file`); ambas se borran al iniciar y al terminar.
 - `globalSetup` crea y migra la base `_test` antes de las pruebas.
 - Cada spec siembra su propio laboratorio sintético (`tests/e2e/support/seed.ts`): cuentas `invalid.test`, permisos explícitos por usuario (sin roles institucionales), catálogo e inventario, y lo elimina al final con una sola transacción que sólo toca ese laboratorio. Specs en serie con un worker.
 
@@ -28,12 +28,13 @@ La primera prueba de Maintenance entra por el formulario de login real. Las dem�
 
 ## Cobertura actual
 
-| Spec                  | Flujo                                                                                                                                                         |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `maintenance.spec.ts` | Entrada fuera de servicio con material, existencia insuficiente sin escritura, 404 sin permiso, recurso deshabilitado al reservar y vuelta a operación (RB5). |
-| `documents.spec.ts`   | Subida por route handler, cabeceras de descarga, firma de bytes, origen ajeno, evidencia en bitácora inmutable, archivado y 404 uniformes.                    |
-| `loans.spec.ts`       | Préstamo sin cambio de existencia, devolución con daño y cierre, vista de préstamos propios.                                                                  |
-| `reports.spec.ts`     | Catálogo por permisos, descarga CSV con contenido exacto y PDF válido, panel de exportación en Inventario, periodo inválido con alerta y 404 sin permisos.    |
+| Spec                    | Flujo                                                                                                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `maintenance.spec.ts`   | Entrada fuera de servicio con material, existencia insuficiente sin escritura, 404 sin permiso, recurso deshabilitado al reservar y vuelta a operación (RB5). |
+| `documents.spec.ts`     | Subida por route handler, cabeceras de descarga, firma de bytes, origen ajeno, evidencia en bitácora inmutable, archivado y 404 uniformes.                    |
+| `loans.spec.ts`         | Préstamo sin cambio de existencia, devolución con daño y cierre, vista de préstamos propios.                                                                  |
+| `reports.spec.ts`       | Catálogo por permisos, descarga CSV con contenido exacto y PDF válido, panel de exportación en Inventario, periodo inválido con alerta y 404 sin permisos.    |
+| `notifications.spec.ts` | Incidencia crítica → contador, centro y `.eml` a quien revisa, apertura de la ficha; resolución → aviso y correo a quien reportó; marcar todas como leídas.   |
 
 Todas comprueban ausencia de desbordamiento horizontal donde aplica. Las guías manuales de Academic, Attendance/Usage e Incidents siguen en `tests/e2e/*.md`; migrarlas a specs con `maintenance.spec.ts` como plantilla.
 

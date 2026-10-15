@@ -92,6 +92,13 @@
       "when": 1791398048260,
       "tag": "0012_loans_i",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792012406964,
+      "tag": "0013_notifications_i",
+      "breakpoints": true
     }
   ]
 }

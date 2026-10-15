@@ -1,7 +1,5 @@
 # notifications
 
-Estado: pendiente de implementación; este directorio delimita responsabilidades.
+Notifications I: centro de notificaciones in-app y correo transaccional mediante un outbox en PostgreSQL (SRS §19, §33 criterio 14).
 
-Notificaciones persistentes y entregas por eventos, mediante adaptadores de canales (SRS §19).
-
-Al iniciar el módulo, crear `domain/` para reglas puras y `application/` para casos de uso, autorización, validación y coordinación transaccional. Añadir adaptadores de persistencia solo cuando exista un caso de uso. No importar React, Next.js ni SDK de IA en el dominio.
+Los módulos de negocio llaman `recordNotificationEvent` dentro de su transacción; este módulo resuelve destinatarios, crea notificaciones y entregas pendientes. El envío ocurre después del commit mediante el puerto `EmailSender`. Ver [arquitectura](../../../docs/architecture/notifications.md) y ADR 0019.

@@ -177,6 +177,22 @@ async function removeLaboratory(
   const userIds = Object.values(users).map((u) => u.id);
   try {
     await db.transaction(async (tx) => {
+      const notifications = (
+        await tx
+          .select({ id: s.notifications.id })
+          .from(s.notifications)
+          .where(eq(s.notifications.laboratoryId, labId))
+      ).map((n) => n.id);
+      if (notifications.length) {
+        await tx
+          .delete(s.notificationDeliveries)
+          .where(
+            inArray(s.notificationDeliveries.notificationId, notifications),
+          );
+        await tx
+          .delete(s.notifications)
+          .where(inArray(s.notifications.id, notifications));
+      }
       await tx.delete(s.documents).where(eq(s.documents.laboratoryId, labId));
       await tx
         .delete(s.maintenanceMaterials)

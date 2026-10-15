@@ -254,6 +254,25 @@ async function main() {
       await once(child, "exit");
     }
     await db.transaction(async (tx) => {
+      // Incident reports emit notifications for the synthetic members.
+      const sent = await tx
+        .select({ id: schema.notifications.id })
+        .from(schema.notifications)
+        .where(eq(schema.notifications.laboratoryId, labId));
+      if (sent.length) {
+        await tx.delete(schema.notificationDeliveries).where(
+          inArray(
+            schema.notificationDeliveries.notificationId,
+            sent.map((n) => n.id),
+          ),
+        );
+        await tx.delete(schema.notifications).where(
+          inArray(
+            schema.notifications.id,
+            sent.map((n) => n.id),
+          ),
+        );
+      }
       const incidentRows = await tx
         .select({ id: incidentReports.id })
         .from(incidentReports)
