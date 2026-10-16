@@ -21,6 +21,16 @@ pnpm dev
 
 Abre [localhost:3000/login](http://localhost:3000/login). El login y `/app` requieren `.env`, PostgreSQL, migraciones aplicadas y una cuenta local. La página informativa `/` no consulta la base de datos.
 
+### Abrir desde el celular u otro dispositivo de la red local
+
+`pnpm dev` imprime una dirección `Network` (por ejemplo `http://192.168.1.20:3000`). Para usarla desde otro dispositivo, agrégala a `.env.local` y reinicia `pnpm dev`:
+
+```bash
+BETTER_AUTH_TRUSTED_ORIGINS=http://192.168.1.20:3000
+```
+
+La misma variable permite el inicio de sesión en Better Auth y, en `next.config.ts`, deriva `allowedDevOrigins` para que Next.js sirva los scripts de desarrollo a ese host. Sin ella, Next.js bloquea esos scripts, la página no se activa y el formulario de login lo indica tras unos segundos. Acepta varias direcciones separadas por comas; si la IP de tu computadora cambia, actualízala.
+
 ## PostgreSQL local
 
 ```bash
@@ -88,7 +98,7 @@ Crea un laboratorio sintético aparte, «Laboratorio de Pesados (demo)», con tr
 
 ## Flujo de autenticación disponible
 
-- `/login` autentica por correo y contraseña mediante Better Auth y muestra un error uniforme para credenciales inválidas o cuentas inactivas.
+- `/login` autentica por correo y contraseña mediante Better Auth y muestra un error uniforme para credenciales inválidas o cuentas inactivas; también distingue demasiados intentos, origen no permitido y servidor inalcanzable. El botón se habilita sólo cuando la página terminó de cargar, para no enviar las credenciales en la URL.
 - `/app` valida la sesión en el servidor, resuelve únicamente `actorUserId` y vuelve a comprobar que `users.is_active` sea verdadero.
 - El selector muestra laboratorios activos asociados a membresías activas del usuario, junto con sus roles locales.
 - `/app/labs/[slug]` trata el slug como intención de navegación y usa `AuthorizationService` antes de mostrar datos; un laboratorio inexistente o no autorizado produce la misma respuesta de no encontrado.

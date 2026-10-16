@@ -20,7 +20,9 @@ La presentación usa Tailwind y componentes propios pequeños. No se añadió sh
 
 ## Login y estado de cuenta
 
-`/login` usa el cliente React oficial de Better Auth para enviar correo y contraseña a `/api/auth/sign-in/email`. El formulario muestra carga y un mensaje uniforme cuando las credenciales son inválidas o la cuenta no puede iniciar sesión; no confirma si el correo existe.
+`/login` usa el cliente React oficial de Better Auth para enviar correo y contraseña a `/api/auth/sign-in/email`. El formulario muestra carga y un mensaje uniforme cuando las credenciales son inválidas o la cuenta no puede iniciar sesión; no confirma si el correo existe. Otros fallos tienen su propio mensaje sin revelar cuentas: demasiados intentos (429), origen no permitido (`INVALID_ORIGIN`) y servidor inalcanzable. El botón queda deshabilitado hasta que React hidrata el formulario, que además usa `method="post"`, para que un envío nativo nunca ponga las credenciales en la URL; si la hidratación no llega, un aviso sólo con CSS aparece a los pocos segundos.
+
+En desarrollo, abrir la app desde otro dispositivo de la red local requiere listar su origen en `BETTER_AUTH_TRUSTED_ORIGINS`: Better Auth lo usa para la comprobación de origen y `next.config.ts` deriva de él `allowedDevOrigins`, sin el cual Next.js 16 bloquea los recursos de desarrollo y la página no se hidrata.
 
 La creación de una sesión ejecuta un hook de infraestructura que consulta `users.is_active`. Una cuenta inactiva recibe el mismo error público que unas credenciales inválidas. Además, toda entrada a `/app` vuelve a cargar el usuario activo: una sesión persistida no constituye autorización ni evita esa comprobación. Si una cuenta se desactiva mientras conserva una cookie, la UI la devuelve a `/login`, limpia la sesión del navegador y no muestra datos protegidos.
 

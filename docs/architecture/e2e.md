@@ -30,6 +30,7 @@ La primera prueba de Maintenance entra por el formulario de login real. Las dem�
 
 | Spec                    | Flujo                                                                                                                                                         |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `login.spec.ts`         | Contraseña rechazada muestra una alerta visible y no deja credenciales en la URL (un solo intento, en el proyecto móvil, sin desactivar el límite).           |
 | `maintenance.spec.ts`   | Entrada fuera de servicio con material, existencia insuficiente sin escritura, 404 sin permiso, recurso deshabilitado al reservar y vuelta a operación (RB5). |
 | `documents.spec.ts`     | Subida por route handler, cabeceras de descarga, firma de bytes, origen ajeno, evidencia en bitácora inmutable, archivado y 404 uniformes.                    |
 | `loans.spec.ts`         | Préstamo sin cambio de existencia, devolución con daño y cierre, vista de préstamos propios.                                                                  |

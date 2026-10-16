@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/modules/identity/infrastructure/auth-client";
+import { describeSignInFailure, signInErrorMessages } from "./sign-in-error";
 
 type LoginFormProps = {
   returnPath?: string;
   initialMessage?: string;
   clearExistingSession?: boolean;
 };
+
+const subscribeToNothing = () => () => {};
 
 export function LoginForm({
   returnPath = "/app",
@@ -18,6 +21,13 @@ export function LoginForm({
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState(initialMessage ?? "");
   const [isPending, setIsPending] = useState(false);
+  // The form only works once React has hydrated it; before that, submitting
+  // would fall back to a native GET that puts the credentials in the URL.
+  const isReady = useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     if (clearExistingSession) void authClient.signOut();
@@ -31,16 +41,20 @@ export function LoginForm({
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
-    const { error } = await authClient.signIn.email({
-      email,
-      password,
-      rememberMe: true,
-    });
+    let failure: string | null;
+    try {
+      const { error } = await authClient.signIn.email({
+        email,
+        password,
+        rememberMe: true,
+      });
+      failure = error ? describeSignInFailure(error) : null;
+    } catch {
+      failure = signInErrorMessages.unavailable;
+    }
 
-    if (error) {
-      setErrorMessage(
-        "No pudimos iniciar sesión. Revisa tus credenciales e inténtalo de nuevo.",
-      );
+    if (failure) {
+      setErrorMessage(failure);
       setIsPending(false);
       return;
     }
@@ -50,7 +64,7 @@ export function LoginForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+    <form method="post" onSubmit={handleSubmit} className="mt-8 space-y-5">
       <div>
         <label
           htmlFor="email"
@@ -89,15 +103,26 @@ export function LoginForm({
 
       <div aria-live="polite" className="min-h-6">
         {errorMessage ? (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">
+          <p
+            role="alert"
+            className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800"
+          >
             {errorMessage}
           </p>
         ) : null}
+        {isReady ? null : (
+          <p className="reveal-if-stalled rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+            La página no terminó de cargar, así que todavía no se puede iniciar
+            sesión. Recarga la página; si abriste Labora desde otro dispositivo
+            de la red local, su dirección debe estar en
+            BETTER_AUTH_TRUSTED_ORIGINS del servidor.
+          </p>
+        )}
       </div>
 
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !isReady}
         className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#7a1731] px-5 font-semibold text-white shadow-sm transition hover:bg-[#651128] focus:outline-none focus:ring-4 focus:ring-[#7a1731]/20 disabled:cursor-wait disabled:opacity-65"
       >
         {isPending ? "Iniciando sesión…" : "Iniciar sesión"}

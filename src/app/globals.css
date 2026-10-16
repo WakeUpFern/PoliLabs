@@ -16,3 +16,15 @@ input {
   background: #7a1731;
   color: white;
 }
+
+/* Reveals a hint only if client scripts never take over the element. */
+@keyframes labora-reveal {
+  to {
+    visibility: visible;
+  }
+}
+
+.reveal-if-stalled {
+  visibility: hidden;
+  animation: labora-reveal 0s linear 8s forwards;
+}
