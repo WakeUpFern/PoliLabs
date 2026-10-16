@@ -12,9 +12,17 @@ export function ReservationForm({
   spaces,
   canCreate,
   action,
+  initial,
 }: {
   spaces: ReservationSpaceOption[];
   canCreate: boolean;
+  initial?: {
+    spaceId: string;
+    mode: string;
+    resourceIds: string[];
+    startsLocal: string;
+    endsLocal: string;
+  };
   action: (
     state: ReservationActionState,
     form: FormData,
@@ -24,11 +32,13 @@ export function ReservationForm({
     action,
     initialReservationActionState,
   );
-  const [spaceId, setSpaceId] = useState("");
-  const [mode, setMode] = useState("space");
-  const [resourceIds, setResourceIds] = useState<string[]>([]);
-  const [startsLocal, setStartsLocal] = useState("");
-  const [endsLocal, setEndsLocal] = useState("");
+  const [spaceId, setSpaceId] = useState(initial?.spaceId ?? "");
+  const [mode, setMode] = useState(initial?.mode ?? "space");
+  const [resourceIds, setResourceIds] = useState<string[]>(
+    initial?.resourceIds ?? [],
+  );
+  const [startsLocal, setStartsLocal] = useState(initial?.startsLocal ?? "");
+  const [endsLocal, setEndsLocal] = useState(initial?.endsLocal ?? "");
   const space = spaces.find((space) => space.id === spaceId);
   const current = new FormData();
   current.set("spaceId", spaceId);

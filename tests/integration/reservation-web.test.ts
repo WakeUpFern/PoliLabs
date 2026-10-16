@@ -26,6 +26,7 @@ import {
   CreateReservation,
   GetReservation,
   ListMyReservations,
+  ListSpaceOccupancy,
 } from "../../src/modules/reservations/application/reservations";
 import {
   ReservationNotFoundError,
@@ -198,6 +199,7 @@ test("Reservations II web adapter with real authorized services", async (context
       get,
       list,
       cancel,
+      occupancy: new ListSpaceOccupancy(store),
     });
     const slug = `reservation-${suffix}-0`;
     const otherSlug = `reservation-${suffix}-1`;

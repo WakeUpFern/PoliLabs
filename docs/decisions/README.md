@@ -25,3 +25,4 @@ Aceptada no implica implementada. Las decisiones iniciales se fundamentan en el 
 - [0017 — Préstamos temporales de herramientas reutilizables](0017-tool-loans.md): Aceptada; Loans I y las decisiones D1–D5 aprobados explícitamente el 7 de octubre de 2026.
 - [0018 — Reportes exportables en CSV y PDF](0018-exportable-reports.md): Aceptada; Reports I y las decisiones D1–D7 aprobados explícitamente el 7 de octubre de 2026.
 - [0019 — Notificaciones in-app y correo transaccional mediante outbox](0019-notifications-email.md): Propuesta; Notifications I implementado, pendiente de aprobación explícita.
+- [0020 — Planos de espacios y calendario de ocupación](0020-floor-plans-calendar.md): Propuesta; Spatial III y Reservations III implementados, pendiente de aprobación explícita (amplía la lectura de ocupación del ADR 0009).

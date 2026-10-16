@@ -1,5 +1,6 @@
 import type { PermissionKey } from "@/modules/identity/domain/access-catalog";
 import type {
+  OccupancyEntry,
   Reservation,
   ReservationInterval,
   ReservationTarget,
@@ -15,6 +16,9 @@ export interface ReservationSession {
   get(input: ActorContext & { reservationId: string }): Promise<Reservation>;
   listMine(input: ActorContext): Promise<readonly Reservation[]>;
   cancel(input: ActorContext & { reservationId: string }): Promise<Reservation>;
+  listOccupancy(
+    input: ActorContext & { spaceId: string } & ReservationInterval,
+  ): Promise<readonly OccupancyEntry[]>;
 }
 export interface ReservationStore {
   run<T>(

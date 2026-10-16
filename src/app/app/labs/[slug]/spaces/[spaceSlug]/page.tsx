@@ -10,10 +10,13 @@ import { getLaboratoryBySlug } from "@/modules/identity/infrastructure/services"
 import type { LocationDetails } from "@/modules/spatial/domain/location";
 import { SpaceNotFoundError } from "@/modules/spatial/domain/space";
 import {
+  floorPlans,
   getSpace,
   listLocations,
   listResources,
 } from "@/modules/spatial/infrastructure/services";
+import { createFloorPlanAction } from "./plans/actions";
+import { ActionForm, NumberField, TextField } from "./plans/plan-forms";
 import {
   createLocationAction,
   createResourceAction,
@@ -55,6 +58,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
   let space;
   let locationCatalog;
   let resourceCatalog;
+  let planCatalog;
   try {
     laboratory = await getLaboratoryBySlug.execute({
       actorUserId,
@@ -65,13 +69,18 @@ export default async function SpaceOrganizationPage({ params }: Props) {
       laboratoryId: laboratory.id,
       slug: spaceSlug,
     });
-    [locationCatalog, resourceCatalog] = await Promise.all([
+    [locationCatalog, resourceCatalog, planCatalog] = await Promise.all([
       listLocations.execute({
         actorUserId,
         laboratoryId: laboratory.id,
         spaceId: space.id,
       }),
       listResources.execute({
+        actorUserId,
+        laboratoryId: laboratory.id,
+        spaceId: space.id,
+      }),
+      floorPlans.list({
         actorUserId,
         laboratoryId: laboratory.id,
         spaceId: space.id,
@@ -135,6 +144,74 @@ export default async function SpaceOrganizationPage({ params }: Props) {
             : "Capacidad no especificada"}
         </p>
       </header>
+
+      <section className="mt-8">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-semibold">Planos</h2>
+            <p className="mt-2 text-sm leading-6 text-stone-600">
+              Representación gráfica del espacio con sus recursos y ubicaciones.
+            </p>
+          </div>
+          <span className="text-sm text-stone-500">
+            {planCatalog.plans.length} activos
+          </span>
+        </div>
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          <div className="space-y-3">
+            {planCatalog.plans.length === 0 ? (
+              <EmptyState text="Todavía no hay planos activos." />
+            ) : (
+              planCatalog.plans.map((plan) => (
+                <Link
+                  key={plan.id}
+                  href={`/app/labs/${slug}/spaces/${spaceSlug}/plans/${plan.id}`}
+                  className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white p-5 font-semibold shadow-sm transition hover:border-[#7a1731]"
+                >
+                  {plan.name}
+                  <span className="text-sm font-normal text-stone-500">
+                    {plan.width} × {plan.height} celdas
+                  </span>
+                </Link>
+              ))
+            )}
+          </div>
+          {planCatalog.canManage ? (
+            <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
+              <h3 className="mb-4 font-semibold">Nuevo plano</h3>
+              <ActionForm
+                action={createFloorPlanAction.bind(null, slug, spaceSlug)}
+                submitLabel="Crear plano"
+              >
+                <TextField
+                  id="new-plan-name"
+                  name="name"
+                  label="Nombre del plano"
+                  maxLength={120}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <NumberField
+                    id="new-plan-width"
+                    name="width"
+                    label="Ancho (celdas)"
+                    min={1}
+                    max={100}
+                    defaultValue={20}
+                  />
+                  <NumberField
+                    id="new-plan-height"
+                    name="height"
+                    label="Alto (celdas)"
+                    min={1}
+                    max={100}
+                    defaultValue={12}
+                  />
+                </div>
+              </ActionForm>
+            </div>
+          ) : null}
+        </div>
+      </section>
 
       <div className="mt-8 grid gap-8 xl:grid-cols-2">
         <section>

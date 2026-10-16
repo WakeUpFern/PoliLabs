@@ -24,6 +24,8 @@ import {
   UpdateResource,
 } from "../application/manage-resources";
 import { DrizzleSpatialOrganizationRepository } from "./spatial-organization-repository";
+import { FloorPlanService } from "../application/floor-plans";
+import { DrizzleFloorPlanStore } from "./floor-plan-store";
 
 const database = getDatabase();
 const authorization = new AuthorizationService(
@@ -50,4 +52,8 @@ export const updateResource = new UpdateResource(authorization, organization);
 export const deactivateResource = new DeactivateResource(
   authorization,
   organization,
+);
+
+export const floorPlans = new FloorPlanService(
+  new DrizzleFloorPlanStore(database),
 );

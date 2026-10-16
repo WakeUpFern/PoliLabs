@@ -107,3 +107,56 @@ export function requireCancellable(reservation: Reservation, now: Date) {
       "A started reservation cannot be cancelled.",
     );
 }
+
+// Reservations III (ADR 0020): occupancy feeds calendars and floor plans.
+// Other users' entries carry no id or creator, only the occupied target.
+export const MAX_OCCUPANCY_DAYS = 42;
+export type OccupancyEntry = ReservationTarget &
+  ReservationInterval & { reservationId: string | null; isMine: boolean };
+
+export function normalizeOccupancyWindow(
+  input: IntervalInput,
+): ReservationInterval {
+  const window = normalizeInterval(input);
+  if (
+    window.endsAt.getTime() - window.startsAt.getTime() >
+    MAX_OCCUPANCY_DAYS * 86_400_000
+  )
+    throw new ReservationInputError("Occupancy window is too long.");
+  return window;
+}
+
+export function occupancyEntry(
+  reservation: Reservation,
+  actorUserId: string,
+): OccupancyEntry {
+  const isMine = reservation.createdBy === actorUserId;
+  return {
+    reservationId: isMine ? reservation.id : null,
+    isMine,
+    spaceId: reservation.spaceId,
+    isExclusive: reservation.isExclusive,
+    resourceIds: reservation.resourceIds,
+    startsAt: reservation.startsAt,
+    endsAt: reservation.endsAt,
+  };
+}
+
+export type ResourceOccupancyStatus = "free" | "occupied" | "blocked";
+
+// "Blocked" is RB5 (a resource not in operation); availability blocks of
+// RF14 do not exist yet. An exclusive space reservation occupies every resource.
+export function resourceOccupancy(
+  resource: { id: string; operational: boolean },
+  entries: readonly OccupancyEntry[],
+  interval: ReservationInterval,
+): ResourceOccupancyStatus {
+  if (!resource.operational) return "blocked";
+  return entries.some(
+    (entry) =>
+      overlaps(entry, interval) &&
+      (entry.isExclusive || entry.resourceIds.includes(resource.id)),
+  )
+    ? "occupied"
+    : "free";
+}

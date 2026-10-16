@@ -19,6 +19,7 @@
     "test:e2e": "playwright test",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm format:check",
     "bootstrap:development": "tsx scripts/bootstrap-development.ts",
+    "seed:demo": "tsx scripts/seed-demo.ts",
     "auth:schema": "auth generate --config ./src/modules/identity/infrastructure/auth-schema.config.ts --output ./src/modules/identity/infrastructure/auth-schema.ts --yes",
     "auth:check": "auth check schema --config ./src/modules/identity/infrastructure/auth-schema.config.ts",
     "db:generate": "drizzle-kit generate",

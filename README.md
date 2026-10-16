@@ -76,6 +76,16 @@ El comando crea interactivamente la primera identidad local, el Laboratorio de P
 
 Después del bootstrap, inicia `pnpm dev`, abre `/login` y usa el correo y la contraseña capturados. No hay registro público ni recuperación de contraseña en esta etapa.
 
+### Datos de demostración
+
+Para probar con distintos perfiles, define `DEMO_PASSWORD` (12+ caracteres) en `.env.local` y ejecuta:
+
+```bash
+pnpm seed:demo
+```
+
+Crea un laboratorio sintético aparte, «Laboratorio de Pesados (demo)», con tres cuentas que comparten esa contraseña: `responsable@demo.invalid` (todos los permisos), `profesor@demo.invalid` (prácticas, asistencia, planos, revisión de incidencias) y `alumno@demo.invalid` (asistencia y uso propios, reservaciones, reportes de incidencias). Incluye el Área de máquinas con cuatro recursos y un plano, una práctica publicada con una sesión de mañana y dos reservaciones. No toca otros laboratorios, se niega a correr sobre una base `_test` y no hace nada si el laboratorio demo ya existe. Los roles `demo_*` son sólo de demostración; el catálogo definitivo de roles sigue pendiente.
+
 ## Flujo de autenticación disponible
 
 - `/login` autentica por correo y contraseña mediante Better Auth y muestra un error uniforme para credenciales inválidas o cuentas inactivas.

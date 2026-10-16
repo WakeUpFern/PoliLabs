@@ -141,6 +141,10 @@ Seis reportes operativos de §32 exportables en CSV y PDF: stock e historial de 
 
 Centro de notificaciones in-app por usuario y correo transaccional para dos eventos de Incidents I: reporte de severidad alta (a quienes tienen `incident.review`) y resolución (a quien reportó). Incidents registra el evento en su propia transacción mediante `recordNotificationEvent`; el módulo resuelve destinatarios activos y escribe `notifications` y entregas `pending` (outbox). Tras el commit, `after()` y `pnpm notifications:dispatch` envían con `FOR UPDATE SKIP LOCKED`, espera exponencial y hasta 5 intentos. El único adaptador escribe `.eml` locales; SES queda pendiente. Migración aditiva `0013_notifications_i.sql`, sin permisos nuevos. Ver [arquitectura](notifications.md) y [ADR 0019 — Propuesta](../decisions/0019-notifications-email.md).
 
+## Spatial III y Reservations III
+
+Planos por Space con elementos de recurso, ubicación o etiqueta en una cuadrícula de celdas, protegidos por FKs compuestas y triggers de límites; reutilizan `space.read`/`space.manage`. `ListSpaceOccupancy` alimenta el plano (libre, ocupado, bloqueado por RB5) y un calendario de día, semana o mes, mostrando reservaciones ajenas sin id ni creador. Migración aditiva `0014_floor_plans_i.sql`. Ver [arquitectura](floor-plans-calendar.md) y [ADR 0020 — Propuesta](../decisions/0020-floor-plans-calendar.md).
+
 ## Pruebas end-to-end
 
-Playwright con Chromium en escritorio y móvil, contra la base `_test` y un laboratorio sintético por spec. Cubre Maintenance, Documents, Loans, Reports y Notifications; las guías manuales anteriores quedan por migrar. Ver [pruebas end-to-end](e2e.md).
+Playwright con Chromium en escritorio y móvil, contra la base `_test` y un laboratorio sintético por spec. Cubre Maintenance, Documents, Loans, Reports, Notifications y planos/calendario; las guías manuales anteriores quedan por migrar. Ver [pruebas end-to-end](e2e.md).
