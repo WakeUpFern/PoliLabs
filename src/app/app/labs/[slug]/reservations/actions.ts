@@ -47,3 +47,20 @@ export async function cancelReservationAction(
   revalidatePath(`/app/labs/${slug}/reservations/${reservationId}`);
   return result;
 }
+
+// Booking from the calendar grid stays on the grid: no redirect, the page is
+// revalidated so the new block appears. Same adapter and services as the form.
+export async function gridReservationAction(
+  slug: string,
+  _state: ReservationActionState,
+  form: FormData,
+): Promise<ReservationActionState> {
+  form.set("intent", "create");
+  try {
+    await reservationWeb.submit(slug, form);
+  } catch (error) {
+    return reservationActionError(error);
+  }
+  revalidatePath(`/app/labs/${slug}/reservations`);
+  return { status: "success", message: "Reservación creada." };
+}

@@ -44,7 +44,7 @@ export default async function NewReservationPage({
         href={`/app/labs/${slug}/reservations`}
         className="text-sm font-semibold text-[#7a1731]"
       >
-        ← Mis reservaciones
+        ← Calendario de reservaciones
       </Link>
       <h1 className="mt-6 text-3xl font-semibold">Nueva reservación</h1>
       <p className="mt-3 text-stone-600">
