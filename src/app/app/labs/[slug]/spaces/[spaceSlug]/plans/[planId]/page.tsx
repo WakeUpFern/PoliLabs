@@ -170,7 +170,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
         </div>
         {occupancy ? (
           <Link
-            href={`/app/labs/${slug}/reservations/calendar?space=${space.id}`}
+            href={`/app/labs/${slug}/reservations?space=${space.id}`}
             className="rounded-xl border border-[#7a1731] px-4 py-2 text-sm font-semibold text-[#7a1731]"
           >
             Ver calendario del espacio

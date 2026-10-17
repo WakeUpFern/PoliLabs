@@ -145,6 +145,10 @@ Centro de notificaciones in-app por usuario y correo transaccional para dos even
 
 Planos por Space con elementos de recurso, ubicación o etiqueta en una cuadrícula de celdas, protegidos por FKs compuestas y triggers de límites; reutilizan `space.read`/`space.manage`. `ListSpaceOccupancy` alimenta el plano (libre, ocupado, bloqueado por RB5) y un calendario de día, semana o mes, mostrando reservaciones ajenas sin id ni creador. Migración aditiva `0014_floor_plans_i.sql`. Ver [arquitectura](floor-plans-calendar.md) y [ADR 0020 — Propuesta](../decisions/0020-floor-plans-calendar.md).
 
+## Reservations IV
+
+Reservaciones abre en una cuadrícula de día o semana con franjas de 30 minutos: se reserva arrastrando con ratón, tocando en móvil o con el botón «Nueva reservación», desde un panel que reutiliza `submit` y `CreateReservation`. «Mis reservaciones» queda como pestaña, la vista Mes es de sólo lectura y `/reservations/calendar` redirige. Sin migraciones ni permisos nuevos. Ver [arquitectura](floor-plans-calendar.md#reservations-iv--cuadrícula-interactiva) y [ADR 0021 — Propuesta](../decisions/0021-interactive-reservation-grid.md).
+
 ## Pruebas end-to-end
 
-Playwright con Chromium en escritorio y móvil, contra la base `_test` y un laboratorio sintético por spec. Cubre Maintenance, Documents, Loans, Reports, Notifications y planos/calendario; las guías manuales anteriores quedan por migrar. Ver [pruebas end-to-end](e2e.md).
+Playwright con Chromium en escritorio y móvil, contra la base `_test` y un laboratorio sintético por spec. Cubre Maintenance, Documents, Loans, Reports, Notifications, planos/calendario y reserva desde la cuadrícula; las guías manuales anteriores quedan por migrar. Ver [pruebas end-to-end](e2e.md).

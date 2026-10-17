@@ -146,10 +146,10 @@ test("the calendar shows the reservation without revealing its owner", async ({
 }, testInfo) => {
   const student = await openAs(browser, testInfo, lab.users.student);
   await student.page.goto(
-    `/app/labs/${lab.slug}/reservations/calendar?view=week&date=${day}`,
+    `/app/labs/${lab.slug}/reservations?view=week&date=${day}`,
   );
   await expect(
-    student.page.getByRole("heading", { name: "Calendario de reservaciones" }),
+    student.page.getByRole("heading", { name: "Reservaciones", exact: true }),
   ).toBeVisible();
   const own = student.page.getByRole("link", {
     name: /Mi reservación · Torno e2e/,
@@ -160,9 +160,7 @@ test("the calendar shows the reservation without revealing its owner", async ({
   await student.context.close();
 
   const { context, page } = await openAs(browser, testInfo, lab.users.manager);
-  await page.goto(
-    `/app/labs/${lab.slug}/reservations/calendar?view=month&date=${day}`,
-  );
+  await page.goto(`/app/labs/${lab.slug}/reservations?view=month&date=${day}`);
   await page.getByRole("link", { name: "Día" }).click();
   await expect(page.getByText("Ocupado · Torno e2e")).toBeVisible();
   await expect(page.getByText("Alumno e2e")).toHaveCount(0);
@@ -171,7 +169,7 @@ test("the calendar shows the reservation without revealing its owner", async ({
   // Filtering by the other resource hides the lathe's reservation.
   await page.getByLabel("Recurso").selectOption({ label: "Fresadora e2e" });
   await page.getByRole("button", { name: "Mostrar" }).click();
-  await expect(page.getByText("Sin reservaciones")).toBeVisible();
+  await expect(page.getByText("Ocupado · Torno e2e")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
   await context.close();
 });

@@ -79,6 +79,9 @@ export type OccupancyView = {
   startsAt: string;
   endsAt: string;
   target: string;
+  // Visible resources it holds; lets the grid tell free resources apart
+  // without exposing who reserved them (ADR 0020).
+  resourceIds: string[];
 };
 export type CalendarQuery = {
   space?: unknown;
@@ -268,6 +271,9 @@ export class ReservationWeb {
       startsAt: entry.startsAt.toISOString(),
       endsAt: entry.endsAt.toISOString(),
       target: entry.isExclusive ? "Espacio completo" : names.join(", "),
+      resourceIds: entry.resourceIds.filter((id) =>
+        space.resources.some((resource) => resource.id === id),
+      ),
     };
   }
   // Calendar of one Space (optionally one Resource) for a day, week or month.
@@ -300,10 +306,15 @@ export class ReservationWeb {
       resource,
       view,
       date,
+      now: now.getTime(),
       today: localDate(now),
       previous: shiftCalendarDate(view, date, -1),
       next: shiftCalendarDate(view, date, 1),
       days,
+      // Every confirmed reservation of the space, for availability hints.
+      spaceEntries: space
+        ? entries.map((entry) => this.occupancyView(entry, space))
+        : [],
       entries: space
         ? entries
             .filter(
