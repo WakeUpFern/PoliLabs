@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -48,13 +49,17 @@ function initials(name: string) {
     .join("");
 }
 
-function Logo({ onGuinda = false }: { onGuinda?: boolean }) {
+/** UPIITA's mark, the unit this laboratory belongs to. Decorative: the link around it is labelled. */
+function Logo() {
   return (
-    <span
-      className={`grid size-8 flex-none place-items-center rounded-md text-sm font-bold ${onGuinda ? "bg-white text-guinda" : "bg-guinda text-white"}`}
-    >
-      L
-    </span>
+    <Image
+      src="/brand/upiita-mark.png"
+      alt=""
+      width={175}
+      height={128}
+      priority
+      className="h-8 w-auto flex-none"
+    />
   );
 }
 
@@ -113,7 +118,7 @@ export function AppShell({
             href={laboratory ? laboratory.href : "/app"}
             aria-label="Labora, inicio"
           >
-            <Logo onGuinda />
+            <Logo />
           </Link>
           <p className="min-w-0 flex-1 truncate font-bold text-white">
             {laboratory ? (

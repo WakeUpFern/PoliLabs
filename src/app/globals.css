@@ -4,7 +4,7 @@
  * Labora tokens. White canvas with a cool gray for boxes, hairline borders and
  * 6px radii, so content and status colors carry the page. The palette follows
  * the IPN and UPIITA identity: IPN guinda paints the top bar and the one main
- * action and marks where you are; UPIITA gold is a thin accent, never body
+ * action and marks where you are; UPIITA gold (its logo) is a small accent, never body
  * text on white below its AA shade (oro). Contrast on white: guinda 11:1,
  * guinda-deep 14:1, oro 4.9:1; oro-light on guinda 7.5:1.
  */
@@ -141,11 +141,10 @@ textarea {
     background: color-mix(in srgb, var(--color-ink) 6%, transparent);
     color: var(--color-ink);
   }
-  /* Guinda top bar with a thin UPIITA gold rule, as on the institutional sites. */
+  /* Guinda top bar, as on the institutional sites, carrying the UPIITA mark. */
   .topbar {
     background: var(--color-guinda);
     color: white;
-    box-shadow: inset 0 -3px 0 var(--color-oro-light);
   }
   .topbar .icon-btn {
     border-color: rgb(255 255 255 / 0.3);
