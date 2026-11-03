@@ -30,6 +30,9 @@ export const users = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
     isActive: boolean("is_active").default(true).notNull(),
+    temporaryPasswordIssuedAt: timestamp("temporary_password_issued_at", {
+      withTimezone: true,
+    }),
   },
   (table) => [
     uniqueIndex("users_email_lower_unique_idx").on(sql`lower(${table.email})`),

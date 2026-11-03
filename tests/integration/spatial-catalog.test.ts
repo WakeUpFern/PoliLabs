@@ -249,14 +249,7 @@ test("space catalog is constrained and isolated by laboratory", async (context) 
       .where(eq(laboratories.id, laboratoryB.id));
     await database.delete(users).where(eq(users.id, manager.id));
     await database.delete(users).where(eq(users.id, outsider.id));
-    await database
-      .delete(permissions)
-      .where(
-        inArray(permissions.key, [
-          INITIAL_PERMISSIONS.spaceRead.key,
-          INITIAL_PERMISSIONS.spaceManage.key,
-        ]),
-      );
+    // Permissions belong to the schema's catalog (migration 0015) and stay.
     await pool.end();
   }
 });

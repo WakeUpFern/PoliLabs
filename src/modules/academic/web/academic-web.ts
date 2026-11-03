@@ -87,6 +87,42 @@ export class AcademicWeb {
       practices: await this.services.academic.list(context.actor),
     };
   }
+  /**
+   * The next sessions that matter to the actor, for the laboratory home: a
+   * teacher's own sessions, or the sessions a student takes part in. Reads
+   * published practices through the same authorized service calls.
+   */
+  async upcoming(slug: string, now = new Date(), limit = 5) {
+    const context = await this.context(slug);
+    const practices = (await this.services.academic.list(context.actor))
+      .filter((practice) => practice.status === "published")
+      .slice(0, 20);
+    const details = await Promise.all(
+      practices.map((practice) =>
+        this.services.academic.practice({
+          ...context.actor,
+          practiceId: practice.id,
+        }),
+      ),
+    );
+    const sessions = details
+      .flatMap(({ practice, sessions }) =>
+        sessions.map((session) => ({
+          ...session,
+          practiceTitle: practice.title,
+        })),
+      )
+      .filter(
+        (session) =>
+          (session.status === "scheduled" || session.status === "open") &&
+          session.endsAt.getTime() >= now.getTime() &&
+          (!context.canManage ||
+            session.teacherUserId === context.actor.actorUserId),
+      )
+      .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+      .slice(0, limit);
+    return { ...context, sessions };
+  }
   async practice(slug: string, practiceId: string) {
     const context = await this.context(slug);
     const detail = await this.services.academic.practice({

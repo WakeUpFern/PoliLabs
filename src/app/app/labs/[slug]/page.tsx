@@ -1,27 +1,82 @@
 import Link from "next/link";
-import { incidentsWeb } from "@/modules/incidents/web/services";
-import { maintenanceWeb } from "@/modules/maintenance/web/services";
-import { loansWeb } from "@/modules/loans/web/services";
-import { reportsWeb } from "@/modules/reports/web/services";
 import { notFound } from "next/navigation";
+import {
+  ArrowRightLeft,
+  BookOpenText,
+  CalendarClock,
+  FlaskConical,
+  TriangleAlert,
+} from "lucide-react";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
-import { LogoutButton } from "@/app/_components/logout-button";
 import { getLaboratoryBySlug } from "@/modules/identity/infrastructure/services";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
+import { LABORATORY_ROLE_CATALOG } from "@/modules/identity/domain/access-catalog";
+import { laboratoryHome } from "./home-data";
+import { severityLabels, statusLabels } from "./incidents/labels";
 
-type LaboratoryPageProps = {
-  params: Promise<{ slug: string }>;
-};
+const TIME_ZONE = "America/Mexico_City";
+const day = new Intl.DateTimeFormat("es-MX", {
+  timeZone: TIME_ZONE,
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+});
+const time = new Intl.DateTimeFormat("es-MX", {
+  timeZone: TIME_ZONE,
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+const dateKey = new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE });
 
-function formatRole(roleKey: string) {
-  return roleKey
-    .split("_")
-    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
-    .join(" ");
+function sessionDay(startsAt: Date, now: Date) {
+  const key = dateKey.format(startsAt);
+  if (key === dateKey.format(now)) return "Hoy";
+  if (key === dateKey.format(new Date(now.getTime() + 86_400_000)))
+    return "Mañana";
+  return day.format(startsAt);
 }
 
-export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
-  const [{ slug }, { actorUserId, user }] = await Promise.all([
+function Box({
+  title,
+  icon: Icon,
+  action,
+  children,
+}: {
+  title: string;
+  icon: typeof BookOpenText;
+  action?: { href: string; label: string };
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="box overflow-hidden">
+      <div className="flex items-center gap-2 border-b border-line bg-paper px-4 py-3">
+        <Icon aria-hidden className="size-4 text-muted" />
+        <h2 className="flex-1 font-bold">{title}</h2>
+        {action ? (
+          <Link
+            href={action.href}
+            className="text-sm font-semibold text-guinda hover:underline"
+          >
+            {action.label}
+          </Link>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Empty({ children }: { children: React.ReactNode }) {
+  return <div className="px-4 py-6 text-center text-muted">{children}</div>;
+}
+
+export default async function LaboratoryPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const [{ slug }, { actorUserId }] = await Promise.all([
     params,
     requireCurrentActor(),
   ]);
@@ -37,146 +92,249 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
     throw error;
   }
 
-  const [incidentAccess, maintenanceAccess, loanAccess, reports] =
-    await Promise.all([
-      incidentsWeb.access(slug),
-      maintenanceWeb.access(slug),
-      loansWeb.access(slug),
-      reportsWeb.catalog(slug),
-    ]);
+  const permissions = laboratory.permissionKeys;
+  const can = (key: string) => permissions.includes(key);
+  const base = `/app/labs/${encodeURIComponent(laboratory.slug)}`;
+  const home = await laboratoryHome(laboratory.slug, permissions);
+  const now = new Date();
+  const roleNames = laboratory.roleKeys.map(
+    (key) =>
+      LABORATORY_ROLE_CATALOG.find((role) => role.key === key)?.name ?? key,
+  );
+  const teaches = can("academic.manage");
+
+  // The one action that starts the usual work of this person.
+  const primary = teaches
+    ? { href: `${base}/academic/practices/new`, label: "Nueva práctica" }
+    : can("reservation.create")
+      ? { href: `${base}/reservations`, label: "Reservar equipo" }
+      : null;
+
   return (
-    <div>
-      <Link
-        href="/app"
-        className="text-sm font-semibold text-stone-600 transition hover:text-[#7a1731]"
-      >
-        <span aria-hidden="true">←</span> Mis laboratorios
-      </Link>
-
-      <section className="mt-6 overflow-hidden rounded-3xl bg-[#641229] text-white shadow-lg shadow-[#641229]/10">
-        <div className="p-7 sm:p-10">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#e2c68f]">
-            Contexto autorizado
-          </p>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">
-            {laboratory.name}
-          </h1>
-          <p className="mt-4 max-w-2xl leading-7 text-white/72">
-            Sesión activa de {user.name}. Trabaja únicamente con los datos
-            autorizados para este laboratorio.
-          </p>
-        </div>
-        <div className="grid gap-px bg-white/15 sm:grid-cols-2">
-          <div className="bg-[#641229] px-7 py-5 sm:px-10">
-            <p className="text-xs uppercase tracking-wider text-white/55">
-              Usuario
-            </p>
-            <p className="mt-1 font-semibold">{user.email}</p>
-          </div>
-          <div className="bg-[#641229] px-7 py-5 sm:px-10">
-            <p className="text-xs uppercase tracking-wider text-white/55">
-              Roles en este laboratorio
-            </p>
-            <p className="mt-1 font-semibold">
-              {laboratory.roleKeys.length > 0
-                ? laboratory.roleKeys.map(formatRole).join(" · ")
-                : "Sin roles asignados"}
+    <div className="grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <aside className="lg:pt-1">
+        <div className="flex items-center gap-4 lg:block">
+          <span className="grid size-16 flex-none place-items-center rounded-xl border border-line bg-paper text-guinda lg:size-20">
+            <FlaskConical aria-hidden className="size-8 lg:size-10" />
+          </span>
+          <div className="min-w-0 lg:mt-4">
+            <h1 className="text-2xl leading-tight font-bold">
+              {laboratory.name}
+            </h1>
+            <p className="mt-1 text-muted">
+              {roleNames.length > 0 ? roleNames.join(", ") : "Sin rol"}
             </p>
           </div>
         </div>
-      </section>
+        {primary ? (
+          <Link href={primary.href} className="btn btn-primary mt-5 w-full">
+            {primary.label}
+          </Link>
+        ) : null}
+      </aside>
 
-      <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6 sm:p-8">
-        <h2 className="text-lg font-semibold">Navegación del laboratorio</h2>
-        <p className="mt-2 text-sm leading-6 text-stone-600">
-          Spatial I y II habilitan espacios, ubicaciones jerárquicas y recursos
-          físicos. Reservaciones permite consultar disponibilidad y gestionar
-          tus reservaciones individuales. Inventario permite consultar
-          materiales, herramientas y movimientos. Prácticas permite gestionar
-          instrucciones, sesiones y participantes.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link
-            href={`/app/labs/${slug}/spaces`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
+      <div className="flex min-w-0 flex-col gap-6">
+        {home.academic ? (
+          <Box
+            title="Tus próximas sesiones"
+            icon={CalendarClock}
+            action={{ href: `${base}/academic`, label: "Prácticas" }}
           >
-            Espacios
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/reservations`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
-          >
-            Reservaciones
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/inventory`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
-          >
-            Inventario
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/academic`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
-          >
-            Prácticas
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/attendance`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-          >
-            Asistencia
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/usage`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-          >
-            Uso de maquinaria
-          </Link>
-          {incidentAccess.canReadOwn ||
-          incidentAccess.canReview ||
-          incidentAccess.canCreate ? (
-            <Link
-              href={
-                incidentAccess.canReadOwn
-                  ? `/app/labs/${slug}/incidents`
-                  : incidentAccess.canReview
-                    ? `/app/labs/${slug}/incidents?scope=laboratory`
-                    : `/app/labs/${slug}/incidents/new`
+            {home.academic.sessions.length === 0 ? (
+              <Empty>
+                {teaches ? (
+                  <>
+                    No tienes sesiones programadas.{" "}
+                    <Link
+                      href={`${base}/academic`}
+                      className="font-semibold text-guinda hover:underline"
+                    >
+                      Programa una desde su práctica
+                    </Link>
+                    .
+                  </>
+                ) : (
+                  "No tienes sesiones próximas. Aparecerán aquí cuando tu profesor te inscriba."
+                )}
+              </Empty>
+            ) : (
+              <ul className="divide-y divide-line">
+                {home.academic.sessions.map((session) => {
+                  const open = session.status === "open";
+                  const action = teaches
+                    ? open && home.academic?.canManageAttendance
+                      ? {
+                          href: `${base}/attendance/sessions/${session.id}`,
+                          label: "Pasar lista",
+                          primary: true,
+                        }
+                      : {
+                          href: `${base}/academic/sessions/${session.id}`,
+                          label: "Ver sesión",
+                          primary: false,
+                        }
+                    : open && home.academic?.canCheckIn
+                      ? {
+                          href: `${base}/attendance`,
+                          label: "Registrar asistencia",
+                          primary: true,
+                        }
+                      : {
+                          href: `${base}/academic/practices/${session.practiceId}`,
+                          label: "Ver instrucciones",
+                          primary: false,
+                        };
+                  return (
+                    <li
+                      key={session.id}
+                      className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-x-4 gap-y-3 px-4 py-3 sm:grid-cols-[6rem_minmax(0,1fr)_auto]"
+                    >
+                      <div>
+                        <p className="font-semibold capitalize">
+                          {sessionDay(session.startsAt, now)}
+                        </p>
+                        <p className="text-sm text-muted">
+                          {time.format(session.startsAt)}–
+                          {time.format(session.endsAt)}
+                        </p>
+                      </div>
+                      <div className="min-w-0">
+                        <Link
+                          href={`${base}/academic/sessions/${session.id}`}
+                          className="font-semibold hover:text-guinda hover:underline"
+                        >
+                          {session.practiceTitle}
+                        </Link>
+                        <p className="text-sm">
+                          {open ? (
+                            <span className="font-semibold text-live">
+                              En curso
+                            </span>
+                          ) : (
+                            <span className="text-muted">Programada</span>
+                          )}
+                        </p>
+                      </div>
+                      <Link
+                        href={action.href}
+                        className={`btn col-span-2 sm:col-span-1 ${action.primary ? "btn-primary" : ""}`}
+                      >
+                        {action.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Box>
+        ) : null}
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          {home.incidents ? (
+            <Box
+              title={
+                home.incidentsScope === "laboratory"
+                  ? "Incidencias por atender"
+                  : "Tus reportes"
               }
-              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
+              icon={TriangleAlert}
+              action={
+                can("incident.create")
+                  ? { href: `${base}/incidents/new`, label: "Reportar falla" }
+                  : undefined
+              }
             >
-              Incidencias
-            </Link>
+              {home.incidents.length === 0 ? (
+                <Empty>
+                  {home.incidentsScope === "laboratory"
+                    ? "Nada pendiente."
+                    : "No tienes reportes abiertos."}
+                </Empty>
+              ) : (
+                <ul className="divide-y divide-line">
+                  {home.incidents.slice(0, 4).map((incident) => (
+                    <li key={incident.id}>
+                      <Link
+                        href={`${base}/incidents/${incident.id}${home.incidentsScope === "laboratory" ? "?scope=laboratory" : ""}`}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-paper"
+                      >
+                        <span
+                          className={`size-2 flex-none rounded-full ${incident.severity === "high" ? "bg-red-600" : incident.severity === "medium" ? "bg-pending" : "bg-muted"}`}
+                          aria-hidden
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-semibold">
+                            {incident.targetSnapshot.name}
+                          </span>
+                          <span className="block text-sm text-muted">
+                            Severidad{" "}
+                            {severityLabels[incident.severity].toLowerCase()},{" "}
+                            {statusLabels[incident.status].toLowerCase()}
+                          </span>
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Box>
           ) : null}
-          {maintenanceAccess.canRead ? (
-            <Link
-              href={`/app/labs/${slug}/maintenance`}
-              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
+
+          {home.loans ? (
+            <Box
+              title={
+                home.loansScope === "laboratory"
+                  ? "Préstamos activos"
+                  : "Tus préstamos"
+              }
+              icon={ArrowRightLeft}
+              action={{ href: `${base}/loans`, label: "Ver todos" }}
             >
-              Mantenimiento
-            </Link>
-          ) : null}
-          {loanAccess.canManage || loanAccess.canReadOwn ? (
-            <Link
-              href={`/app/labs/${slug}/loans`}
-              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Préstamos
-            </Link>
-          ) : null}
-          {reports.length ? (
-            <Link
-              href={`/app/labs/${slug}/reports`}
-              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Reportes
-            </Link>
+              {home.loans.length === 0 ? (
+                <Empty>
+                  {home.loansScope === "laboratory"
+                    ? "No hay herramientas prestadas."
+                    : "No tienes herramientas prestadas."}
+                </Empty>
+              ) : (
+                <ul className="divide-y divide-line">
+                  {home.loans.slice(0, 4).map((loan) => (
+                    <li
+                      key={loan.id}
+                      className="flex items-center gap-3 px-4 py-3"
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold">
+                          {loan.itemName}
+                        </span>
+                        <span className="block text-sm text-muted">
+                          {home.loansScope === "laboratory"
+                            ? `${loan.borrowerName}, ${loan.outstanding} pendiente`
+                            : `${loan.outstanding} por devolver`}
+                        </span>
+                      </span>
+                      {loan.overdue ? (
+                        <span className="rounded-full border border-red-300 px-2 text-xs font-semibold text-red-700">
+                          Vencido
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Box>
           ) : null}
         </div>
-        <div className="mt-8 border-t border-stone-200 pt-6">
-          <LogoutButton />
-        </div>
-      </section>
+
+        {!home.academic && !home.incidents && !home.loans ? (
+          <div className="box">
+            <Empty>
+              Aún no tienes actividades en este laboratorio. Pide a tu profesor
+              que revise tu rol.
+            </Empty>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

@@ -533,6 +533,7 @@ test("Incidents I PostgreSQL authorization, historical context, transitions and 
               name: "Test",
               slug: "test",
               roleKeys: [],
+              permissionKeys: [],
             }),
           },
           incidents: service,

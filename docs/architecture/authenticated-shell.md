@@ -40,7 +40,16 @@ La protección no depende de `proxy.ts` o middleware. Cada página servidor prot
 
 La navegación usa `/app/labs/[slug]`. El slug expresa intención, no acceso. `GetLaboratoryBySlug` resuelve un laboratorio activo y después exige `laboratory.read` mediante el `AuthorizationService` existente. Laboratorio inexistente, membresía ajena, membresía inactiva, usuario inactivo y falta de permiso producen la misma respuesta pública de no encontrado, por lo que editar la URL no revela existencia ni datos.
 
-El dashboard inicial muestra solamente nombre de laboratorio, usuario y roles de la membresía. Los módulos operativos aparecen deshabilitados y no muestran estadísticas inventadas.
+El inicio del laboratorio es un tablero con las próximas sesiones, las incidencias y los préstamos de la persona, y con la acción que corresponde a cada sesión. No muestra estadísticas inventadas.
+
+## Shell y navegación
+
+Desde el [ADR 0022](../decisions/0022-laboratory-people-and-guided-navigation.md), `src/app/app/layout.tsx` sólo valida el actor. Cada sección monta el shell (`src/app/_shell/app-shell.tsx`) con la navegación que le corresponde:
+
+- `src/app/app/(home)/layout.tsx`: «Mis laboratorios», notificaciones y contraseña, sin contexto de laboratorio.
+- `src/app/app/labs/[slug]/layout.tsx`: resuelve el laboratorio con `GetLaboratoryBySlug` (que ahora devuelve también `permissionKeys`) y arma con permisos las pestañas (`labNavigation`, en el orden de una práctica) y el menú «+» (`createActions`). La navegación sólo decide qué mostrar; cada página y servicio vuelve a autorizar.
+
+El menú lateral es un `<dialog>` modal (foco atrapado, Esc, cierre al tocar fuera y al navegar) con secciones, cuenta y laboratorios.
 
 ## Logout y cambio de contraseña
 
@@ -58,16 +67,16 @@ Con `.env` configurado, PostgreSQL iniciado y las migraciones aplicadas, el resp
 pnpm bootstrap:development
 ```
 
-El comando es interactivo, no recibe la contraseña como argumento, crea una única identidad local con laboratorio/membresía/rol iniciales y no inicia sesión. Este incremento no lo ejecuta automáticamente. Después se inicia `pnpm dev` y se abre `http://localhost:3000/login`.
+El comando es interactivo, no recibe la contraseña como argumento, crea una única identidad local con laboratorio/membresía/rol iniciales y no inicia sesión. Reutiliza los permisos y roles que sembraron las migraciones; sólo se niega si ya existen usuarios, laboratorios o membresías. Este incremento no lo ejecuta automáticamente. Después se inicia `pnpm dev` y se abre `http://localhost:3000/login`.
 
 ## Limitaciones pendientes
 
 - No hay recuperación de contraseña ni adaptador de correo.
 - No hay registro público, MFA, OIDC ni proveedores sociales.
-- No hay UI para crear cuentas, laboratorios, roles o membresías.
+- La UI permite crear cuentas y membresías con un rol del catálogo («Personas», ADR 0022), pero no crear laboratorios ni roles nuevos.
 - No hay auditoría persistente del login, logout o cambio de credenciales.
 - Los módulos Spatial, Resources, Inventory, Reservations, Academic, Maintenance, Incidents y Giussepe permanecen fuera de alcance.
-- La desactivación administrativa de usuarios y la revocación explícita de todas sus sesiones se abordarán con el caso de uso de administración; el acceso actual ya se deniega en la siguiente solicitud y en nuevos inicios de sesión.
+- «Quitar acceso» desactiva la membresía del laboratorio; la cuenta global (`users.is_active`) no tiene todavía una pantalla. Emitir una contraseña temporal sí revoca todas las sesiones de esa persona.
 
 ## Validación
 
