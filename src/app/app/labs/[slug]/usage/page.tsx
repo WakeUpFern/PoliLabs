@@ -21,7 +21,7 @@ export default async function UsagePage({
         Registra el uso efectivo. La asistencia y las reservaciones se conservan
         por separado.
       </p>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <h2 className="mb-4 text-xl font-semibold">Iniciar uso</h2>
         {options.length ? (
           <UsageForm slug={slug} operation="start" label="Iniciar uso">
@@ -60,10 +60,7 @@ export default async function UsagePage({
         <h2 className="text-xl font-semibold">Mis usos</h2>
         <div className="mt-4 space-y-4">
           {history.map((u) => (
-            <article
-              className="rounded-md border border-line bg-surface p-6"
-              key={u.id}
-            >
+            <article className="box p-6" key={u.id}>
               <p className="font-semibold">
                 {u.endedAt ? "Uso terminado" : "Uso en curso"}
               </p>

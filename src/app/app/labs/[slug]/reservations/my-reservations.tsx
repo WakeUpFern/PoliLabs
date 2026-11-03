@@ -40,10 +40,7 @@ export function MyReservations({
           <h2 className="text-xl font-semibold">{group.title}</h2>
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             {group.rows.map((reservation) => (
-              <article
-                key={reservation.id}
-                className="rounded-md border border-line bg-surface p-6 shadow-sm"
-              >
+              <article key={reservation.id} className="box p-6 shadow-sm">
                 <ReservationSummary reservation={reservation} />
                 <Link
                   className="mt-5 inline-block font-semibold text-guinda"

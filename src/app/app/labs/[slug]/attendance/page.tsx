@@ -22,7 +22,7 @@ export default async function AttendancePage({
   return (
     <div>
       <h1 className="text-3xl font-semibold">Asistencia</h1>
-      <section className="mt-6 space-y-5 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 space-y-5 box p-6">
         <h2 className="text-xl font-semibold">
           {data.location?.name ?? "Sesiones abiertas"}
         </h2>
@@ -74,7 +74,7 @@ export default async function AttendancePage({
           </p>
         ) : null}
       </section>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <h2 className="text-xl font-semibold">Mi asistencia</h2>
         {history.length ? (
           <ul className="mt-4 space-y-3">

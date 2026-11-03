@@ -28,7 +28,7 @@ export default async function ResourceDocumentsPage({
         </Link>
       ) : null}
       {access.canUpload && resource.isActive ? (
-        <section className="mt-6 rounded-md border border-line bg-surface p-6">
+        <section className="mt-6 box p-6">
           <h2 className="mb-4 text-xl font-semibold">
             Subir manual o documento
           </h2>
@@ -41,7 +41,7 @@ export default async function ResourceDocumentsPage({
           />
         </section>
       ) : null}
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <h2 className="mb-4 text-xl font-semibold">Manuales y documentos</h2>
         <DocumentList
           slug={slug}

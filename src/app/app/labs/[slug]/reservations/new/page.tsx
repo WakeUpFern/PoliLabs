@@ -50,7 +50,7 @@ export default async function NewReservationPage({
       <p className="mt-3 text-muted">
         {data.laboratory.name} · Fechas y horas en America/Mexico_City.
       </p>
-      <section className="mt-8 rounded-md border border-line bg-surface p-6 shadow-sm sm:p-8">
+      <section className="mt-8 box p-6 shadow-sm sm:p-8">
         {data.spaces.length ? (
           <ReservationForm
             spaces={data.spaces}

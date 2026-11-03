@@ -31,7 +31,7 @@ export default async function SessionPage({
         </p>
         <h1 className="mt-2 text-3xl font-semibold">Sesión de laboratorio</h1>
       </header>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <dl className="grid gap-6 sm:grid-cols-2">
           <div>
             <dt className="text-sm text-muted">Espacio</dt>
@@ -97,7 +97,7 @@ export default async function SessionPage({
         </p>
       ) : null}
       {data.canManage ? (
-        <section className="mt-6 rounded-md border border-line bg-surface p-6">
+        <section className="mt-6 box p-6">
           <h2 className="text-xl font-semibold">Participantes registrados</h2>
           {data.participants.length ? (
             <ul className="mt-4 space-y-2">
@@ -112,7 +112,7 @@ export default async function SessionPage({
       ) : null}
       {data.options ? (
         <>
-          <section className="mt-6 rounded-md border border-line bg-surface p-6">
+          <section className="mt-6 box p-6">
             <h2 className="mb-5 text-xl font-semibold">Editar sesión</h2>
             <AcademicForm
               slug={slug}
@@ -132,7 +132,7 @@ export default async function SessionPage({
               />
             </AcademicForm>
           </section>
-          <section className="mt-6 rounded-md border border-line bg-surface p-6">
+          <section className="mt-6 box p-6">
             <AcademicForm
               slug={slug}
               operation="participants"
@@ -154,7 +154,7 @@ export default async function SessionPage({
         </>
       ) : null}
       {data.canEdit && (s.status === "scheduled" || s.status === "open") ? (
-        <section className="mt-6 flex flex-wrap gap-5 rounded-md border border-line bg-surface p-6">
+        <section className="mt-6 flex flex-wrap gap-5 box p-6">
           <AcademicForm
             slug={slug}
             operation="session-status"

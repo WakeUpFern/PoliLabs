@@ -18,7 +18,7 @@ export function LoanCard({
   returnForm?: { canAdjust: boolean } | null;
 }) {
   return (
-    <article className="rounded-md border border-line bg-surface p-5">
+    <article className="box p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <h3 className="font-semibold break-words">
           {showItem && linkItem ? (

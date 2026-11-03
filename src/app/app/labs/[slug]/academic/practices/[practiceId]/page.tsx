@@ -32,14 +32,14 @@ export default async function PracticePage({
         </p>
         <h1 className="mt-2 text-3xl font-semibold">{p.title}</h1>
       </header>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <h2 className="text-lg font-semibold">Instrucciones</h2>
         <p className="mt-4 whitespace-pre-wrap leading-7 text-muted">
           {p.instructions}
         </p>
       </section>
       {data.canManage && p.status !== "closed" ? (
-        <section className="mt-6 rounded-md border border-line bg-surface p-6">
+        <section className="mt-6 box p-6">
           <details>
             <summary className="cursor-pointer font-semibold">
               Editar práctica
@@ -107,7 +107,7 @@ export default async function PracticePage({
             <Link
               key={s.id}
               href={`/app/labs/${slug}/academic/sessions/${s.id}`}
-              className="rounded-md border border-line bg-surface p-5"
+              className="box p-5"
             >
               <p className="font-semibold">
                 {formatTime(s.startsAt)} → {formatTime(s.endsAt)}
@@ -123,7 +123,7 @@ export default async function PracticePage({
         </div>
       </section>
       {data.options ? (
-        <section className="mt-8 rounded-md border border-line bg-surface p-6">
+        <section className="mt-8 box p-6">
           <h2 className="mb-5 text-xl font-semibold">Programar sesión</h2>
           <AcademicForm
             slug={slug}

@@ -27,10 +27,7 @@ export default async function MaintenancePage({
       />
       <div className="mt-6 space-y-4">
         {resources.map((r) => (
-          <article
-            key={r.id}
-            className="rounded-md border border-line bg-surface p-6"
-          >
+          <article key={r.id} className="box p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <Link
                 className="font-semibold break-words text-guinda"

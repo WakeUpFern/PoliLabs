@@ -48,7 +48,7 @@ export default async function ReservationDetailPage({
           Reservación creada correctamente.
         </p>
       )}
-      <article className="mt-8 rounded-md border border-line bg-surface p-6 shadow-sm sm:p-8">
+      <article className="mt-8 box p-6 shadow-sm sm:p-8">
         <ReservationSummary reservation={reservation} />
         <p className="mt-5 text-sm text-muted">
           Creada:{" "}

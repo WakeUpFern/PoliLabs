@@ -56,7 +56,7 @@ export function FloorPlanCanvas({
     ...elements.filter((e) => e.kind === "resource"),
   ];
   return (
-    <div className="overflow-x-auto rounded-md border border-line bg-surface p-3">
+    <div className="overflow-x-auto box p-3">
       <svg
         role="img"
         aria-label={`Plano ${name}`}

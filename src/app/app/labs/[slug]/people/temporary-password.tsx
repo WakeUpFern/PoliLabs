@@ -27,7 +27,7 @@ export function TemporaryPassword({
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <code
           aria-label="Contraseña temporal"
-          className="rounded-md border border-line bg-surface px-3 py-1.5 text-lg font-semibold tracking-wide"
+          className="box px-3 py-1.5 text-lg font-semibold tracking-wide"
         >
           {password}
         </code>

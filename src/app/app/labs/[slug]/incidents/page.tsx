@@ -58,10 +58,7 @@ export default async function IncidentsPage({
       ) : null}
       <div className="mt-4 space-y-4">
         {entries.map((i) => (
-          <article
-            key={i.id}
-            className="rounded-md border border-line bg-surface p-6"
-          >
+          <article key={i.id} className="box p-6">
             <Link
               className="font-semibold text-guinda"
               href={`/app/labs/${slug}/incidents/${i.id}?scope=${scope}`}

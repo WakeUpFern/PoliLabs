@@ -53,7 +53,7 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
       </div>
 
       {catalog.canManage ? (
-        <section className="mt-8 rounded-md border border-line bg-surface p-6 shadow-sm sm:p-8">
+        <section className="mt-8 box p-6 shadow-sm sm:p-8">
           <h2 className="text-xl font-semibold">Registrar espacio</h2>
           <p className="mt-2 text-sm leading-6 text-muted">
             La capacidad puede dejarse vacía hasta contar con el dato validado.
@@ -77,10 +77,7 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
                 space.slug,
               );
               return (
-                <article
-                  key={space.id}
-                  className="rounded-md border border-line bg-surface p-6 shadow-sm"
-                >
+                <article key={space.id} className="box p-6 shadow-sm">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h3 className="text-lg font-semibold">{space.name}</h3>

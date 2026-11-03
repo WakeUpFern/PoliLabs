@@ -218,10 +218,7 @@ export function ReservationGrid({
         {notice}
       </p>
 
-      <div
-        ref={scroller}
-        className="max-h-[70vh] overflow-auto rounded-md border border-line bg-surface"
-      >
+      <div ref={scroller} className="max-h-[70vh] overflow-auto box">
         <div
           className="grid"
           style={{

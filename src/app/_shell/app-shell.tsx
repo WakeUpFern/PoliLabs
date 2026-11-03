@@ -132,33 +132,11 @@ export function AppShell({
   // Following a link closes whatever menu it came from.
   useEffect(() => {
     sheet.current?.close();
+    // Header menus are native popovers: a click outside or Escape closes them.
     header.current
-      ?.querySelectorAll("details[open]")
-      .forEach((menu) => menu.removeAttribute("open"));
+      ?.querySelectorAll<HTMLElement>("[popover]")
+      .forEach((menu) => menu.hidePopover());
   }, [pathname]);
-
-  // Header menus close on a click outside them or on Escape.
-  useEffect(() => {
-    const closeMenus = (event: Event) => {
-      header.current?.querySelectorAll("details[open]").forEach((menu) => {
-        if (
-          event instanceof KeyboardEvent
-            ? event.key === "Escape"
-            : !menu.contains(event.target as Node)
-        ) {
-          menu.removeAttribute("open");
-          if (event instanceof KeyboardEvent)
-            menu.querySelector("summary")?.focus();
-        }
-      });
-    };
-    document.addEventListener("click", closeMenus);
-    document.addEventListener("keydown", closeMenus);
-    return () => {
-      document.removeEventListener("click", closeMenus);
-      document.removeEventListener("keydown", closeMenus);
-    };
-  }, []);
 
   const closeSheet = () => sheet.current?.close();
 
@@ -184,14 +162,20 @@ export function AppShell({
           </p>
 
           {laboratory && laboratory.create.length > 0 ? (
-            <details className="relative">
-              <summary
+            <>
+              <button
+                type="button"
+                popoverTarget="create-menu"
                 aria-label="Crear"
-                className="icon-btn cursor-pointer list-none [&::-webkit-details-marker]:hidden"
+                className="icon-btn"
               >
                 <Plus aria-hidden className="size-4.5" />
-              </summary>
-              <div className="menu-popover w-60">
+              </button>
+              <div
+                id="create-menu"
+                popover="auto"
+                className="menu-popover w-60"
+              >
                 {laboratory.create.map((action) => (
                   <Link key={action.key} href={action.href} className="nav-row">
                     <NavIcon name={action.icon} className="nav-icon" />
@@ -199,7 +183,7 @@ export function AppShell({
                   </Link>
                 ))}
               </div>
-            </details>
+            </>
           ) : null}
           <Link
             href="/app/notifications"
@@ -219,61 +203,59 @@ export function AppShell({
             ) : null}
           </Link>
 
-          <details className="relative">
-            <summary
-              aria-label="Cuenta"
-              title={`${user.name}\n${user.email}`}
-              className="grid size-11 cursor-pointer list-none place-items-center rounded-full [&::-webkit-details-marker]:hidden"
-            >
-              <span className="grid size-8 place-items-center rounded-full bg-white/15 text-xs font-bold text-white ring-1 ring-white/30">
-                {initials(user.name)}
-              </span>
-            </summary>
-            <div className="menu-popover w-72">
-              <div className="px-2.5 pt-1.5 pb-2.5 text-sm">
-                <p className="truncate font-semibold">{user.name}</p>
-                <p className="truncate text-muted">{user.email}</p>
-              </div>
-              <hr className="mb-1.5 border-line" />
-              <nav aria-label="Cuenta" className="flex flex-col gap-0.5">
-                {account.map((item) => (
-                  <Link
-                    key={item.key}
-                    href={item.href}
-                    aria-current={
-                      current?.key === item.key ? "page" : undefined
-                    }
-                    className="nav-row"
-                  >
-                    <NavIcon name={item.icon} className="nav-icon" />
-                    <span className="nav-label">{item.label}</span>
-                  </Link>
-                ))}
-              </nav>
-              {laboratories.length > 1 ? (
-                <>
-                  <hr className="my-1.5 border-line" />
-                  <p className="nav-group">Tus laboratorios</p>
-                  <div className="flex flex-col gap-0.5">
-                    {laboratories.map((lab) => (
-                      <Link
-                        key={lab.slug}
-                        href={`/app/labs/${encodeURIComponent(lab.slug)}`}
-                        className="nav-row"
-                      >
-                        <span className="grid size-5 flex-none place-items-center rounded bg-guinda-tint text-[0.6875rem] font-bold text-guinda">
-                          {lab.name.slice(0, 1)}
-                        </span>
-                        <span className="nav-label truncate">{lab.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </>
-              ) : null}
-              <hr className="my-1.5 border-line" />
-              <LogoutButton variant="menu" />
+          <button
+            type="button"
+            popoverTarget="account-menu"
+            aria-label="Cuenta"
+            title={`${user.name}\n${user.email}`}
+            className="grid size-11 cursor-pointer place-items-center rounded-full"
+          >
+            <span className="grid size-8 place-items-center rounded-full bg-white/15 text-xs font-bold text-white ring-1 ring-white/30">
+              {initials(user.name)}
+            </span>
+          </button>
+          <div id="account-menu" popover="auto" className="menu-popover w-72">
+            <div className="px-2.5 pt-1.5 pb-2.5 text-sm">
+              <p className="truncate font-semibold">{user.name}</p>
+              <p className="truncate text-muted">{user.email}</p>
             </div>
-          </details>
+            <hr className="mb-1.5 border-line" />
+            <nav aria-label="Cuenta" className="flex flex-col gap-0.5">
+              {account.map((item) => (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  aria-current={current?.key === item.key ? "page" : undefined}
+                  className="nav-row"
+                >
+                  <NavIcon name={item.icon} className="nav-icon" />
+                  <span className="nav-label">{item.label}</span>
+                </Link>
+              ))}
+            </nav>
+            {laboratories.length > 1 ? (
+              <>
+                <hr className="my-1.5 border-line" />
+                <p className="nav-group">Tus laboratorios</p>
+                <div className="flex flex-col gap-0.5">
+                  {laboratories.map((lab) => (
+                    <Link
+                      key={lab.slug}
+                      href={`/app/labs/${encodeURIComponent(lab.slug)}`}
+                      className="nav-row"
+                    >
+                      <span className="grid size-5 flex-none place-items-center rounded bg-guinda-tint text-[0.6875rem] font-bold text-guinda">
+                        {lab.name.slice(0, 1)}
+                      </span>
+                      <span className="nav-label truncate">{lab.name}</span>
+                    </Link>
+                  ))}
+                </div>
+              </>
+            ) : null}
+            <hr className="my-1.5 border-line" />
+            <LogoutButton variant="menu" />
+          </div>
         </div>
       </header>
 

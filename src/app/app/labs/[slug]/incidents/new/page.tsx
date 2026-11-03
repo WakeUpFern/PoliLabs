@@ -30,7 +30,7 @@ export default async function NewIncidentPage({
         El reporte quedará a tu nombre y con la hora de registro. Describe lo
         observado; no necesitas identificar a una persona responsable.
       </p>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         {options.targets.length ? (
           <ReportForm
             slug={slug}

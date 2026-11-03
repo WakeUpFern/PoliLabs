@@ -21,10 +21,7 @@ export default async function ResourceUsageTrace({
       </p>
       <div className="mt-6 space-y-4">
         {history.map((u) => (
-          <article
-            key={u.id}
-            className="rounded-md border border-line bg-surface p-6"
-          >
+          <article key={u.id} className="box p-6">
             <p className="break-all">
               {u.resourceName} · {u.userName}
             </p>

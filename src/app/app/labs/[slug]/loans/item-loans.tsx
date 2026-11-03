@@ -48,7 +48,7 @@ export async function ItemLoans({
         ) : null}
       </p>
       {options ? (
-        <div className="rounded-md border border-line bg-surface p-6">
+        <div className="box p-6">
           <h2 className="mb-5 text-xl font-semibold">Registrar préstamo</h2>
           {Number(summary.available) > 0 ? (
             <LendForm

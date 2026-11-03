@@ -70,10 +70,7 @@ export default async function InventoryPage({
       ) : (
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           {data.items.map((item) => (
-            <article
-              key={item.id}
-              className="rounded-md border border-line bg-surface p-6 shadow-sm"
-            >
+            <article key={item.id} className="box p-6 shadow-sm">
               <h2 className="text-xl font-semibold">{item.name}</h2>
               <p className="mt-2 text-muted">
                 {TYPE_LABELS[item.type]} ·{" "}

@@ -35,10 +35,7 @@ export default async function SessionAttendancePage({
       ) : null}
       <div className="mt-6 space-y-4">
         {rows.map((r) => (
-          <article
-            key={r.userId}
-            className="rounded-md border border-line bg-surface p-6"
-          >
+          <article key={r.userId} className="box p-6">
             <h2 className="font-semibold">{r.name}</h2>
             <p className="mt-2">
               {r.attendance
@@ -106,7 +103,7 @@ export default async function SessionAttendancePage({
           </article>
         ))}
       </div>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <h2 className="text-xl font-semibold">
           Historial de registros y correcciones
         </h2>

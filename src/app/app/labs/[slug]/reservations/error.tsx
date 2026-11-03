@@ -1,7 +1,7 @@
 "use client";
 export default function ReservationsError({ reset }: { reset: () => void }) {
   return (
-    <div role="alert" className="rounded-md border border-line bg-surface p-8">
+    <div role="alert" className="box p-8">
       <h2 className="text-xl font-semibold">
         No pudimos completar la operación
       </h2>

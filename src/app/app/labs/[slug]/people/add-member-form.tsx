@@ -60,7 +60,7 @@ export function AddMemberForm({
             {roles.map((role) => (
               <label
                 key={role.key}
-                className="flex cursor-pointer gap-3 rounded-md border border-line bg-surface p-3 transition has-[:checked]:border-guinda has-[:checked]:bg-guinda-tint/50"
+                className="flex cursor-pointer gap-3 box p-3 transition has-[:checked]:border-guinda has-[:checked]:bg-guinda-tint/50"
               >
                 <input
                   type="radio"

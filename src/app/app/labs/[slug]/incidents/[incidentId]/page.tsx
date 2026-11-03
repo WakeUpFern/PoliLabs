@@ -57,7 +57,7 @@ export default async function IncidentDetailPage({
       <h1 className="mt-6 text-3xl font-semibold">
         {targetLabels[i.targetKind]}: {i.targetSnapshot.name}
       </h1>
-      <section className="mt-6 space-y-3 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 space-y-3 box p-6">
         <p>
           {statusLabels[i.status]} · Severidad{" "}
           {severityLabels[i.severity].toLowerCase()}
@@ -92,7 +92,7 @@ export default async function IncidentDetailPage({
         </div>
       </section>
       {access.canResolve && i.status !== "resolved" ? (
-        <section className="mt-6 rounded-md border border-line bg-surface p-6">
+        <section className="mt-6 box p-6">
           <h2 className="mb-4 text-xl font-semibold">Seguimiento</h2>
           <IncidentForm
             key={`${i.id}:${i.version}`}

@@ -1,7 +1,7 @@
 "use client";
 export default function AcademicErrorPage({ reset }: { reset: () => void }) {
   return (
-    <section className="rounded-md border border-line bg-surface p-8">
+    <section className="box p-8">
       <h2 className="text-xl font-semibold">
         No se pudo cargar el módulo académico
       </h2>
