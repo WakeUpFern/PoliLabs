@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { unlessDenied } from "@/app/_lib/unless-denied";
 import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
@@ -50,15 +51,6 @@ const statusTone = {
   blocked: "bg-amber-100 text-amber-900",
 };
 
-async function optional<T>(load: () => Promise<T>, fallback: T) {
-  try {
-    return await load();
-  } catch (error) {
-    if (error instanceof AuthorizationDeniedError) return fallback;
-    throw error;
-  }
-}
-
 export default async function FloorPlanPage({ params, searchParams }: Props) {
   const [{ slug, spaceSlug, planId }, query, { actorUserId }] =
     await Promise.all([params, searchParams, requireCurrentActor()]);
@@ -94,8 +86,14 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
 
   const scope = { actorUserId, laboratoryId: laboratory.id, spaceId: space.id };
   const [resources, locations] = await Promise.all([
-    optional(async () => (await listResources.execute(scope)).resources, []),
-    optional(async () => (await listLocations.execute(scope)).locations, []),
+    unlessDenied(
+      async () => (await listResources.execute(scope)).resources,
+      [],
+    ),
+    unlessDenied(
+      async () => (await listLocations.execute(scope)).locations,
+      [],
+    ),
   ]);
 
   const defaults = nextHourInterval(new Date());
