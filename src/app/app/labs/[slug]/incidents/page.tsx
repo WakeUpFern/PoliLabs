@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ReportDownloads } from "../reports/report-downloads";
 import { incidentsWeb } from "@/modules/incidents/web/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { incidentPageData } from "./page-data";
 import { statusLabels, severityLabels, targetLabels } from "./labels";
 export default async function IncidentsPage({
@@ -58,10 +58,7 @@ export default async function IncidentsPage({
       ) : null}
       <div className="mt-4 space-y-4">
         {entries.map((i) => (
-          <article
-            key={i.id}
-            className="rounded-md border border-line bg-surface p-6"
-          >
+          <article key={i.id} className="box p-6">
             <Link
               className="font-semibold text-guinda"
               href={`/app/labs/${slug}/incidents/${i.id}?scope=${scope}`}
@@ -76,7 +73,7 @@ export default async function IncidentsPage({
               {i.description}
             </p>
             <p className="mt-2 text-sm text-muted">
-              {i.reporterName} · {formatAcademicTime(i.createdAt)}
+              {i.reporterName} · {formatTime(i.createdAt)}
             </p>
           </article>
         ))}

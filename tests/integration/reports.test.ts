@@ -2,11 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { ReportService } from "../../src/modules/reports/application/reports";
 import { DrizzleReportStore } from "../../src/modules/reports/infrastructure/report-store";
-import {
-  addDays,
-  reportDate,
-  type ReportTable,
-} from "../../src/modules/reports/domain/reports";
+import type { ReportTable } from "../../src/modules/reports/domain/reports";
+import { addDays, localDate } from "../../src/shared/time";
 import { CreateInventoryItem } from "../../src/modules/inventory/application/inventory";
 import { DrizzleInventoryStore } from "../../src/modules/inventory/infrastructure/inventory-store";
 import { LoanService } from "../../src/modules/loans/application/loans";
@@ -82,7 +79,7 @@ test("Reports I exports laboratory-scoped data in PostgreSQL", async (t) => {
       severity: "high",
     });
     const performedAt = new Date(Date.now() - 1800000).toISOString();
-    const today = reportDate(new Date());
+    const today = localDate(new Date());
     await maintenance.record({
       ...actor,
       resourceId: resourceRows[0].id,

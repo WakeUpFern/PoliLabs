@@ -10,7 +10,7 @@ import type {
   ResourceWriter,
   ResourceWriteResult,
 } from "./spatial-organization-repository";
-import { isSpatialId } from "../domain/spatial-id";
+import { isId } from "@/shared/validation";
 
 type ResourceInput = {
   actorUserId: string;
@@ -62,7 +62,7 @@ export class UpdateResource {
   ) {}
 
   async execute(input: ResourceInput & { resourceId: string }) {
-    if (!isSpatialId(input.resourceId)) throw new ResourceNotFoundError();
+    if (!isId(input.resourceId)) throw new ResourceNotFoundError();
     const values = normalizeResourceInput(input);
     await authorize(this.authorization, input);
     const result = await this.repository.updateResource({
@@ -86,7 +86,7 @@ export class DeactivateResource {
       resourceId: string;
     },
   ) {
-    if (!isSpatialId(input.resourceId)) throw new ResourceNotFoundError();
+    if (!isId(input.resourceId)) throw new ResourceNotFoundError();
     await authorize(this.authorization, input);
     const result = await this.repository.deactivateResource({
       ...input,

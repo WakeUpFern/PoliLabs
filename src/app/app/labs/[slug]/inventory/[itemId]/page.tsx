@@ -9,6 +9,7 @@ import {
   MOVEMENT_LABELS,
   locationLabel,
 } from "@/modules/inventory/web/inventory-web";
+import { formatTime } from "@/shared/time";
 import { InventoryForm } from "../inventory-form";
 import { ItemLoans } from "../../loans/item-loans";
 export default async function InventoryDetailPage({
@@ -69,13 +70,13 @@ export default async function InventoryDetailPage({
       <ItemLoans slug={slug} itemId={item.id} />
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         {item.isActive && data.canAdjust && (
-          <section className="rounded-md border border-line bg-surface p-6">
+          <section className="box p-6">
             <h2 className="mb-5 text-xl font-semibold">Registrar movimiento</h2>
             <InventoryForm slug={slug} mode="movement" item={item} />
           </section>
         )}
         {item.isActive && data.canManage && (
-          <section className="rounded-md border border-line bg-surface p-6">
+          <section className="box p-6">
             <h2 className="mb-5 text-xl font-semibold">Editar artículo</h2>
             <InventoryForm
               slug={slug}
@@ -94,10 +95,7 @@ export default async function InventoryDetailPage({
         ) : (
           <div className="mt-4 space-y-3">
             {data.movements.map((movement) => (
-              <article
-                key={movement.id}
-                className="rounded-md border border-line bg-surface p-5"
-              >
+              <article key={movement.id} className="box p-5">
                 <div className="flex flex-wrap justify-between gap-3">
                   <h3 className="font-semibold">
                     {MOVEMENT_LABELS[movement.type]} · {movement.quantity}{" "}
@@ -107,11 +105,7 @@ export default async function InventoryDetailPage({
                     dateTime={movement.createdAt}
                     className="text-sm text-muted"
                   >
-                    {new Intl.DateTimeFormat("es-MX", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                      timeZone: "America/Mexico_City",
-                    }).format(new Date(movement.createdAt))}
+                    {formatTime(movement.createdAt)}
                   </time>
                 </div>
                 <p className="mt-2">{movement.notes}</p>

@@ -1,21 +1,13 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
+import { authorizeLocked } from "@/modules/identity/infrastructure/authorize-locked";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "@/infrastructure/database/schema";
-import {
-  AuthorizationService,
-  type AuthorizationGrant,
-} from "@/modules/identity/application/authorization-service";
+import { type AuthorizationGrant } from "@/modules/identity/application/authorization-service";
 import { DrizzleAuthorizationReader } from "@/modules/identity/infrastructure/access-repository";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import type { PermissionKey } from "@/modules/identity/domain/access-catalog";
-import {
-  laboratories,
-  laboratoryMemberships,
-  membershipRoles,
-  permissions,
-  rolePermissions,
-  roles,
-} from "@/modules/identity/infrastructure/access-schema";
+import { laboratoryMemberships } from "@/modules/identity/infrastructure/access-schema";
 import { users } from "@/modules/identity/infrastructure/auth-schema";
 import { spaces } from "@/modules/spatial/infrastructure/spatial-schema";
 import {
@@ -38,51 +30,6 @@ import {
 } from "./academic-schema";
 type Database = NodePgDatabase<typeof schema>;
 type Transaction = Parameters<Parameters<Database["transaction"]>[0]>[0];
-function postgresError(error: unknown): { code?: string } {
-  if (!error || typeof error !== "object") return {};
-  if ("code" in error) return error as { code: string };
-  if ("cause" in error) return postgresError(error.cause);
-  return {};
-}
-async function authorizeLocked(
-  tx: Transaction,
-  context: AcademicContext,
-  permission: PermissionKey,
-) {
-  // Protect membership, actor, lab and concrete permission paths until commit.
-  await tx
-    .select({ id: laboratoryMemberships.id })
-    .from(users)
-    .innerJoin(
-      laboratoryMemberships,
-      and(
-        eq(laboratoryMemberships.userId, users.id),
-        eq(laboratoryMemberships.laboratoryId, context.laboratoryId),
-      ),
-    )
-    .innerJoin(
-      laboratories,
-      eq(laboratories.id, laboratoryMemberships.laboratoryId),
-    )
-    .innerJoin(
-      membershipRoles,
-      eq(membershipRoles.membershipId, laboratoryMemberships.id),
-    )
-    .innerJoin(roles, eq(roles.id, membershipRoles.roleId))
-    .innerJoin(rolePermissions, eq(rolePermissions.roleId, roles.id))
-    .innerJoin(
-      permissions,
-      and(
-        eq(permissions.id, rolePermissions.permissionId),
-        eq(permissions.key, permission),
-      ),
-    )
-    .where(eq(users.id, context.actorUserId))
-    .for("share");
-  return new AuthorizationService(new DrizzleAuthorizationReader(tx)).authorize(
-    { ...context, requiredPermission: permission },
-  );
-}
 class DrizzleAcademicSession implements AcademicSession {
   constructor(private readonly tx: Transaction) {}
   async list(context: AcademicContext, manage: boolean) {

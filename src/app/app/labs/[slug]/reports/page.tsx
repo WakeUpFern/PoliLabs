@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
-import { REPORT_TIME_ZONE } from "@/modules/reports/domain/reports";
+import { TIME_ZONE } from "@/shared/time";
 import { REPORT_ERROR_MESSAGES } from "@/modules/reports/web/reports-web";
 import { reportsWeb } from "@/modules/reports/web/services";
 import { ReportForm } from "./report-form";
@@ -31,9 +31,9 @@ export default async function ReportsPage({
       <p className="mt-3 text-muted">
         Exporta información del laboratorio en CSV o PDF. Cada reporte se genera
         al momento con tus permisos actuales; las fechas usan la hora de{" "}
-        {REPORT_TIME_ZONE} y el periodo incluye ambos días. Inventario,
-        Préstamos, Mantenimiento e Incidencias ofrecen las mismas descargas en
-        su propia sección.
+        {TIME_ZONE} y el periodo incluye ambos días. Inventario, Préstamos,
+        Mantenimiento e Incidencias ofrecen las mismas descargas en su propia
+        sección.
       </p>
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
         {data.reports.map((report) => (

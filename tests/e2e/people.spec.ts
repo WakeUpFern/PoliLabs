@@ -47,6 +47,19 @@ test("a teacher enrols a student who then sets their own password", async ({
   await expect(
     page.getByRole("heading", { name: "Tus próximas sesiones" }),
   ).toBeVisible();
+  // Header menus are native popovers: Escape and a click outside close them.
+  const accountMenu = page.locator("#account-menu");
+  await page.getByRole("button", { name: "Cuenta" }).click();
+  await expect(accountMenu.getByText(lab.users.teacher.email)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(accountMenu).toBeHidden();
+  await page.getByRole("button", { name: "Cuenta" }).click();
+  await expect(accountMenu).toBeVisible();
+  // The menu opens at the right; the heading's left edge stays uncovered on phones.
+  await page
+    .getByRole("heading", { name: "Tus próximas sesiones" })
+    .click({ position: { x: 2, y: 2 } });
+  await expect(accountMenu).toBeHidden();
   await openSection(page, "Personas");
   await expect(page.getByRole("dialog", { name: "Más" })).toBeHidden();
   await expect(page.getByRole("heading", { name: "Personas" })).toBeVisible();

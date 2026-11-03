@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { IncidentForm } from "../incident-form";
 import { incidentPageData } from "../page-data";
 import { statusLabels, severityLabels, targetLabels } from "../labels";
@@ -11,14 +11,14 @@ function UsageEntry({ usage, at }: { usage: IncidentUsage; at: Date }) {
     <div className="rounded-md bg-paper p-4">
       <p className="font-semibold">{usage.userName}</p>
       <p className="mt-1 text-sm">
-        Inicio: {formatAcademicTime(usage.startedAt)} ·{" "}
+        Inicio: {formatTime(usage.startedAt)} ·{" "}
         {openAtReport
           ? "Abierto al reportar"
-          : `Fin: ${formatAcademicTime(usage.endedAt!)}`}
+          : `Fin: ${formatTime(usage.endedAt!)}`}
       </p>
       {openAtReport && usage.endedAt ? (
         <p className="mt-1 text-sm">
-          Finalizó después del reporte: {formatAcademicTime(usage.endedAt)}
+          Finalizó después del reporte: {formatTime(usage.endedAt)}
         </p>
       ) : null}
       <p className="mt-1 text-sm">
@@ -57,14 +57,14 @@ export default async function IncidentDetailPage({
       <h1 className="mt-6 text-3xl font-semibold">
         {targetLabels[i.targetKind]}: {i.targetSnapshot.name}
       </h1>
-      <section className="mt-6 space-y-3 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 space-y-3 box p-6">
         <p>
           {statusLabels[i.status]} · Severidad{" "}
           {severityLabels[i.severity].toLowerCase()}
         </p>
         <p className="whitespace-pre-wrap break-words">{i.description}</p>
         <p>
-          Reportó: {i.reporterName} · {formatAcademicTime(i.createdAt)}
+          Reportó: {i.reporterName} · {formatTime(i.createdAt)}
         </p>
         <p>Espacio al reportar: {i.targetSnapshot.spaceName}</p>
         <p>
@@ -77,7 +77,7 @@ export default async function IncidentDetailPage({
         </p>
         {i.resolution ? (
           <p className="whitespace-pre-wrap break-words">
-            Resolución: {i.resolution} · {formatAcademicTime(i.resolvedAt!)}
+            Resolución: {i.resolution} · {formatTime(i.resolvedAt!)}
           </p>
         ) : null}
       </section>
@@ -92,7 +92,7 @@ export default async function IncidentDetailPage({
         </div>
       </section>
       {access.canResolve && i.status !== "resolved" ? (
-        <section className="mt-6 rounded-md border border-line bg-surface p-6">
+        <section className="mt-6 box p-6">
           <h2 className="mb-4 text-xl font-semibold">Seguimiento</h2>
           <IncidentForm
             key={`${i.id}:${i.version}`}
@@ -137,7 +137,7 @@ export default async function IncidentDetailPage({
               </p>
               <p className="mt-1 whitespace-pre-wrap break-words">{e.note}</p>
               <p className="mt-1 text-sm text-muted">
-                {formatAcademicTime(e.createdAt)} · {e.source}
+                {formatTime(e.createdAt)} · {e.source}
               </p>
             </li>
           ))}

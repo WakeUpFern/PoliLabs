@@ -41,7 +41,7 @@ export default async function LaboratoriesPage({
           </p>
         </section>
       ) : (
-        <ul className="mt-8 divide-y divide-line overflow-hidden rounded-md border border-line bg-surface">
+        <ul className="mt-8 divide-y divide-line overflow-hidden box">
           {laboratories.map((laboratory) => (
             <li key={laboratory.id}>
               <Link

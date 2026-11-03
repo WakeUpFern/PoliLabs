@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  localToInstant,
-  formatReservationTime,
-} from "../src/modules/reservations/web/time";
+import { localToInstant, formatTime } from "../src/shared/time";
 import { reservationActionError } from "../src/modules/reservations/web/reservation-web";
 import { reservationFormFingerprint } from "../src/modules/reservations/web/form-state";
 import {
@@ -12,6 +9,7 @@ import {
   ReservationNotFoundError,
 } from "../src/modules/reservations/domain/reservation";
 import { AuthorizationDeniedError } from "../src/modules/identity/domain/access-errors";
+const invalid = () => new ReservationInputError();
 
 test("Mexico City conversion ignores process timezone and sends explicit UTC", () => {
   const previous = process.env.TZ;
@@ -19,18 +17,18 @@ test("Mexico City conversion ignores process timezone and sends explicit UTC", (
     for (const zone of ["UTC", "Asia/Tokyo", "America/Los_Angeles"]) {
       process.env.TZ = zone;
       assert.equal(
-        localToInstant("2026-10-06T10:15"),
+        localToInstant("2026-10-06T10:15", invalid),
         "2026-10-06T16:15:00.000Z",
       );
       assert.equal(
-        localToInstant("2026-07-01T10:15"),
+        localToInstant("2026-07-01T10:15", invalid),
         "2026-07-01T16:15:00.000Z",
       );
       assert.equal(
-        localToInstant("2022-07-01T10:15"),
+        localToInstant("2022-07-01T10:15", invalid),
         "2022-07-01T15:15:00.000Z",
       );
-      assert.match(formatReservationTime("2026-10-06T16:15:00.000Z"), /10:15/);
+      assert.match(formatTime("2026-10-06T16:15:00.000Z"), /10:15/);
     }
   } finally {
     if (previous === undefined) delete process.env.TZ;
@@ -47,8 +45,11 @@ test("rejects invalid dates, historical gaps and ambiguous local times", () => {
     "2022-04-03T02:30",
     "2022-10-30T01:30",
   ])
-    assert.throws(() => localToInstant(value), ReservationInputError);
-  assert.equal(localToInstant("2028-02-29T23:30"), "2028-03-01T05:30:00.000Z");
+    assert.throws(() => localToInstant(value, invalid), ReservationInputError);
+  assert.equal(
+    localToInstant("2028-02-29T23:30", invalid),
+    "2028-03-01T05:30:00.000Z",
+  );
 });
 test("public errors hide internals and preserve uniform not-found semantics", () => {
   assert.match(

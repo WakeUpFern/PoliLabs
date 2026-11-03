@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { unlessDenied } from "@/app/_lib/unless-denied";
 import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
@@ -9,7 +10,7 @@ import {
   nextHourInterval,
 } from "@/modules/reservations/web/calendar";
 import { reservationWeb } from "@/modules/reservations/web/services";
-import { formatReservationTime } from "@/modules/reservations/web/time";
+import { formatTime } from "@/shared/time";
 import { FloorPlanError } from "@/modules/spatial/domain/floor-plan";
 import { SpaceNotFoundError } from "@/modules/spatial/domain/space";
 import {
@@ -50,15 +51,6 @@ const statusTone = {
   blocked: "bg-amber-100 text-amber-900",
 };
 
-async function optional<T>(load: () => Promise<T>, fallback: T) {
-  try {
-    return await load();
-  } catch (error) {
-    if (error instanceof AuthorizationDeniedError) return fallback;
-    throw error;
-  }
-}
-
 export default async function FloorPlanPage({ params, searchParams }: Props) {
   const [{ slug, spaceSlug, planId }, query, { actorUserId }] =
     await Promise.all([params, searchParams, requireCurrentActor()]);
@@ -94,8 +86,14 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
 
   const scope = { actorUserId, laboratoryId: laboratory.id, spaceId: space.id };
   const [resources, locations] = await Promise.all([
-    optional(async () => (await listResources.execute(scope)).resources, []),
-    optional(async () => (await listLocations.execute(scope)).locations, []),
+    unlessDenied(
+      async () => (await listResources.execute(scope)).resources,
+      [],
+    ),
+    unlessDenied(
+      async () => (await listLocations.execute(scope)).locations,
+      [],
+    ),
   ]);
 
   const defaults = nextHourInterval(new Date());
@@ -181,7 +179,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
       {occupancy !== null || intervalError ? (
         <form
           method="get"
-          className="mt-6 grid gap-4 rounded-md border border-line bg-surface p-5 shadow-sm sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+          className="mt-6 grid gap-4 box p-5 shadow-sm sm:grid-cols-[1fr_1fr_auto] sm:items-end"
         >
           <div>
             <label htmlFor="start" className="mb-2 block font-semibold">
@@ -216,7 +214,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
             {intervalError
               ? "Revisa el intervalo: el fin debe ser posterior al inicio, sin superar 42 días, en hora válida de America/Mexico_City."
               : occupancy
-                ? `Ocupación de ${formatReservationTime(occupancy.startsAt)} a ${formatReservationTime(occupancy.endsAt)}. ${occupancy.canCreate ? "Selecciona un recurso libre para reservarlo." : ""}`
+                ? `Ocupación de ${formatTime(occupancy.startsAt)} a ${formatTime(occupancy.endsAt)}. ${occupancy.canCreate ? "Selecciona un recurso libre para reservarlo." : ""}`
                 : null}
           </p>
         </form>
@@ -267,7 +265,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
             {placedResources.map((resource) => (
               <li
                 key={resource.id}
-                className="flex items-center justify-between gap-3 rounded-md border border-line bg-surface p-4"
+                className="flex items-center justify-between gap-3 box p-4"
               >
                 <span className="font-semibold">{resource.name}</span>
                 <span className="flex items-center gap-3">
@@ -303,7 +301,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
             {occupancy.entries.map((entry, index) => (
               <li
                 key={`${entry.startsAt}-${index}`}
-                className="rounded-md border border-line bg-surface px-4 py-3 text-sm"
+                className="box px-4 py-3 text-sm"
               >
                 <span className="font-semibold">
                   {formatCalendarTime(entry.startsAt)}–
@@ -318,7 +316,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
 
       {data.canManage ? (
         <section className="mt-10 grid gap-6 xl:grid-cols-2">
-          <div className="rounded-md border border-line bg-surface p-5 shadow-sm">
+          <div className="box p-5 shadow-sm">
             <h2 className="text-lg font-semibold">Colocar elemento</h2>
             <p className="mt-1 mb-4 text-sm text-muted">
               Las coordenadas son celdas desde la esquina superior izquierda
@@ -345,7 +343,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
                 .map(({ id, name }) => ({ id, name }))}
             />
           </div>
-          <div className="rounded-md border border-line bg-surface p-5 shadow-sm">
+          <div className="box p-5 shadow-sm">
             <h2 className="mb-4 text-lg font-semibold">Datos del plano</h2>
             <ActionForm
               action={updateFloorPlanAction.bind(
@@ -400,10 +398,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
               <h2 className="text-lg font-semibold">Elementos colocados</h2>
               <ul className="mt-4 grid gap-3 lg:grid-cols-2">
                 {elements.map((element) => (
-                  <li
-                    key={element.id}
-                    className="rounded-md border border-line bg-surface p-4"
-                  >
+                  <li key={element.id} className="box p-4">
                     <details>
                       <summary className="cursor-pointer font-semibold">
                         {element.name}

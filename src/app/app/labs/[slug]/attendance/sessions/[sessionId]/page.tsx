@@ -2,7 +2,7 @@ import Link from "next/link";
 import { attendanceWeb } from "@/modules/attendance/web/services";
 import { ATTENDANCE_LABELS } from "@/modules/attendance/web/attendance-web";
 import { attendanceService } from "@/modules/attendance/infrastructure/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { AttendanceForm } from "../../attendance-form";
 import { attendancePageData } from "../../page-data";
 export default async function SessionAttendancePage({
@@ -35,10 +35,7 @@ export default async function SessionAttendancePage({
       ) : null}
       <div className="mt-6 space-y-4">
         {rows.map((r) => (
-          <article
-            key={r.userId}
-            className="rounded-md border border-line bg-surface p-6"
-          >
+          <article key={r.userId} className="box p-6">
             <h2 className="font-semibold">{r.name}</h2>
             <p className="mt-2">
               {r.attendance
@@ -46,7 +43,7 @@ export default async function SessionAttendancePage({
                 : "Sin registro"}{" "}
               ·{" "}
               {r.attendance?.checkInAt
-                ? formatAcademicTime(r.attendance.checkInAt)
+                ? formatTime(r.attendance.checkInAt)
                 : "Sin hora de entrada"}
             </p>
             {r.attendance?.locationId ? (
@@ -106,7 +103,7 @@ export default async function SessionAttendancePage({
           </article>
         ))}
       </div>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <h2 className="text-xl font-semibold">
           Historial de registros y correcciones
         </h2>
@@ -116,7 +113,7 @@ export default async function SessionAttendancePage({
               {rows.find((r) => r.userId === e.userId)?.name ?? "Participante"}{" "}
               ·{" "}
               {e.action === "attendance.corrected" ? "Corrección" : "Registro"}{" "}
-              por {e.actorName} · {formatAcademicTime(e.createdAt)}
+              por {e.actorName} · {formatTime(e.createdAt)}
               {e.reason ? ` · ${e.reason}` : ""}
             </li>
           ))}

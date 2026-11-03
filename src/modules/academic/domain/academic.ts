@@ -1,3 +1,10 @@
+import {
+  parseId,
+  parseInstant,
+  parseOneOf,
+  SOURCES,
+  type Source,
+} from "@/shared/validation";
 export const PRACTICE_STATUSES = ["draft", "published", "closed"] as const;
 export const SESSION_STATUSES = [
   "scheduled",
@@ -5,10 +12,9 @@ export const SESSION_STATUSES = [
   "closed",
   "cancelled",
 ] as const;
-export const ACADEMIC_SOURCES = ["WEB", "API", "AGENT", "SYSTEM"] as const;
 export type PracticeStatus = (typeof PRACTICE_STATUSES)[number];
 export type SessionStatus = (typeof SESSION_STATUSES)[number];
-export type AcademicSource = (typeof ACADEMIC_SOURCES)[number];
+export type AcademicSource = Source;
 export class AcademicError extends Error {
   constructor(
     public readonly code:
@@ -19,18 +25,10 @@ export class AcademicError extends Error {
   }
 }
 export function academicId(value: string) {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      value,
-    )
-  )
-    throw new AcademicError("input");
-  return value.toLowerCase();
+  return parseId(value, () => new AcademicError("input"));
 }
 export function academicSource(value: string): AcademicSource {
-  if (!ACADEMIC_SOURCES.includes(value as AcademicSource))
-    throw new AcademicError("input");
-  return value as AcademicSource;
+  return parseOneOf(SOURCES, value, () => new AcademicError("input"));
 }
 export function practiceValues(input: { title: string; instructions: string }) {
   const title = input.title.trim();
@@ -45,24 +43,7 @@ export function practiceValues(input: { title: string; instructions: string }) {
   return { title, instructions };
 }
 function instant(value: string) {
-  if (
-    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(
-      value,
-    )
-  )
-    throw new AcademicError("input");
-  const date = new Date(value);
-  const [year, month, day] = value.slice(0, 10).split("-").map(Number);
-  if (
-    !Number.isFinite(date.getTime()) ||
-    month < 1 ||
-    month > 12 ||
-    day < 1 ||
-    day > new Date(Date.UTC(year, month, 0)).getUTCDate() ||
-    Number(value.slice(11, 13)) > 23
-  )
-    throw new AcademicError("input");
-  return date;
+  return parseInstant(value, () => new AcademicError("input"));
 }
 export function sessionValues(input: {
   spaceId: string;

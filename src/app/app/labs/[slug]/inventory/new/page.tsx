@@ -29,7 +29,7 @@ export default async function NewInventoryPage({
         Antes de registrar, busca si el artículo ya existe. Si llegó más
         material, registra una entrada en su detalle.
       </p>
-      <section className="mt-8 rounded-md border border-line bg-surface p-6">
+      <section className="mt-8 box p-6">
         <InventoryForm
           slug={slug}
           mode="create"

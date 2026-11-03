@@ -1,9 +1,11 @@
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { AcademicService } from "../application/academic";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import type { AuthorizationService } from "@/modules/identity/application/authorization-service";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { AcademicError } from "../domain/academic";
-import { localToInstant } from "./time";
+const invalid = () => new AcademicError("input");
+import { localToInstant } from "@/shared/time";
 export const PRACTICE_LABELS = {
   draft: "Borrador",
   published: "Publicada",
@@ -61,12 +63,7 @@ export class AcademicWeb {
     },
   ) {}
   private async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const laboratory = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    const actor = { actorUserId, laboratoryId: laboratory.id };
+    const { laboratory, actor } = await laboratoryContext(this.services, slug);
     const grant = await this.services.authorization.authorize({
       ...actor,
       requiredPermission: "academic.read",
@@ -177,8 +174,8 @@ export class AcademicWeb {
     const values = () => ({
       spaceId: value("spaceId"),
       teacherUserId: value("teacherUserId"),
-      startsAt: localToInstant(value("startsLocal")),
-      endsAt: localToInstant(value("endsLocal")),
+      startsAt: localToInstant(value("startsLocal"), invalid),
+      endsAt: localToInstant(value("endsLocal"), invalid),
     });
     switch (operation) {
       case "create-practice": {

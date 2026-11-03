@@ -1,13 +1,11 @@
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
-import { AcademicError } from "@/modules/academic/domain/academic";
-import { localToInstant } from "@/modules/academic/web/time";
+import { addDays, localDate, localToInstant } from "@/shared/time";
 import type { ReportService } from "../application/reports";
 import { toCsv } from "../domain/csv";
 import {
-  addDays,
   MAX_PERIOD_DAYS,
   MAX_REPORT_ROWS,
-  reportDate,
   ReportError,
   reportFileName,
   reportFormat,
@@ -25,12 +23,7 @@ export const REPORT_ERROR_MESSAGES = {
 function localDay(value: string | null) {
   if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value))
     throw new ReportError("input");
-  try {
-    return localToInstant(`${value}T00:00`);
-  } catch (error) {
-    if (error instanceof AcademicError) throw new ReportError("input");
-    throw error;
-  }
+  return localToInstant(`${value}T00:00`, () => new ReportError("input"));
 }
 function localRange(from: string | null, to: string | null) {
   if (!from && !to) return { from: null, to: null };
@@ -50,19 +43,14 @@ export class ReportsWeb {
     },
   ) {}
   private async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const lab = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    return { actorUserId, laboratoryId: lab.id };
+    return (await laboratoryContext(this.services, slug)).actor;
   }
   // Allowed reports, optionally narrowed to the ones a section offers.
   async page(slug: string, only?: readonly ReportKey[]) {
     const reports = (
       await this.services.reports.catalog(await this.context(slug))
     ).filter((report) => !only || only.includes(report.key));
-    const today = reportDate(this.services.clock?.() ?? new Date());
+    const today = localDate(this.services.clock?.() ?? new Date());
     return { reports, defaults: { from: addDays(today, -29), to: today } };
   }
   async catalog(slug: string) {

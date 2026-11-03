@@ -1,3 +1,4 @@
+import { parseId, SOURCES, type Source } from "@/shared/validation";
 export const ITEM_TYPES = ["consumable", "reusable_tool"] as const;
 export const UNITS = ["piece", "metre", "litre", "kilogram"] as const;
 export const MOVEMENT_TYPES = [
@@ -10,11 +11,10 @@ export const MOVEMENT_TYPES = [
   "adjustment_in",
   "adjustment_out",
 ] as const;
-export const SOURCES = ["WEB", "API", "AGENT", "SYSTEM"] as const;
 export type ItemType = (typeof ITEM_TYPES)[number];
 export type Unit = (typeof UNITS)[number];
 export type MovementType = (typeof MOVEMENT_TYPES)[number];
-export type Source = (typeof SOURCES)[number];
+export type { Source };
 export type InventoryErrorCode =
   | "input"
   | "not-found"
@@ -32,13 +32,7 @@ export class InventoryError extends Error {
   }
 }
 export function requireId(value: string) {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      value,
-    )
-  )
-    throw new InventoryError("input");
-  return value;
+  return parseId(value, () => new InventoryError("input"));
 }
 export function normalizeItem(input: {
   name: string;

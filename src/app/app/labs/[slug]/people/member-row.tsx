@@ -104,7 +104,7 @@ export function MemberRow({
                 name="roleKey"
                 value={role}
                 onChange={(event) => setRole(event.target.value)}
-                className="min-h-9 rounded-md border border-line bg-surface px-2.5 text-sm"
+                className="min-h-9 box px-2.5 text-sm"
               >
                 {!currentRole ? <option value="">Sin rol</option> : null}
                 {roles.map((option) => (

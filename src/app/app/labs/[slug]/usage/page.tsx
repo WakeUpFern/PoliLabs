@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
 import { usageWeb } from "@/modules/usage/web/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { UsageForm } from "./usage-form";
 import { usagePageData } from "./page-data";
 export default async function UsagePage({
@@ -21,7 +21,7 @@ export default async function UsagePage({
         Registra el uso efectivo. La asistencia y las reservaciones se conservan
         por separado.
       </p>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <h2 className="mb-4 text-xl font-semibold">Iniciar uso</h2>
         {options.length ? (
           <UsageForm slug={slug} operation="start" label="Iniciar uso">
@@ -43,7 +43,7 @@ export default async function UsagePage({
                   >
                     {o.resourceName} ·{" "}
                     {o.kind === "academic" ? "Sesión" : "Reservación"}:{" "}
-                    {o.title} · {formatAcademicTime(o.startsAt)}
+                    {o.title} · {formatTime(o.startsAt)}
                   </option>
                 ))}
               </select>
@@ -60,17 +60,14 @@ export default async function UsagePage({
         <h2 className="text-xl font-semibold">Mis usos</h2>
         <div className="mt-4 space-y-4">
           {history.map((u) => (
-            <article
-              className="rounded-md border border-line bg-surface p-6"
-              key={u.id}
-            >
+            <article className="box p-6" key={u.id}>
               <p className="font-semibold">
                 {u.endedAt ? "Uso terminado" : "Uso en curso"}
               </p>
               <p className="mt-2 break-all">Recurso: {u.resourceName}</p>
               <p className="mt-2 text-sm">
-                Inicio: {formatAcademicTime(u.startedAt)} · Fin:{" "}
-                {u.endedAt ? formatAcademicTime(u.endedAt) : "En curso"}
+                Inicio: {formatTime(u.startedAt)} · Fin:{" "}
+                {u.endedAt ? formatTime(u.endedAt) : "En curso"}
               </p>
               {u.sessionId ? (
                 <Link

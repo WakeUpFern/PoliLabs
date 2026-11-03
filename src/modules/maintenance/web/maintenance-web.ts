@@ -1,7 +1,7 @@
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
-import { localToInstant } from "@/modules/academic/web/time";
-import { AcademicError } from "@/modules/academic/domain/academic";
+import { localToInstant } from "@/shared/time";
 import type { MaintenanceService } from "../application/maintenance";
 import { MaintenanceError } from "../domain/maintenance";
 export type MaintenanceActionState = {
@@ -41,12 +41,7 @@ export class MaintenanceWeb {
     },
   ) {}
   async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const lab = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    return { actorUserId, laboratoryId: lab.id };
+    return (await laboratoryContext(this.services, slug)).actor;
   }
   async access(slug: string) {
     return this.services.maintenance.access(await this.context(slug));
@@ -74,14 +69,10 @@ export class MaintenanceWeb {
   async record(slug: string, resourceId: string, form: FormData) {
     const context = await this.context(slug);
     const field = (key: string) => String(form.get(key) ?? "");
-    let performedAt: string;
-    try {
-      // The form states America/Mexico_City wall time; services receive offsets.
-      performedAt = localToInstant(field("performedLocal"));
-    } catch (error) {
-      if (error instanceof AcademicError) throw new MaintenanceError("input");
-      throw error;
-    }
+    const performedAt = localToInstant(
+      field("performedLocal"),
+      () => new MaintenanceError("input"),
+    );
     const itemIds = form.getAll("materialItemId").map(String);
     const quantities = form.getAll("materialQuantity").map(String);
     if (itemIds.length !== quantities.length)

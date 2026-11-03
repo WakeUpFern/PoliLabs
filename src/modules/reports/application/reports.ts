@@ -1,12 +1,11 @@
+import { addDays, localDate } from "@/shared/time";
 import {
-  addDays,
   assertWithinLimit,
   describePeriod,
   MAINTENANCE_HORIZON_DAYS,
   MAX_REPORT_ROWS,
   REPORT_LIST,
   REPORTS,
-  reportDate,
   reportKey,
   reportPeriod,
   reportUuid,
@@ -40,7 +39,7 @@ function read(
       return tx.incidents(range, LIMIT);
     case "resource-attention":
       return tx.resourceAttention(
-        addDays(reportDate(now), MAINTENANCE_HORIZON_DAYS),
+        addDays(localDate(now), MAINTENANCE_HORIZON_DAYS),
         LIMIT,
       );
   }

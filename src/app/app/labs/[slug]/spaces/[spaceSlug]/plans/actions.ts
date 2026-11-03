@@ -1,36 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { resolveSpaceContext } from "../space-context";
 import { redirect } from "next/navigation";
-import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
-import { getLaboratoryBySlug } from "@/modules/identity/infrastructure/services";
 import { FloorPlanError } from "@/modules/spatial/domain/floor-plan";
 import { SpaceNotFoundError } from "@/modules/spatial/domain/space";
-import {
-  floorPlans,
-  getSpace,
-} from "@/modules/spatial/infrastructure/services";
+import { floorPlans } from "@/modules/spatial/infrastructure/services";
 import type { OrganizationActionState } from "../organization-form-state";
-
-async function resolveContext(laboratorySlug: string, spaceSlug: string) {
-  const { actorUserId } = await requireCurrentActor();
-  const laboratory = await getLaboratoryBySlug.execute({
-    actorUserId,
-    laboratorySlug,
-  });
-  const space = await getSpace.execute({
-    actorUserId,
-    laboratoryId: laboratory.id,
-    slug: spaceSlug,
-  });
-  return {
-    actorUserId,
-    laboratoryId: laboratory.id,
-    spaceId: space.id,
-    path: `/app/labs/${laboratorySlug}/spaces/${spaceSlug}`,
-  };
-}
 
 const messages: Record<FloorPlanError["code"], string> = {
   input:
@@ -72,7 +49,7 @@ export async function createFloorPlanAction(
 ): Promise<OrganizationActionState> {
   let planId: string;
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     const plan = await floorPlans.create({
       ...context,
       name: field(form, "name"),
@@ -95,7 +72,7 @@ export async function updateFloorPlanAction(
   form: FormData,
 ): Promise<OrganizationActionState> {
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await floorPlans.update({
       ...context,
       floorPlanId,
@@ -121,7 +98,7 @@ export async function deactivateFloorPlanAction(
   void _form;
   let path: string;
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await floorPlans.deactivate({ ...context, floorPlanId });
     revalidatePath(context.path);
     path = context.path;
@@ -139,7 +116,7 @@ export async function addFloorPlanElementAction(
   form: FormData,
 ): Promise<OrganizationActionState> {
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     const kind = field(form, "kind");
     await floorPlans.addElement({
       ...context,
@@ -165,7 +142,7 @@ export async function moveFloorPlanElementAction(
   form: FormData,
 ): Promise<OrganizationActionState> {
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await floorPlans.moveElement({
       ...context,
       floorPlanId,
@@ -190,7 +167,7 @@ export async function removeFloorPlanElementAction(
   void _state;
   void _form;
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await floorPlans.removeElement({ ...context, floorPlanId, elementId });
     revalidatePath(`${context.path}/plans/${floorPlanId}`);
     return { status: "success", message: "Elemento retirado." };

@@ -22,7 +22,7 @@ export default async function NewPracticePage({
         Se guardará como borrador. Publícala cuando las instrucciones estén
         listas.
       </p>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <AcademicForm
           slug={slug}
           operation="create-practice"

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { localDateTime } from "../../src/modules/reservations/web/calendar";
+import { instantToLocal as localDateTime } from "../../src/shared/time";
 import { seedLaboratory, type SeededLaboratory } from "./support/seed";
 import { expectNoHorizontalOverflow, openAs } from "./support/session";
 

@@ -10,10 +10,10 @@ import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { getLaboratoryBySlug } from "@/modules/identity/infrastructure/services";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { LABORATORY_ROLE_CATALOG } from "@/modules/identity/domain/access-catalog";
+import { addDays, localDate, TIME_ZONE } from "@/shared/time";
 import { laboratoryHome } from "./home-data";
 import { severityLabels, statusLabels } from "./incidents/labels";
 
-const TIME_ZONE = "America/Mexico_City";
 const day = new Intl.DateTimeFormat("es-MX", {
   timeZone: TIME_ZONE,
   weekday: "short",
@@ -26,13 +26,11 @@ const time = new Intl.DateTimeFormat("es-MX", {
   minute: "2-digit",
   hourCycle: "h23",
 });
-const dateKey = new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE });
 
 function sessionDay(startsAt: Date, now: Date) {
-  const key = dateKey.format(startsAt);
-  if (key === dateKey.format(now)) return "Hoy";
-  if (key === dateKey.format(new Date(now.getTime() + 86_400_000)))
-    return "Mañana";
+  const key = localDate(startsAt);
+  if (key === localDate(now)) return "Hoy";
+  if (key === addDays(localDate(now), 1)) return "Mañana";
   return day.format(startsAt);
 }
 

@@ -1,5 +1,5 @@
 import { notificationsWeb } from "@/modules/notifications/web/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { markAllNotificationsRead, openNotification } from "./actions";
 export default async function NotificationsPage() {
   const entries = await notificationsWeb.page();
@@ -31,7 +31,7 @@ export default async function NotificationsPage() {
               <h2 className="mt-2 break-words font-semibold">{n.title}</h2>
               <p className="mt-1 break-words text-muted">{n.body}</p>
               <p className="mt-2 text-sm text-muted">
-                {formatAcademicTime(n.createdAt)}
+                {formatTime(n.createdAt)}
               </p>
               <button
                 className="mt-3 text-sm font-semibold text-guinda"

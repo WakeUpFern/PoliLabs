@@ -1,4 +1,5 @@
-import { isSpatialId } from "@/modules/spatial/domain/spatial-id";
+import { parseInstant } from "@/shared/validation";
+import { isId } from "@/shared/validation";
 
 export class ReservationInputError extends Error {}
 export class ReservationTargetError extends Error {}
@@ -23,29 +24,13 @@ export type Reservation = ReservationTarget &
 export type IntervalInput = { startsAt: string; endsAt: string };
 
 function instant(value: string) {
-  if (
-    typeof value !== "string" ||
-    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(
-      value,
-    )
-  )
-    throw new ReservationInputError(
-      "An explicit ISO timestamp offset is required.",
-    );
-  const date = new Date(value);
-  // Date.parse normalizes impossible calendar dates, so validate the calendar separately.
-  const [year, month, day] = value.slice(0, 10).split("-").map(Number);
-  const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  if (
-    !Number.isFinite(date.getTime()) ||
-    month < 1 ||
-    month > 12 ||
-    day < 1 ||
-    day > days ||
-    Number(value.slice(11, 13)) > 23
-  )
-    throw new ReservationInputError("Invalid instant.");
-  return date;
+  return parseInstant(
+    value,
+    () =>
+      new ReservationInputError(
+        "An explicit ISO timestamp offset is required.",
+      ),
+  );
 }
 
 export function normalizeInterval(input: IntervalInput): ReservationInterval {
@@ -63,10 +48,10 @@ export function requireFutureStart(interval: ReservationInterval, now: Date) {
 
 export function normalizeTarget(input: ReservationTarget): ReservationTarget {
   if (
-    !isSpatialId(input.spaceId) ||
+    !isId(input.spaceId) ||
     typeof input.isExclusive !== "boolean" ||
     !Array.isArray(input.resourceIds) ||
-    input.resourceIds.some((id) => !isSpatialId(id))
+    input.resourceIds.some((id) => !isId(id))
   )
     throw new ReservationInputError("Invalid reservation target.");
   const resourceIds = input.resourceIds.map((id) => id.toLowerCase()).sort();

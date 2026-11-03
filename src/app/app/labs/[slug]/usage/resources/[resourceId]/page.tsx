@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { usageWeb } from "@/modules/usage/web/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { usagePageData } from "../../page-data";
 export default async function ResourceUsageTrace({
   params,
@@ -21,16 +21,13 @@ export default async function ResourceUsageTrace({
       </p>
       <div className="mt-6 space-y-4">
         {history.map((u) => (
-          <article
-            key={u.id}
-            className="rounded-md border border-line bg-surface p-6"
-          >
+          <article key={u.id} className="box p-6">
             <p className="break-all">
               {u.resourceName} · {u.userName}
             </p>
             <p className="mt-2">
-              {formatAcademicTime(u.startedAt)} →{" "}
-              {u.endedAt ? formatAcademicTime(u.endedAt) : "En curso"}
+              {formatTime(u.startedAt)} →{" "}
+              {u.endedAt ? formatTime(u.endedAt) : "En curso"}
             </p>
             <p className="mt-2">
               {u.sessionId

@@ -10,8 +10,7 @@ import { ensureRoleCatalog } from "../src/modules/identity/infrastructure/role-c
 import { createBootstrapAuth } from "../src/modules/identity/infrastructure/bootstrap-auth";
 import { CreateReservation } from "../src/modules/reservations/application/reservations";
 import { DrizzleReservationStore } from "../src/modules/reservations/infrastructure/reservation-store";
-import { localToInstant } from "../src/modules/reservations/web/time";
-import { localDateTime } from "../src/modules/reservations/web/calendar";
+import { addDays, localDate, localToInstant } from "../src/shared/time";
 import { FloorPlanService } from "../src/modules/spatial/application/floor-plans";
 import { DrizzleFloorPlanStore } from "../src/modules/spatial/infrastructure/floor-plan-store";
 
@@ -178,8 +177,9 @@ async function main() {
     });
 
     // Tomorrow, in America/Mexico_City wall time.
-    const day = localDateTime(Date.now() + 86_400_000).slice(0, 10);
-    const at = (time: string) => localToInstant(`${day}T${time}`);
+    const day = addDays(localDate(new Date()), 1);
+    const at = (time: string) =>
+      localToInstant(`${day}T${time}`, () => new Error(`Invalid time ${time}`));
     const academic = new AcademicService(new DrizzleAcademicStore(db));
     const practice = await academic.createPractice({
       ...responsable,

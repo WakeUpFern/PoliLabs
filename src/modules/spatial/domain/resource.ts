@@ -1,4 +1,4 @@
-import { isSpatialId } from "./spatial-id";
+import { isId } from "@/shared/validation";
 
 export class ResourceInputError extends Error {
   constructor(message: string) {
@@ -45,7 +45,7 @@ export function normalizeResourceInput(input: {
   const name = input.name.trim();
   const locationId = input.locationId?.trim() || null;
   if (!name) throw new ResourceInputError("Resource name is required.");
-  if (locationId && !isSpatialId(locationId))
+  if (locationId && !isId(locationId))
     throw new ResourceInputError("Resource location id is invalid.");
   return { name, locationId };
 }

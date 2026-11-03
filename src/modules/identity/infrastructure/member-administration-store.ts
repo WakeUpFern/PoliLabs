@@ -1,3 +1,5 @@
+import { isId } from "@/shared/validation";
+import { postgresError } from "@/infrastructure/database/postgres-error";
 import { and, asc, eq, inArray, ne, sql } from "drizzle-orm";
 import { hashPassword } from "better-auth/crypto";
 import { randomBytes } from "node:crypto";
@@ -30,15 +32,6 @@ import {
   roles,
 } from "./access-schema";
 import { accounts, sessions, users } from "./auth-schema";
-
-const UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-function postgresCode(error: unknown): string | undefined {
-  if (!error || typeof error !== "object") return undefined;
-  if ("code" in error && typeof error.code === "string") return error.code;
-  return "cause" in error ? postgresCode(error.cause) : undefined;
-}
 
 export const temporaryPasswords: TemporaryPasswords = {
   generate: () =>
@@ -137,7 +130,7 @@ class DrizzleMemberTransaction implements MemberTransaction {
   }
 
   async member(laboratoryId: string, membershipId: string) {
-    if (!UUID.test(membershipId)) return null;
+    if (!isId(membershipId)) return null;
     // Serialize concurrent changes to the same membership.
     await this.tx
       .select({ id: laboratoryMemberships.id })
@@ -230,7 +223,7 @@ class DrizzleMemberTransaction implements MemberTransaction {
       });
       return user.id;
     } catch (error) {
-      if (postgresCode(error) === "23505")
+      if (postgresError(error).code === "23505")
         throw new MemberAdministrationError("exists");
       throw error;
     }
@@ -251,7 +244,7 @@ class DrizzleMemberTransaction implements MemberTransaction {
         .values({ membershipId: membership.id, roleId: input.roleId });
       return membership.id;
     } catch (error) {
-      if (postgresCode(error) === "23505")
+      if (postgresError(error).code === "23505")
         throw new MemberAdministrationError("exists");
       throw error;
     }

@@ -1,3 +1,4 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
 import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import {
   authorizeLocked,
@@ -26,12 +27,6 @@ import type {
   DocumentStore,
   DocumentTransaction,
 } from "../application/document-store";
-function postgresError(error: unknown): { code?: string; message?: string } {
-  if (!error || typeof error !== "object") return {};
-  if ("code" in error) return error as { code: string; message?: string };
-  if ("cause" in error) return postgresError(error.cause);
-  return {};
-}
 const summaryColumns = {
   id: documents.id,
   title: documents.title,

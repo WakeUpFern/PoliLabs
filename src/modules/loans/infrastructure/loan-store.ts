@@ -1,3 +1,4 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
 import { and, asc, desc, eq, inArray, lte, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import {
@@ -37,12 +38,6 @@ import {
   type ReturnRequest,
 } from "../domain/loans";
 import type { LoanStore, LoanTransaction } from "../application/loan-store";
-function postgresError(error: unknown): { code?: string; message?: string } {
-  if (!error || typeof error !== "object") return {};
-  if ("code" in error) return error as { code: string; message?: string };
-  if ("cause" in error) return postgresError(error.cause);
-  return {};
-}
 const borrowers = alias(users, "loan_borrowers");
 const actors = alias(users, "loan_actors");
 const returnActors = alias(users, "loan_return_actors");

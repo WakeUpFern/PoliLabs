@@ -35,7 +35,7 @@ export default async function AcademicPage({
           <Link
             key={p.id}
             href={`/app/labs/${slug}/academic/practices/${p.id}`}
-            className="rounded-md border border-line bg-surface p-6 transition hover:border-guinda"
+            className="box p-6 transition hover:border-guinda"
           >
             <span className="text-xs font-bold uppercase text-guinda">
               {PRACTICE_LABELS[p.status]}

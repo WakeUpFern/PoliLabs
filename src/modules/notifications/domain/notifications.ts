@@ -1,3 +1,4 @@
+import { parseId } from "@/shared/validation";
 // Notifications I: pure rules that turn business events into in-app
 // notifications and transactional email deliveries (SRS §19, §33 criterion 14).
 export class NotificationError extends Error {
@@ -7,13 +8,7 @@ export class NotificationError extends Error {
   }
 }
 export function notificationId(value: string) {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      value,
-    )
-  )
-    throw new NotificationError("input");
-  return value.toLowerCase();
+  return parseId(value, () => new NotificationError("input"));
 }
 
 export type NotificationType = "incident.reported" | "incident.resolved";

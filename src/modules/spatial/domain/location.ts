@@ -1,4 +1,4 @@
-import { isSpatialId } from "./spatial-id";
+import { isId } from "@/shared/validation";
 
 export class LocationInputError extends Error {
   constructor(message: string) {
@@ -52,7 +52,26 @@ export function normalizeLocationInput(input: {
   const name = input.name.trim();
   const parentId = input.parentId?.trim() || null;
   if (!name) throw new LocationInputError("Location name is required.");
-  if (parentId && !isSpatialId(parentId))
+  if (parentId && !isId(parentId))
     throw new LocationInputError("Parent location id is invalid.");
   return { name, parentId };
+}
+
+type PathNode = { id: string; name: string; parentId: string | null };
+// Names from the root down to this location; a corrupt cycle stops the walk.
+export function locationPath<T extends PathNode>(
+  location: T,
+  byId: ReadonlyMap<string, T>,
+) {
+  const names: string[] = [];
+  const visited = new Set<string>();
+  for (
+    let current: T | undefined = location;
+    current && !visited.has(current.id);
+    current = current.parentId ? byId.get(current.parentId) : undefined
+  ) {
+    visited.add(current.id);
+    names.unshift(current.name);
+  }
+  return names;
 }

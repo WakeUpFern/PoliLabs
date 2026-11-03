@@ -1,12 +1,11 @@
 import {
   formatReportTime,
-  reportDate,
   MAINTENANCE_HORIZON_DAYS,
-  REPORT_TIME_ZONE,
   type ReportCell,
   type ReportColumn,
   type ReportKey,
 } from "./reports";
+import { localDate, TIME_ZONE } from "@/shared/time";
 
 // Rows as read from PostgreSQL; quantities are numeric(18,3) text.
 export type StockRow = {
@@ -130,7 +129,7 @@ const INCIDENT_STATUSES: Record<string, string> = {
 const label = (labels: Record<string, string>, value: string) =>
   labels[value] ?? value;
 
-const TIME = `(${REPORT_TIME_ZONE})`;
+const TIME = `(${TIME_ZONE})`;
 const col = (
   header: string,
   kind: ReportColumn["kind"],
@@ -330,7 +329,7 @@ const attention: Projection<AttentionRow> = {
     formatReportTime(r.lastPerformedAt),
     r.lastType ? label(MAINTENANCE_TYPES, r.lastType) : null,
     r.nextDueOn,
-    attentionReason(r, reportDate(now)),
+    attentionReason(r, localDate(now)),
   ],
 };
 

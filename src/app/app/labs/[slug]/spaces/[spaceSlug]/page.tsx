@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { getLaboratoryBySlug } from "@/modules/identity/infrastructure/services";
-import type { LocationDetails } from "@/modules/spatial/domain/location";
+import { locationPath } from "@/modules/spatial/domain/location";
 import { SpaceNotFoundError } from "@/modules/spatial/domain/space";
 import {
   floorPlans,
@@ -30,23 +30,6 @@ import { LocationForm } from "./location-form";
 import { ResourceForm } from "./resource-form";
 
 type Props = { params: Promise<{ slug: string; spaceSlug: string }> };
-
-function locationPath(
-  location: LocationDetails,
-  byId: ReadonlyMap<string, LocationDetails>,
-) {
-  const names = [location.name];
-  const visited = new Set([location.id]);
-  let parentId = location.parentId;
-  while (parentId && !visited.has(parentId)) {
-    visited.add(parentId);
-    const parent = byId.get(parentId);
-    if (!parent) break;
-    names.unshift(parent.name);
-    parentId = parent.parentId;
-  }
-  return names.join(" › ");
-}
 
 export default async function SpaceOrganizationPage({ params }: Props) {
   const [{ slug, spaceSlug }, { actorUserId }] = await Promise.all([
@@ -106,10 +89,9 @@ export default async function SpaceOrganizationPage({ params }: Props) {
     locationCatalog.locations.map((location) => [location.id, location]),
   );
   const sortedLocations = [...locationCatalog.locations].sort((left, right) =>
-    locationPath(left, locationsById).localeCompare(
-      locationPath(right, locationsById),
-      "es",
-    ),
+    locationPath(left, locationsById)
+      .join(" › ")
+      .localeCompare(locationPath(right, locationsById).join(" › "), "es"),
   );
   const createLocation = createLocationAction.bind(null, slug, spaceSlug);
   const createResource = createResourceAction.bind(null, slug, spaceSlug);
@@ -166,7 +148,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                 <Link
                   key={plan.id}
                   href={`/app/labs/${slug}/spaces/${spaceSlug}/plans/${plan.id}`}
-                  className="flex items-center justify-between rounded-md border border-line bg-surface p-5 font-semibold shadow-sm transition hover:border-guinda"
+                  className="flex items-center justify-between box p-5 font-semibold shadow-sm transition hover:border-guinda"
                 >
                   {plan.name}
                   <span className="text-sm font-normal text-muted">
@@ -177,7 +159,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
             )}
           </div>
           {planCatalog.canManage ? (
-            <div className="rounded-md border border-line bg-surface p-5 shadow-sm">
+            <div className="box p-5 shadow-sm">
               <h3 className="mb-4 font-semibold">Nuevo plano</h3>
               <ActionForm
                 action={createFloorPlanAction.bind(null, slug, spaceSlug)}
@@ -228,7 +210,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
           </div>
 
           {locationCatalog.canManage ? (
-            <div className="mt-5 rounded-md border border-line bg-surface p-5 shadow-sm">
+            <div className="mt-5 box p-5 shadow-sm">
               <h3 className="font-semibold">Nueva ubicación</h3>
               <LocationForm
                 action={createLocation}
@@ -257,13 +239,10 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                   location.id,
                 );
                 return (
-                  <article
-                    key={location.id}
-                    className="rounded-md border border-line bg-surface p-5 shadow-sm"
-                  >
+                  <article key={location.id} className="box p-5 shadow-sm">
                     <p className="font-semibold">{location.name}</p>
                     <p className="mt-1 text-xs text-muted">
-                      {locationPath(location, locationsById)}
+                      {locationPath(location, locationsById).join(" › ")}
                     </p>
                     <Link
                       className="mt-3 inline-block text-sm font-semibold text-guinda"
@@ -314,7 +293,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
           </div>
 
           {resourceCatalog.canManage ? (
-            <div className="mt-5 rounded-md border border-line bg-surface p-5 shadow-sm">
+            <div className="mt-5 box p-5 shadow-sm">
               <h3 className="font-semibold">Nuevo recurso</h3>
               <ResourceForm
                 action={createResource}
@@ -346,10 +325,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                   ? locationsById.get(resource.locationId)
                   : null;
                 return (
-                  <article
-                    key={resource.id}
-                    className="rounded-md border border-line bg-surface p-5 shadow-sm"
-                  >
+                  <article key={resource.id} className="box p-5 shadow-sm">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="font-semibold">{resource.name}</p>

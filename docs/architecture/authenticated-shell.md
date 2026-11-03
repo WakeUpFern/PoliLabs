@@ -49,7 +49,7 @@ Desde el [ADR 0022](../decisions/0022-laboratory-people-and-guided-navigation.md
 - `src/app/app/(home)/layout.tsx`: «Mis laboratorios», notificaciones y contraseña, sin contexto de laboratorio.
 - `src/app/app/labs/[slug]/layout.tsx`: resuelve el laboratorio con `GetLaboratoryBySlug` (que ahora devuelve también `permissionKeys`) y arma con permisos las secciones agrupadas (`labNavigation`), los accesos de la barra inferior (`quickSections`) y el menú «+» (`createActions`). La navegación sólo decide qué mostrar; cada página y servicio vuelve a autorizar.
 
-Desde el [ADR 0023](../decisions/0023-single-navigation-and-institutional-palette.md) hay una sola navegación por tamaño: barra lateral fija desde 1024 px y, debajo, barra inferior con Inicio, tres secciones y «Más», que abre la lista completa en una hoja inferior (`<dialog>` modal: foco atrapado, Esc, cierre al tocar fuera y al navegar). La cuenta (notificaciones, contraseña, laboratorios y cerrar sesión) está en el menú del avatar.
+Desde el [ADR 0023](../decisions/0023-single-navigation-and-institutional-palette.md) hay una sola navegación por tamaño: barra lateral fija desde 1024 px y, debajo, barra inferior con Inicio, tres secciones y «Más», que abre la lista completa en una hoja inferior (`<dialog>` modal: foco atrapado, Esc, cierre al tocar fuera y al navegar). La cuenta (notificaciones, contraseña, laboratorios y cerrar sesión) está en el menú del avatar. El menú del avatar y el menú «+» son `popover` nativos: el navegador los cierra con Esc o al tocar fuera, y el shell los cierra al navegar. Ambos abren arriba a la derecha bajo la barra.
 
 ## Logout y cambio de contraseña
 

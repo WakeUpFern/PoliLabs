@@ -4,7 +4,7 @@ import {
   PRACTICE_LABELS,
   SESSION_LABELS,
 } from "@/modules/academic/web/academic-web";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { academicPageData } from "../../page-data";
 import { AcademicForm, field } from "../../academic-form";
 import { SessionFields, ParticipantFields } from "../../session-fields";
@@ -32,14 +32,14 @@ export default async function PracticePage({
         </p>
         <h1 className="mt-2 text-3xl font-semibold">{p.title}</h1>
       </header>
-      <section className="mt-6 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 box p-6">
         <h2 className="text-lg font-semibold">Instrucciones</h2>
         <p className="mt-4 whitespace-pre-wrap leading-7 text-muted">
           {p.instructions}
         </p>
       </section>
       {data.canManage && p.status !== "closed" ? (
-        <section className="mt-6 rounded-md border border-line bg-surface p-6">
+        <section className="mt-6 box p-6">
           <details>
             <summary className="cursor-pointer font-semibold">
               Editar práctica
@@ -107,11 +107,10 @@ export default async function PracticePage({
             <Link
               key={s.id}
               href={`/app/labs/${slug}/academic/sessions/${s.id}`}
-              className="rounded-md border border-line bg-surface p-5"
+              className="box p-5"
             >
               <p className="font-semibold">
-                {formatAcademicTime(s.startsAt)} →{" "}
-                {formatAcademicTime(s.endsAt)}
+                {formatTime(s.startsAt)} → {formatTime(s.endsAt)}
               </p>
               <p className="mt-2 text-sm text-guinda">
                 {SESSION_LABELS[s.status]}
@@ -124,7 +123,7 @@ export default async function PracticePage({
         </div>
       </section>
       {data.options ? (
-        <section className="mt-8 rounded-md border border-line bg-surface p-6">
+        <section className="mt-8 box p-6">
           <h2 className="mb-5 text-xl font-semibold">Programar sesión</h2>
           <AcademicForm
             slug={slug}

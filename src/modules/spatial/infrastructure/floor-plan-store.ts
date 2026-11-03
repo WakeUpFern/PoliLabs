@@ -1,3 +1,4 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
 import { and, asc, eq, or, type Column } from "drizzle-orm";
 import {
   authorizeLocked,
@@ -25,16 +26,6 @@ import {
   resources,
   spaces,
 } from "./spatial-schema";
-
-function postgresError(error: unknown): { code?: string; message?: string } {
-  if (!error || typeof error !== "object") return {};
-  if ("code" in error && typeof error.code === "string")
-    return {
-      code: error.code,
-      message: "message" in error ? String(error.message) : undefined,
-    };
-  return "cause" in error ? postgresError(error.cause) : {};
-}
 
 const planSelection = {
   id: floorPlans.id,

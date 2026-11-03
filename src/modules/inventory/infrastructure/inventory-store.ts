@@ -1,19 +1,10 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
+import { authorizeLocked } from "@/modules/identity/infrastructure/authorize-locked";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "@/infrastructure/database/schema";
-import { AuthorizationService } from "@/modules/identity/application/authorization-service";
-import { DrizzleAuthorizationReader } from "@/modules/identity/infrastructure/access-repository";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import type { PermissionKey } from "@/modules/identity/domain/access-catalog";
-import {
-  laboratories,
-  laboratoryMemberships,
-  membershipRoles,
-  permissions,
-  rolePermissions,
-  roles,
-} from "@/modules/identity/infrastructure/access-schema";
-import { users } from "@/modules/identity/infrastructure/auth-schema";
 import {
   InventoryError,
   requireId,
@@ -35,12 +26,6 @@ import {
 } from "./inventory-schema";
 type Database = NodePgDatabase<typeof schema>;
 type Transaction = Parameters<Parameters<Database["transaction"]>[0]>[0];
-function postgresError(error: unknown): { code?: string; message?: string } {
-  if (!error || typeof error !== "object") return {};
-  if ("code" in error) return error as { code: string; message?: string };
-  if ("cause" in error) return postgresError(error.cause);
-  return {};
-}
 const selection = {
   id: items.id,
   laboratoryId: items.laboratoryId,
@@ -214,39 +199,7 @@ export class DrizzleInventoryStore implements InventoryStore {
       return await this.database.transaction(
         async (tx) => {
           for (const permission of [...required].sort()) {
-            // Protect membership, actor, lab and concrete permission paths until commit.
-            await tx
-              .select({ id: laboratoryMemberships.id })
-              .from(users)
-              .innerJoin(
-                laboratoryMemberships,
-                and(
-                  eq(laboratoryMemberships.userId, users.id),
-                  eq(laboratoryMemberships.laboratoryId, context.laboratoryId),
-                ),
-              )
-              .innerJoin(
-                laboratories,
-                eq(laboratories.id, laboratoryMemberships.laboratoryId),
-              )
-              .innerJoin(
-                membershipRoles,
-                eq(membershipRoles.membershipId, laboratoryMemberships.id),
-              )
-              .innerJoin(roles, eq(roles.id, membershipRoles.roleId))
-              .innerJoin(rolePermissions, eq(rolePermissions.roleId, roles.id))
-              .innerJoin(
-                permissions,
-                and(
-                  eq(permissions.id, rolePermissions.permissionId),
-                  eq(permissions.key, permission),
-                ),
-              )
-              .where(eq(users.id, context.actorUserId))
-              .for("share");
-            await new AuthorizationService(
-              new DrizzleAuthorizationReader(tx),
-            ).authorize({ ...context, requiredPermission: permission });
+            await authorizeLocked(tx, context, permission);
           }
           return operation(new DrizzleInventorySession(tx));
         },

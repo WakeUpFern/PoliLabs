@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function AppNotFound() {
   return (
-    <section className="rounded-md border border-line bg-surface p-8 sm:p-10">
+    <section className="box p-8 sm:p-10">
       <p className="text-sm font-semibold text-guinda">No disponible</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">
         No encontramos ese laboratorio

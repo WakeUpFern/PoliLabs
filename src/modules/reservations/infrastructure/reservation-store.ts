@@ -1,19 +1,10 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
+import { authorizeLocked } from "@/modules/identity/infrastructure/authorize-locked";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
-import { isSpatialId } from "@/modules/spatial/domain/spatial-id";
+import { isId } from "@/shared/validation";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "@/infrastructure/database/schema";
-import { AuthorizationService } from "@/modules/identity/application/authorization-service";
-import { DrizzleAuthorizationReader } from "@/modules/identity/infrastructure/access-repository";
-import {
-  laboratories,
-  laboratoryMemberships,
-  membershipRoles,
-  permissions,
-  rolePermissions,
-  roles,
-} from "@/modules/identity/infrastructure/access-schema";
-import { users } from "@/modules/identity/infrastructure/auth-schema";
 import type { PermissionKey } from "@/modules/identity/domain/access-catalog";
 import {
   spaces,
@@ -41,12 +32,6 @@ import { reservations, reservationResources } from "./reservation-schema";
 
 type Database = NodePgDatabase<typeof schema>;
 type Transaction = Parameters<Parameters<Database["transaction"]>[0]>[0];
-
-function postgresCode(error: unknown): string | undefined {
-  if (!error || typeof error !== "object") return;
-  if ("code" in error && typeof error.code === "string") return error.code;
-  if ("cause" in error) return postgresCode(error.cause);
-}
 
 class DrizzleReservationSession implements ReservationSession {
   constructor(private readonly transaction: Transaction) {}
@@ -245,51 +230,19 @@ export class DrizzleReservationStore implements ReservationStore {
     permission: PermissionKey,
     operation: (session: ReservationSession) => Promise<T>,
   ): Promise<T> {
-    if (!isSpatialId(context.actorUserId) || !isSpatialId(context.laboratoryId))
+    if (!isId(context.actorUserId) || !isId(context.laboratoryId))
       throw new AuthorizationDeniedError();
     try {
       return await this.database.transaction(
         async (transaction) => {
-          // Lock the concrete permission path, then use the existing authorization policy.
           // Revocation/deactivation cannot commit until this operation finishes.
-          await transaction
-            .select({ id: laboratoryMemberships.id })
-            .from(users)
-            .innerJoin(
-              laboratoryMemberships,
-              and(
-                eq(laboratoryMemberships.userId, users.id),
-                eq(laboratoryMemberships.laboratoryId, context.laboratoryId),
-              ),
-            )
-            .innerJoin(
-              laboratories,
-              eq(laboratories.id, laboratoryMemberships.laboratoryId),
-            )
-            .innerJoin(
-              membershipRoles,
-              eq(membershipRoles.membershipId, laboratoryMemberships.id),
-            )
-            .innerJoin(roles, eq(roles.id, membershipRoles.roleId))
-            .innerJoin(rolePermissions, eq(rolePermissions.roleId, roles.id))
-            .innerJoin(
-              permissions,
-              and(
-                eq(permissions.id, rolePermissions.permissionId),
-                eq(permissions.key, permission),
-              ),
-            )
-            .where(eq(users.id, context.actorUserId))
-            .for("share");
-          await new AuthorizationService(
-            new DrizzleAuthorizationReader(transaction),
-          ).authorize({ ...context, requiredPermission: permission });
+          await authorizeLocked(transaction, context, permission);
           return operation(new DrizzleReservationSession(transaction));
         },
         { isolationLevel: "read committed" },
       );
     } catch (error) {
-      const code = postgresCode(error);
+      const code = postgresError(error).code;
       if (code === "23P01") throw new ReservationConflictError();
       if (code === "23503") throw new ReservationTargetError();
       if (code === "23514")

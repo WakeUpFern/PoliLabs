@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   LocationInputError,
+  locationPath,
   normalizeLocationInput,
 } from "../src/modules/spatial/domain/location";
 import {
@@ -40,4 +41,16 @@ test("rejects blank names and malformed relation ids", () => {
     () => normalizeResourceInput({ name: "Torno", locationId: "invalid" }),
     ResourceInputError,
   );
+});
+
+test("builds a location path from the root and stops on a cycle", () => {
+  const nodes = [
+    { id: "room", name: "Salón", parentId: null },
+    { id: "shelf", name: "Estante", parentId: "room" },
+    { id: "a", name: "A", parentId: "b" },
+    { id: "b", name: "B", parentId: "a" },
+  ];
+  const byId = new Map(nodes.map((node) => [node.id, node]));
+  assert.deepEqual(locationPath(nodes[1], byId), ["Salón", "Estante"]);
+  assert.deepEqual(locationPath(nodes[2], byId), ["B", "A"]);
 });

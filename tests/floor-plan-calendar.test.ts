@@ -18,11 +18,11 @@ import {
   calendarDays,
   calendarWindow,
   entriesForDay,
-  localDateTime,
   nextHourInterval,
   parseCalendarQuery,
   shiftCalendarDate,
 } from "../src/modules/reservations/web/calendar";
+import { instantToLocal as localDateTime } from "../src/shared/time";
 
 const id = (n: number) => `00000000-0000-4000-8000-00000000000${n}`;
 const input = (error: unknown) =>

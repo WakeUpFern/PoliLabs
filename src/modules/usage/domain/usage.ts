@@ -1,5 +1,6 @@
+import { parseId, parseOneOf, SOURCES, type Source } from "@/shared/validation";
 export type UsageContext = { actorUserId: string; laboratoryId: string };
-export type UsageSource = "WEB" | "API" | "AGENT" | "SYSTEM";
+export type UsageSource = Source;
 export type UsageContextKind = "academic" | "reservation";
 export class UsageError extends Error {
   constructor(
@@ -11,18 +12,10 @@ export class UsageError extends Error {
   }
 }
 export function usageId(value: string) {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      value,
-    )
-  )
-    throw new UsageError("input");
-  return value.toLowerCase();
+  return parseId(value, () => new UsageError("input"));
 }
 export function usageSource(value: string): UsageSource {
-  if (!["WEB", "API", "AGENT", "SYSTEM"].includes(value))
-    throw new UsageError("input");
-  return value as UsageSource;
+  return parseOneOf(SOURCES, value, () => new UsageError("input"));
 }
 export function usageKind(value: string): UsageContextKind {
   if (value !== "academic" && value !== "reservation")

@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { maintenanceWeb } from "@/modules/maintenance/web/services";
-import {
-  formatAcademicTime,
-  instantToLocal,
-} from "@/modules/academic/web/time";
+import { formatTime, instantToLocal } from "@/shared/time";
 import { maintenancePageData } from "../../page-data";
 import {
   formatDueDate,
@@ -45,7 +42,7 @@ export default async function MaintenanceResourcePage({
           Manuales y documentos
         </Link>
       ) : null}
-      <section className="mt-6 space-y-3 rounded-md border border-line bg-surface p-6">
+      <section className="mt-6 space-y-3 box p-6">
         <span
           className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${statusTone(resource.operationalStatus)}`}
         >
@@ -69,7 +66,7 @@ export default async function MaintenanceResourcePage({
         ) : null}
       </section>
       {access.canCreate && options ? (
-        <section className="mt-6 rounded-md border border-line bg-surface p-6">
+        <section className="mt-6 box p-6">
           <h2 className="mb-4 text-xl font-semibold">
             Registrar mantenimiento
           </h2>
@@ -84,7 +81,7 @@ export default async function MaintenanceResourcePage({
             defaultPerformedLocal={instantToLocal(new Date())}
             incidents={options.incidents.map((i) => ({
               id: i.id,
-              label: `${i.name} · ${incidentStatusLabels[i.status]} · ${formatAcademicTime(i.createdAt)}`,
+              label: `${i.name} · ${incidentStatusLabels[i.status]} · ${formatTime(i.createdAt)}`,
             }))}
             items={access.canConsume ? options.items : null}
           />
@@ -93,13 +90,9 @@ export default async function MaintenanceResourcePage({
       <h2 className="mt-8 text-xl font-semibold">Bitácora</h2>
       <div className="mt-4 space-y-4">
         {logs.map((log) => (
-          <article
-            key={log.id}
-            className="rounded-md border border-line bg-surface p-6"
-          >
+          <article key={log.id} className="box p-6">
             <p className="font-semibold">
-              {maintenanceTypeLabels[log.type]} ·{" "}
-              {formatAcademicTime(log.performedAt)}
+              {maintenanceTypeLabels[log.type]} · {formatTime(log.performedAt)}
             </p>
             <p className="mt-1 text-sm">
               {operationalStatusLabels[log.statusBefore]} →{" "}
@@ -155,8 +148,7 @@ export default async function MaintenanceResourcePage({
               ) : null}
             </div>
             <p className="mt-2 text-sm text-muted">
-              {log.performerName} · registrado{" "}
-              {formatAcademicTime(log.createdAt)}
+              {log.performerName} · registrado {formatTime(log.createdAt)}
               {log.nextDueOn
                 ? ` · próximo: ${formatDueDate(log.nextDueOn)}`
                 : null}

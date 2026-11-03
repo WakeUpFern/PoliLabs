@@ -1,3 +1,4 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
 import {
   and,
   asc,
@@ -49,12 +50,6 @@ import type {
   MaintenanceStore,
   MaintenanceTransaction,
 } from "../application/maintenance-store";
-function postgresError(error: unknown): { code?: string; message?: string } {
-  if (!error || typeof error !== "object") return {};
-  if ("code" in error) return error as { code: string; message?: string };
-  if ("cause" in error) return postgresError(error.cause);
-  return {};
-}
 const resourceColumns = {
   id: resources.id,
   name: resources.name,

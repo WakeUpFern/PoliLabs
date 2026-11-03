@@ -1,17 +1,13 @@
 import "server-only";
+import { unlessDenied } from "@/app/_lib/unless-denied";
 import { academicWeb } from "@/modules/academic/web/services";
 import { incidentsWeb } from "@/modules/incidents/web/services";
 import { loansWeb } from "@/modules/loans/web/services";
 
 // Each panel of the laboratory home reads through its module's authorized web
 // adapter and appears only for people allowed to see it.
-async function optional<T>(enabled: boolean, read: () => Promise<T>) {
-  if (!enabled) return null;
-  try {
-    return await read();
-  } catch {
-    return null;
-  }
+function optional<T>(enabled: boolean, read: () => Promise<T>) {
+  return enabled ? unlessDenied(read, null) : null;
 }
 
 export async function laboratoryHome(

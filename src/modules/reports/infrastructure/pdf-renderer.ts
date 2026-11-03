@@ -5,11 +5,8 @@ import {
   type PDFFont,
   type PDFPage,
 } from "pdf-lib";
-import {
-  formatReportTime,
-  REPORT_TIME_ZONE,
-  type ReportTable,
-} from "../domain/reports";
+import { formatReportTime, type ReportTable } from "../domain/reports";
+import { TIME_ZONE } from "@/shared/time";
 
 // US Letter landscape, in points.
 const PAGE = { width: 792, height: 612, margin: 36 };
@@ -135,7 +132,7 @@ export async function renderReportPdf(table: ReportTable) {
 
   const columnHeader = layout(
     // The time zone is stated once in the metadata, not in every header.
-    table.columns.map((c) => c.header.replace(` (${REPORT_TIME_ZONE})`, "")),
+    table.columns.map((c) => c.header.replace(` (${TIME_ZONE})`, "")),
     bold,
   );
   function newPage(first: boolean) {
@@ -147,7 +144,7 @@ export async function renderReportPdf(table: ReportTable) {
     if (first) {
       const meta = [
         table.period ? `Periodo: ${table.period}` : null,
-        `Generado: ${formatReportTime(table.generatedAt)} por ${table.generatedBy}. Fechas y horas en ${REPORT_TIME_ZONE}.`,
+        `Generado: ${formatReportTime(table.generatedAt)} por ${table.generatedBy}. Fechas y horas en ${TIME_ZONE}.`,
         `Registros: ${table.rows.length}`,
         ...table.notes,
       ].filter((line): line is string => line !== null);
