@@ -47,9 +47,9 @@ El inicio del laboratorio es un tablero con las próximas sesiones, las incidenc
 Desde el [ADR 0022](../decisions/0022-laboratory-people-and-guided-navigation.md), `src/app/app/layout.tsx` sólo valida el actor. Cada sección monta el shell (`src/app/_shell/app-shell.tsx`) con la navegación que le corresponde:
 
 - `src/app/app/(home)/layout.tsx`: «Mis laboratorios», notificaciones y contraseña, sin contexto de laboratorio.
-- `src/app/app/labs/[slug]/layout.tsx`: resuelve el laboratorio con `GetLaboratoryBySlug` (que ahora devuelve también `permissionKeys`) y arma con permisos las pestañas (`labNavigation`, en el orden de una práctica) y el menú «+» (`createActions`). La navegación sólo decide qué mostrar; cada página y servicio vuelve a autorizar.
+- `src/app/app/labs/[slug]/layout.tsx`: resuelve el laboratorio con `GetLaboratoryBySlug` (que ahora devuelve también `permissionKeys`) y arma con permisos las secciones agrupadas (`labNavigation`), los accesos de la barra inferior (`quickSections`) y el menú «+» (`createActions`). La navegación sólo decide qué mostrar; cada página y servicio vuelve a autorizar.
 
-El menú lateral es un `<dialog>` modal (foco atrapado, Esc, cierre al tocar fuera y al navegar) con secciones, cuenta y laboratorios.
+Desde el [ADR 0023](../decisions/0023-single-navigation-and-institutional-palette.md) hay una sola navegación por tamaño: barra lateral fija desde 1024 px y, debajo, barra inferior con Inicio, tres secciones y «Más», que abre la lista completa en una hoja inferior (`<dialog>` modal: foco atrapado, Esc, cierre al tocar fuera y al navegar). La cuenta (notificaciones, contraseña, laboratorios y cerrar sesión) está en el menú del avatar.
 
 ## Logout y cambio de contraseña
 

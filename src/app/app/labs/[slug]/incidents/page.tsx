@@ -18,27 +18,39 @@ export default async function IncidentsPage({
   );
   return (
     <div>
-      <Link href={`/app/labs/${slug}`}>← Laboratorio</Link>
-      <h1 className="mt-6 text-3xl font-semibold">Incidencias</h1>
-      <div className="mt-4 flex flex-wrap gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold sm:text-3xl">Incidencias</h1>
         {access.canCreate ? (
           <Link
-            className="font-semibold text-[#7a1731]"
+            className="btn btn-primary"
             href={`/app/labs/${slug}/incidents/new`}
           >
             Reportar incidencia
           </Link>
         ) : null}
-        {access.canReadOwn ? (
-          <Link href={`/app/labs/${slug}/incidents`}>Mis reportes</Link>
-        ) : null}
-        {access.canReview ? (
-          <Link href={`/app/labs/${slug}/incidents?scope=laboratory`}>
+      </div>
+      {access.canReadOwn && access.canReview ? (
+        <nav
+          aria-label="Reportes"
+          className="mt-4 flex gap-1 border-b border-line"
+        >
+          <Link
+            href={`/app/labs/${slug}/incidents`}
+            aria-current={scope === "own" ? "page" : undefined}
+            className={`-mb-px border-b-2 px-4 py-2 font-semibold ${scope === "own" ? "border-guinda text-guinda" : "border-transparent text-muted"}`}
+          >
+            Mis reportes
+          </Link>
+          <Link
+            href={`/app/labs/${slug}/incidents?scope=laboratory`}
+            aria-current={scope === "laboratory" ? "page" : undefined}
+            className={`-mb-px border-b-2 px-4 py-2 font-semibold ${scope === "laboratory" ? "border-guinda text-guinda" : "border-transparent text-muted"}`}
+          >
             Reportes del laboratorio
           </Link>
-        ) : null}
-      </div>
-      <h2 className="mt-6 text-xl font-semibold">
+        </nav>
+      ) : null}
+      <h2 className="sr-only">
         {scope === "own" ? "Mis reportes" : "Reportes del laboratorio"}
       </h2>
       {scope === "laboratory" ? (
@@ -48,10 +60,10 @@ export default async function IncidentsPage({
         {entries.map((i) => (
           <article
             key={i.id}
-            className="rounded-2xl border border-stone-200 bg-white p-6"
+            className="rounded-md border border-line bg-surface p-6"
           >
             <Link
-              className="font-semibold text-[#7a1731]"
+              className="font-semibold text-guinda"
               href={`/app/labs/${slug}/incidents/${i.id}?scope=${scope}`}
             >
               {targetLabels[i.targetKind]}: {i.targetSnapshot.name}
@@ -63,7 +75,7 @@ export default async function IncidentsPage({
             <p className="mt-2 whitespace-pre-wrap break-words">
               {i.description}
             </p>
-            <p className="mt-2 text-sm text-stone-600">
+            <p className="mt-2 text-sm text-muted">
               {i.reporterName} · {formatAcademicTime(i.createdAt)}
             </p>
           </article>

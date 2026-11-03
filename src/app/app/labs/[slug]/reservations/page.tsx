@@ -12,6 +12,7 @@ import {
 import { reservationWeb } from "@/modules/reservations/web/services";
 import { gridReservationAction } from "./actions";
 import { MonthCalendar } from "./month-calendar";
+import { CalendarFilters } from "./calendar-filters";
 import { MyReservations } from "./my-reservations";
 import { ReservationGrid, type GridDay } from "./reservation-grid";
 
@@ -21,7 +22,7 @@ const viewLabels: Record<CalendarView, string> = {
   month: "Mes",
 };
 const inputStyle =
-  "min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 focus:outline-none focus:ring-4 focus:ring-[#7a1731]/20";
+  "min-h-11 w-full rounded-md border border-line bg-surface px-3 focus:outline-none focus:ring-4 focus:ring-guinda/20";
 
 // Reservaciones opens on the interactive calendar (ADR 0021); "Mis
 // reservaciones" stays as a list tab and the form remains at /new.
@@ -44,38 +45,14 @@ export default async function ReservationsPage({
     if (error instanceof AuthorizationDeniedError) notFound();
     throw error;
   }
-  const laboratory = (data ?? list)!.laboratory;
   const canCreate = (data ?? list)!.canCreate;
 
   return (
     <div>
-      <Link
-        href={`/app/labs/${slug}`}
-        className="text-sm font-semibold text-[#7a1731]"
-      >
-        ← {laboratory.name}
-      </Link>
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold">Reservaciones</h1>
-          <p className="mt-3 text-stone-600">
-            {laboratory.name} · Horarios en America/Mexico_City. Las
-            reservaciones de otras personas aparecen como ocupadas, sin datos de
-            quién reservó.
-          </p>
-        </div>
-        {canCreate && (
-          <Link
-            href={`${base}/new`}
-            className="text-sm font-semibold text-[#7a1731] underline-offset-4 hover:underline"
-          >
-            Usar el formulario
-          </Link>
-        )}
-      </div>
+      <h1 className="text-2xl font-semibold sm:text-3xl">Reservaciones</h1>
       <nav
         aria-label="Secciones de reservaciones"
-        className="mt-6 flex gap-1 border-b border-stone-200"
+        className="mt-4 flex gap-1 border-b border-line"
       >
         {[
           { label: "Calendario", href: base, current: !mine },
@@ -91,8 +68,8 @@ export default async function ReservationsPage({
             aria-current={tab.current ? "page" : undefined}
             className={`-mb-px border-b-2 px-4 py-2 font-semibold ${
               tab.current
-                ? "border-[#7a1731] text-[#7a1731]"
-                : "border-transparent text-stone-600"
+                ? "border-guinda text-guinda"
+                : "border-transparent text-muted"
             }`}
           >
             {tab.label}
@@ -107,7 +84,15 @@ export default async function ReservationsPage({
           reservations={list.reservations}
         />
       ) : (
-        data && <Calendar slug={slug} base={base} data={data} query={query} />
+        data && (
+          <Calendar
+            slug={slug}
+            base={base}
+            data={data}
+            query={query}
+            canCreate={canCreate}
+          />
+        )
       )}
     </div>
   );
@@ -118,16 +103,18 @@ function Calendar({
   base,
   data,
   query,
+  canCreate,
 }: {
   slug: string;
   base: string;
   data: Awaited<ReturnType<typeof reservationWeb.calendar>>;
   query: Record<string, string | string[] | undefined>;
+  canCreate: boolean;
 }) {
   const { space } = data;
   if (!space)
     return (
-      <p className="mt-8 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-8 text-stone-600">
+      <p className="mt-8 rounded-md border border-dashed border-line bg-paper p-8 text-muted">
         No hay espacios activos visibles para mostrar un calendario.
       </p>
     );
@@ -148,61 +135,59 @@ function Calendar({
     shortLabel: formatCalendarDay(date, "short"),
     isToday: date === data.today,
   }));
-  const linkStyle =
-    "rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm font-semibold";
+  const linkStyle = "btn";
 
   return (
     <>
-      <form
-        method="get"
-        className="mt-6 grid gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:grid-cols-[1fr_1fr_auto] sm:items-end"
-      >
-        <input type="hidden" name="view" value={data.view} />
-        <input type="hidden" name="date" value={data.date} />
-        <div>
-          <label htmlFor="space" className="mb-2 block font-semibold">
-            Espacio
-          </label>
-          <select
-            id="space"
-            name="space"
-            defaultValue={space.id}
-            className={inputStyle}
-          >
-            {data.spaces.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="resource" className="mb-2 block font-semibold">
-            Recurso
-          </label>
-          <select
-            id="resource"
-            name="resource"
-            defaultValue={data.resource?.id ?? ""}
-            className={inputStyle}
-          >
-            <option value="">Todo el espacio</option>
-            {space.resources.map((resource) => (
-              <option key={resource.id} value={resource.id}>
-                {resource.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
-          type="submit"
-          className="min-h-11 rounded-xl bg-[#7a1731] px-5 font-semibold text-white"
-        >
-          Mostrar
-        </button>
-      </form>
+      <div className="mt-5">
+        <CalendarFilters>
+          <input type="hidden" name="view" value={data.view} />
+          <input type="hidden" name="date" value={data.date} />
+          <div>
+            <label
+              htmlFor="space"
+              className="mb-1.5 block text-sm font-semibold"
+            >
+              Espacio
+            </label>
+            <select
+              id="space"
+              name="space"
+              defaultValue={space.id}
+              className={inputStyle}
+            >
+              {data.spaces.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="resource"
+              className="mb-1.5 block text-sm font-semibold"
+            >
+              Recurso
+            </label>
+            <select
+              id="resource"
+              name="resource"
+              defaultValue={data.resource?.id ?? ""}
+              className={inputStyle}
+            >
+              <option value="">Todo el espacio</option>
+              {space.resources.map((resource) => (
+                <option key={resource.id} value={resource.id}>
+                  {resource.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </CalendarFilters>
+      </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <nav aria-label="Periodo" className="flex flex-wrap gap-2">
           <Link href={href({ date: data.previous })} className={linkStyle}>
             <span aria-hidden="true">←</span> Anterior
@@ -216,17 +201,17 @@ function Calendar({
         </nav>
         <nav
           aria-label="Vista"
-          className="flex gap-1 rounded-xl bg-stone-100 p-1"
+          className="flex gap-1 rounded-md border border-line bg-paper p-1"
         >
           {CALENDAR_VIEWS.map((view) => (
             <Link
               key={view}
               href={href({ view })}
               aria-current={view === data.view ? "page" : undefined}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold ${
+              className={`grid min-h-9 place-items-center rounded px-4 text-sm font-semibold max-lg:min-h-11 ${
                 view === data.view
-                  ? "bg-white text-[#7a1731] shadow-sm"
-                  : "text-stone-600"
+                  ? "bg-surface text-guinda shadow-sm"
+                  : "text-muted"
               }`}
             >
               {viewLabels[view]}
@@ -235,9 +220,9 @@ function Calendar({
         </nav>
       </div>
 
-      <h2 className="mt-6 mb-4 text-xl font-semibold first-letter:uppercase">
+      <h2 className="mt-5 mb-3 text-lg font-semibold first-letter:uppercase">
         {formatCalendarTitle(data.view, data.date, data.days)}
-        <span className="ml-2 text-base font-normal text-stone-500">
+        <span className="ml-2 text-base font-normal text-muted">
           · {data.resource?.name ?? space.name}
         </span>
       </h2>
@@ -266,15 +251,26 @@ function Calendar({
           action={gridReservationAction.bind(null, slug)}
         />
       )}
-      <p className="mt-4 flex flex-wrap gap-4 text-sm text-stone-600">
-        <span className="inline-flex items-center gap-2">
-          <span className="h-3 w-3 rounded-sm bg-[#7a1731]" /> Mis reservaciones
-        </span>
-        <span className="inline-flex items-center gap-2">
-          <span className="h-3 w-3 rounded-sm bg-stone-400" /> Ocupado por otra
-          persona
-        </span>
-      </p>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-sm text-muted">
+        <p className="flex flex-wrap gap-x-4 gap-y-1">
+          <span className="inline-flex items-center gap-2">
+            <span className="h-3 w-3 rounded-sm bg-guinda" /> Mis reservaciones
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-3 w-3 rounded-sm bg-stone-400" /> Ocupado (no se
+            muestra quién reservó)
+          </span>
+          <span>Hora del centro de México.</span>
+        </p>
+        {canCreate && (
+          <Link
+            href={`${base}/new`}
+            className="font-semibold text-guinda underline-offset-4 hover:underline"
+          >
+            Reservar con formulario
+          </Link>
+        )}
+      </div>
     </>
   );
 }

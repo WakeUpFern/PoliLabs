@@ -60,14 +60,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
       <section className="flex items-center justify-center px-6 py-12 sm:px-10">
         <div className="w-full max-w-md">
-          <p className="text-sm font-bold tracking-[0.22em] text-[#7a1731] lg:hidden">
+          <p className="text-sm font-bold tracking-[0.22em] text-guinda lg:hidden">
             LABORA
           </p>
-          <p className="text-sm font-semibold text-[#7a1731]">Bienvenido</p>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-stone-950 sm:text-4xl">
+          <p className="text-sm font-semibold text-guinda">Bienvenido</p>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             Inicia sesión
           </h2>
-          <p className="mt-3 leading-7 text-stone-600">
+          <p className="mt-3 leading-7 text-muted">
             Usa la cuenta local proporcionada por el responsable de tu
             laboratorio.
           </p>
@@ -76,7 +76,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             initialMessage={reason ? messages[reason] : undefined}
             clearExistingSession={clearExistingSession}
           />
-          <p className="mt-8 text-center text-xs leading-5 text-stone-500">
+          <p className="mt-8 text-center text-xs leading-5 text-muted">
             El acceso y las acciones disponibles dependen de tu membresía activa
             en cada laboratorio.
           </p>

@@ -68,7 +68,7 @@ export function LoginForm({
       <div>
         <label
           htmlFor="email"
-          className="mb-2 block text-sm font-semibold text-stone-800"
+          className="mb-2 block text-sm font-semibold text-ink"
         >
           Correo
         </label>
@@ -79,14 +79,14 @@ export function LoginForm({
           autoComplete="email"
           required
           disabled={isPending}
-          className="min-h-12 w-full rounded-xl border border-stone-300 bg-white px-4 text-base text-stone-950 outline-none transition placeholder:text-stone-400 focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-12 w-full rounded-md border border-line bg-surface px-4 text-base text-ink outline-none transition placeholder:text-muted focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
           placeholder="nombre@institucion.mx"
         />
       </div>
       <div>
         <label
           htmlFor="password"
-          className="mb-2 block text-sm font-semibold text-stone-800"
+          className="mb-2 block text-sm font-semibold text-ink"
         >
           Contraseña
         </label>
@@ -97,7 +97,7 @@ export function LoginForm({
           autoComplete="current-password"
           required
           disabled={isPending}
-          className="min-h-12 w-full rounded-xl border border-stone-300 bg-white px-4 text-base text-stone-950 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-12 w-full rounded-md border border-line bg-surface px-4 text-base text-ink outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
         />
       </div>
 
@@ -123,7 +123,7 @@ export function LoginForm({
       <button
         type="submit"
         disabled={isPending || !isReady}
-        className="flex min-h-12 w-full items-center justify-center rounded-xl bg-[#7a1731] px-5 font-semibold text-white shadow-sm transition hover:bg-[#651128] focus:outline-none focus:ring-4 focus:ring-[#7a1731]/20 disabled:cursor-wait disabled:opacity-65"
+        className="btn btn-primary w-full"
       >
         {isPending ? "Iniciando sesión…" : "Iniciar sesión"}
       </button>

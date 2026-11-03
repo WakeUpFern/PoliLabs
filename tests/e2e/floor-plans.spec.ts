@@ -167,8 +167,9 @@ test("the calendar shows the reservation without revealing its owner", async ({
   await expect(page.getByRole("link", { name: /Ocupado/ })).toHaveCount(0);
 
   // Filtering by the other resource hides the lathe's reservation.
+  // The pickers apply on change, without a separate button.
   await page.getByLabel("Recurso").selectOption({ label: "Fresadora e2e" });
-  await page.getByRole("button", { name: "Mostrar" }).click();
+  await expect(page).toHaveURL(/resource=/);
   await expect(page.getByText("Ocupado · Torno e2e")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
   await context.close();

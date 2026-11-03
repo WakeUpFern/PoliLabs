@@ -15,7 +15,7 @@ export default async function ResourceUsageTrace({
       <h1 className="mt-6 text-3xl font-semibold">
         Historial de uso del recurso
       </h1>
-      <p className="mt-3 text-stone-600">
+      <p className="mt-3 text-muted">
         El historial es informativo; no determina culpabilidad ni
         responsabilidad disciplinaria.
       </p>
@@ -23,7 +23,7 @@ export default async function ResourceUsageTrace({
         {history.map((u) => (
           <article
             key={u.id}
-            className="rounded-2xl border border-stone-200 bg-white p-6"
+            className="rounded-md border border-line bg-surface p-6"
           >
             <p className="break-all">
               {u.resourceName} · {u.userName}

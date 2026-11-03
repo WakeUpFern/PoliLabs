@@ -21,21 +21,21 @@ export async function ItemLoans({
   const closed = loans?.filter((l) => l.status !== "active") ?? [];
   return (
     <section className="mt-8 space-y-6">
-      <div className="grid gap-px overflow-hidden rounded-2xl border border-stone-200 bg-stone-200 sm:grid-cols-3">
+      <div className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-3">
         {[
           ["Existencia", summary.stock],
           ["Prestadas", summary.loaned],
           ["Disponibles", summary.available],
         ].map(([label, value]) => (
-          <div key={label} className="bg-white p-5">
-            <p className="text-xs uppercase tracking-wide text-stone-500">
+          <div key={label} className="bg-surface p-5">
+            <p className="text-xs uppercase tracking-wide text-muted">
               {label}
             </p>
             <p className="mt-1 text-2xl font-semibold">{Number(value)} pz</p>
           </div>
         ))}
       </div>
-      <p className="text-sm text-stone-600">
+      <p className="text-sm text-muted">
         Un préstamo no es consumo: la existencia conserva las piezas prestadas y
         la disponibilidad descuenta las que siguen fuera.
         {access.canManage ? (
@@ -43,7 +43,7 @@ export async function ItemLoans({
             {" "}
             <Link
               href={`/app/labs/${slug}/loans`}
-              className="font-semibold text-[#7a1731]"
+              className="font-semibold text-guinda"
             >
               Ver préstamos del laboratorio
             </Link>
@@ -51,7 +51,7 @@ export async function ItemLoans({
         ) : null}
       </p>
       {options ? (
-        <div className="rounded-2xl border border-stone-200 bg-white p-6">
+        <div className="rounded-md border border-line bg-surface p-6">
           <h2 className="mb-5 text-xl font-semibold">Registrar préstamo</h2>
           {Number(summary.available) > 0 ? (
             <LendForm
@@ -83,7 +83,7 @@ export async function ItemLoans({
               />
             ))}
             {!active.length ? (
-              <p className="text-stone-600">No hay préstamos activos.</p>
+              <p className="text-muted">No hay préstamos activos.</p>
             ) : null}
           </div>
           {closed.length ? (

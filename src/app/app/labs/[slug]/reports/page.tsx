@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { REPORT_TIME_ZONE } from "@/modules/reports/domain/reports";
@@ -28,9 +27,8 @@ export default async function ReportsPage({
       : null;
   return (
     <div>
-      <Link href={`/app/labs/${slug}`}>← Laboratorio</Link>
-      <h1 className="mt-6 text-3xl font-semibold">Reportes</h1>
-      <p className="mt-3 text-stone-600">
+      <h1 className="text-3xl font-semibold">Reportes</h1>
+      <p className="mt-3 text-muted">
         Exporta información del laboratorio en CSV o PDF. Cada reporte se genera
         al momento con tus permisos actuales; las fechas usan la hora de{" "}
         {REPORT_TIME_ZONE} y el periodo incluye ambos días. Inventario,

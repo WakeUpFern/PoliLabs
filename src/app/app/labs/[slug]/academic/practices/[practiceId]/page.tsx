@@ -22,24 +22,24 @@ export default async function PracticePage({
     <div>
       <Link
         href={`/app/labs/${slug}/academic`}
-        className="text-sm font-semibold text-stone-600"
+        className="text-sm font-semibold text-muted"
       >
         ← Prácticas
       </Link>
       <header className="mt-6">
-        <p className="text-xs font-bold uppercase text-[#7a1731]">
+        <p className="text-xs font-bold uppercase text-guinda">
           {PRACTICE_LABELS[p.status]}
         </p>
         <h1 className="mt-2 text-3xl font-semibold">{p.title}</h1>
       </header>
-      <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 rounded-md border border-line bg-surface p-6">
         <h2 className="text-lg font-semibold">Instrucciones</h2>
-        <p className="mt-4 whitespace-pre-wrap leading-7 text-stone-700">
+        <p className="mt-4 whitespace-pre-wrap leading-7 text-muted">
           {p.instructions}
         </p>
       </section>
       {data.canManage && p.status !== "closed" ? (
-        <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+        <section className="mt-6 rounded-md border border-line bg-surface p-6">
           <details>
             <summary className="cursor-pointer font-semibold">
               Editar práctica
@@ -107,24 +107,24 @@ export default async function PracticePage({
             <Link
               key={s.id}
               href={`/app/labs/${slug}/academic/sessions/${s.id}`}
-              className="rounded-xl border border-stone-200 bg-white p-5"
+              className="rounded-md border border-line bg-surface p-5"
             >
               <p className="font-semibold">
                 {formatAcademicTime(s.startsAt)} →{" "}
                 {formatAcademicTime(s.endsAt)}
               </p>
-              <p className="mt-2 text-sm text-[#7a1731]">
+              <p className="mt-2 text-sm text-guinda">
                 {SESSION_LABELS[s.status]}
               </p>
             </Link>
           ))}
           {data.sessions.length === 0 ? (
-            <p className="text-stone-600">No hay sesiones para mostrar.</p>
+            <p className="text-muted">No hay sesiones para mostrar.</p>
           ) : null}
         </div>
       </section>
       {data.options ? (
-        <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6">
+        <section className="mt-8 rounded-md border border-line bg-surface p-6">
           <h2 className="mb-5 text-xl font-semibold">Programar sesión</h2>
           <AcademicForm
             slug={slug}

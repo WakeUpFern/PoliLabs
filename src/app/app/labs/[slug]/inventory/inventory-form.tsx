@@ -10,9 +10,8 @@ import {
 } from "@/modules/inventory/web/inventory-web";
 import { inventoryAction } from "./actions";
 const field =
-  "mt-2 block w-full rounded-xl border border-stone-300 bg-white px-4 py-3";
-const button =
-  "rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white disabled:opacity-50";
+  "mt-2 block w-full rounded-md border border-line bg-surface px-4 py-3";
+const button = "btn btn-primary";
 export function InventoryForm({
   slug,
   mode,
@@ -119,7 +118,7 @@ export function InventoryForm({
               </label>
             </div>
             {hasHistory && (
-              <p className="text-sm text-stone-600">
+              <p className="text-sm text-muted">
                 El tipo y la unidad se conservan porque el artículo ya tiene
                 movimientos.
               </p>
@@ -148,7 +147,7 @@ export function InventoryForm({
               </select>
             </label>
             {mode === "update" && (
-              <p className="text-sm text-stone-600">
+              <p className="text-sm text-muted">
                 Cambiar la ubicación actualiza la referencia principal; los
                 movimientos conservan la ubicación registrada en su fecha.
               </p>
@@ -178,7 +177,7 @@ export function InventoryForm({
               </>
             )}
             {mode === "create" && !canAdjust && (
-              <p className="text-sm text-stone-600">
+              <p className="text-sm text-muted">
                 El artículo se creará con saldo cero. Registrar existencias
                 requiere permiso de movimientos.
               </p>
@@ -187,7 +186,7 @@ export function InventoryForm({
         )}
         {mode === "movement" && item && (
           <>
-            <p className="text-stone-600">
+            <p className="text-muted">
               Existencia actual:{" "}
               <strong>
                 {item.quantity} {UNIT_LABELS[item.unit]}
@@ -238,7 +237,7 @@ export function InventoryForm({
           </>
         )}
         {mode === "deactivate" && (
-          <p className="text-sm text-stone-600">
+          <p className="text-sm text-muted">
             Sólo se puede desactivar con saldo cero. El artículo y su historial
             permanecerán consultables.
           </p>
@@ -257,7 +256,7 @@ export function InventoryForm({
       {state.message && (
         <p
           role={state.status === "error" ? "alert" : "status"}
-          className={`rounded-xl p-4 text-sm ${state.status === "error" ? "bg-red-50 text-red-800" : "bg-green-50 text-green-800"}`}
+          className={`rounded-md p-4 text-sm ${state.status === "error" ? "bg-red-50 text-red-800" : "bg-green-50 text-green-800"}`}
         >
           {state.message}
         </p>

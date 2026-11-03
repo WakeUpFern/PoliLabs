@@ -4,7 +4,6 @@ import {
   ArrowRightLeft,
   BookOpenText,
   CalendarClock,
-  FlaskConical,
   TriangleAlert,
 } from "lucide-react";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
@@ -76,7 +75,7 @@ export default async function LaboratoryPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const [{ slug }, { actorUserId }] = await Promise.all([
+  const [{ slug }, { actorUserId, user }] = await Promise.all([
     params,
     requireCurrentActor(),
   ]);
@@ -111,27 +110,22 @@ export default async function LaboratoryPage({
       : null;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)]">
-      <aside className="lg:pt-1">
-        <div className="flex items-center gap-4 lg:block">
-          <span className="grid size-16 flex-none place-items-center rounded-xl border border-line bg-paper text-guinda lg:size-20">
-            <FlaskConical aria-hidden className="size-8 lg:size-10" />
-          </span>
-          <div className="min-w-0 lg:mt-4">
-            <h1 className="text-2xl leading-tight font-bold">
-              {laboratory.name}
-            </h1>
-            <p className="mt-1 text-muted">
-              {roleNames.length > 0 ? roleNames.join(", ") : "Sin rol"}
-            </p>
-          </div>
+    <div className="flex flex-col gap-6">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl leading-tight font-bold">
+            Hola, {user.name.split(/\s+/)[0]}
+          </h1>
+          <p className="mt-0.5 text-muted">
+            {roleNames.length > 0 ? roleNames.join(", ") : "Sin rol"}
+          </p>
         </div>
         {primary ? (
-          <Link href={primary.href} className="btn btn-primary mt-5 w-full">
+          <Link href={primary.href} className="btn btn-primary max-sm:w-full">
             {primary.label}
           </Link>
         ) : null}
-      </aside>
+      </header>
 
       <div className="flex min-w-0 flex-col gap-6">
         {home.academic ? (

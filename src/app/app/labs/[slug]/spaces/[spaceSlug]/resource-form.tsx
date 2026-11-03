@@ -46,7 +46,7 @@ export function ResourceForm({
           defaultValue={resource?.name}
           required
           disabled={isPending}
-          className="min-h-11 w-full rounded-xl border border-stone-300 px-3 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-11 w-full rounded-md border border-line px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
         />
       </div>
       <div>
@@ -54,15 +54,14 @@ export function ResourceForm({
           htmlFor={`${formId}-location`}
           className="mb-2 block text-sm font-semibold"
         >
-          Ubicación{" "}
-          <span className="font-normal text-stone-500">(opcional)</span>
+          Ubicación <span className="font-normal text-muted">(opcional)</span>
         </label>
         <select
           id={`${formId}-location`}
           name="locationId"
           defaultValue={resource?.locationId ?? ""}
           disabled={isPending}
-          className="min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-11 w-full rounded-md border border-line bg-surface px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
         >
           <option value="">Sin ubicación específica</option>
           {locations.map((location) => (
@@ -86,11 +85,7 @@ export function ResourceForm({
       ) : (
         <div aria-live="polite" className="min-h-5" />
       )}
-      <button
-        type="submit"
-        disabled={isPending}
-        className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#7a1731] px-4 text-sm font-semibold text-white transition hover:bg-[#651128] disabled:cursor-wait disabled:opacity-65"
-      >
+      <button type="submit" disabled={isPending} className="btn btn-primary">
         {isPending ? "Guardando…" : submitLabel}
       </button>
     </form>

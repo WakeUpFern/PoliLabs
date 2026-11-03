@@ -32,7 +32,7 @@ export default async function LaboratoriesPage({
       </p>
 
       {laboratories.length === 0 ? (
-        <section className="mt-8 rounded-xl border border-dashed border-line bg-surface p-8">
+        <section className="mt-8 rounded-md border border-dashed border-line bg-surface p-8">
           <h2 className="text-lg font-semibold">Aún no tienes laboratorio</h2>
           <p className="mt-2 leading-6 text-muted">
             Tu cuenta está activa, pero nadie te ha dado acceso a un
@@ -41,7 +41,7 @@ export default async function LaboratoriesPage({
           </p>
         </section>
       ) : (
-        <ul className="mt-8 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+        <ul className="mt-8 divide-y divide-line overflow-hidden rounded-md border border-line bg-surface">
           {laboratories.map((laboratory) => (
             <li key={laboratory.id}>
               <Link

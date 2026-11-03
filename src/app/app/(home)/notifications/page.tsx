@@ -6,13 +6,13 @@ export default async function NotificationsPage() {
   const unread = entries.some((n) => !n.readAt);
   return (
     <div>
-      <p className="text-sm font-semibold text-[#7a1731]">Avisos</p>
+      <p className="text-sm font-semibold text-guinda">Avisos</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">
         Notificaciones
       </h1>
       {unread ? (
         <form action={markAllNotificationsRead} className="mt-4">
-          <button className="text-sm font-semibold text-[#7a1731] underline-offset-4 hover:underline">
+          <button className="text-sm font-semibold text-guinda underline-offset-4 hover:underline">
             Marcar todas como leídas
           </button>
         </form>
@@ -21,20 +21,20 @@ export default async function NotificationsPage() {
         {entries.map((n) => (
           <li
             key={n.id}
-            className={`rounded-2xl border bg-white p-5 ${n.readAt ? "border-stone-200" : "border-[#7a1731]/40 shadow-sm"}`}
+            className={`rounded-md border bg-surface p-5 ${n.readAt ? "border-line" : "border-guinda/40 shadow-sm"}`}
           >
             <form action={openNotification}>
               <input type="hidden" name="notificationId" value={n.id} />
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">
                 {n.readAt ? "Leída" : "Nueva"} · {n.laboratoryName}
               </p>
               <h2 className="mt-2 break-words font-semibold">{n.title}</h2>
-              <p className="mt-1 break-words text-stone-700">{n.body}</p>
-              <p className="mt-2 text-sm text-stone-500">
+              <p className="mt-1 break-words text-muted">{n.body}</p>
+              <p className="mt-2 text-sm text-muted">
                 {formatAcademicTime(n.createdAt)}
               </p>
               <button
-                className="mt-3 text-sm font-semibold text-[#7a1731]"
+                className="mt-3 text-sm font-semibold text-guinda"
                 aria-label={`Abrir: ${n.title}`}
               >
                 Abrir
@@ -44,7 +44,7 @@ export default async function NotificationsPage() {
         ))}
       </ul>
       {!entries.length ? (
-        <p className="mt-6 text-stone-600">No tienes notificaciones.</p>
+        <p className="mt-6 text-muted">No tienes notificaciones.</p>
       ) : null}
     </div>
   );

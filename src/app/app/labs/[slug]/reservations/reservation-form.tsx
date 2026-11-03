@@ -7,7 +7,7 @@ import {
   type ReservationActionState,
 } from "@/modules/reservations/web/form-state";
 const inputStyle =
-  "min-h-12 w-full rounded-xl border border-stone-300 px-4 focus:outline-none focus:ring-4 focus:ring-[#7a1731]/20";
+  "min-h-12 w-full rounded-md border border-line px-4 focus:outline-none focus:ring-4 focus:ring-guinda/20";
 export function ReservationForm({
   spaces,
   canCreate,
@@ -120,18 +120,18 @@ export function ReservationForm({
                 Uno o varios recursos
               </label>
               {!space.canReadResources && (
-                <p className="text-sm text-stone-600">
+                <p className="text-sm text-muted">
                   No tienes permiso para consultar recursos de este laboratorio.
                 </p>
               )}
               {space.canReadResources && !space.resources.length && (
-                <p className="text-sm text-stone-600">
+                <p className="text-sm text-muted">
                   Este espacio todavía no tiene recursos activos.
                 </p>
               )}
             </fieldset>
             {mode === "resources" && (
-              <fieldset className="space-y-3 rounded-xl bg-stone-50 p-4">
+              <fieldset className="space-y-3 rounded-md bg-paper p-4">
                 <legend className="font-semibold">Recursos del espacio</legend>
                 {space.resources.map((resource) => (
                   <label key={resource.id} className="flex items-start gap-3">
@@ -153,12 +153,12 @@ export function ReservationForm({
                     <span>
                       {resource.name}
                       {!resource.available && (
-                        <span className="block text-sm text-[#7a1731]">
+                        <span className="block text-sm text-guinda">
                           No disponible: en mantenimiento o fuera de servicio
                         </span>
                       )}
                       {resource.location && (
-                        <span className="block text-sm text-stone-500">
+                        <span className="block text-sm text-muted">
                           Ubicación: {resource.location}
                         </span>
                       )}
@@ -201,7 +201,7 @@ export function ReservationForm({
             />
           </div>
         </div>
-        <p className="text-sm leading-6 text-stone-600">
+        <p className="text-sm leading-6 text-muted">
           Horarios de Ciudad de México (America/Mexico_City). Consultar
           disponibilidad es informativo; al confirmar se comprueba nuevamente.
         </p>
@@ -211,7 +211,7 @@ export function ReservationForm({
             name="intent"
             value="check"
             disabled={!ready}
-            className="min-h-12 rounded-xl border border-[#7a1731] px-5 font-semibold text-[#7a1731] disabled:opacity-50"
+            className="btn btn-outline"
           >
             Consultar disponibilidad
           </button>
@@ -221,14 +221,14 @@ export function ReservationForm({
               name="intent"
               value="create"
               disabled={!ready}
-              className="min-h-12 rounded-xl bg-[#7a1731] px-5 font-semibold text-white disabled:opacity-50"
+              className="btn btn-primary"
             >
               Confirmar reservación
             </button>
           )}
         </div>
         {!canCreate && (
-          <p className="text-sm text-stone-600">
+          <p className="text-sm text-muted">
             Puedes consultar disponibilidad; necesitas permiso de creación para
             confirmar.
           </p>
@@ -240,7 +240,7 @@ export function ReservationForm({
         ) : (
           message && (
             <p
-              className={`rounded-xl p-4 text-sm ${state.status === "available" ? "bg-emerald-50 text-emerald-900" : "bg-amber-50 text-amber-900"}`}
+              className={`rounded-md p-4 text-sm ${state.status === "available" ? "bg-emerald-50 text-emerald-900" : "bg-amber-50 text-amber-900"}`}
             >
               {message}
             </p>

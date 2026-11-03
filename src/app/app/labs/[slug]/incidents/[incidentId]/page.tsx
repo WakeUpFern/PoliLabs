@@ -8,7 +8,7 @@ import type { IncidentUsage } from "@/modules/incidents/domain/incidents";
 function UsageEntry({ usage, at }: { usage: IncidentUsage; at: Date }) {
   const openAtReport = !usage.endedAt || usage.endedAt > at;
   return (
-    <div className="rounded-xl bg-stone-50 p-4">
+    <div className="rounded-md bg-paper p-4">
       <p className="font-semibold">{usage.userName}</p>
       <p className="mt-1 text-sm">
         Inicio: {formatAcademicTime(usage.startedAt)} ·{" "}
@@ -57,7 +57,7 @@ export default async function IncidentDetailPage({
       <h1 className="mt-6 text-3xl font-semibold">
         {targetLabels[i.targetKind]}: {i.targetSnapshot.name}
       </h1>
-      <section className="mt-6 space-y-3 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 space-y-3 rounded-md border border-line bg-surface p-6">
         <p>
           {statusLabels[i.status]} · Severidad{" "}
           {severityLabels[i.severity].toLowerCase()}
@@ -71,7 +71,7 @@ export default async function IncidentDetailPage({
           Ubicación asignada al reportar:{" "}
           {i.targetSnapshot.locationName ?? "Sin ubicación específica"}
         </p>
-        <p className="text-sm text-stone-600">
+        <p className="text-sm text-muted">
           Este contexto se conserva aunque cambie el catálogo. La hora del
           reporte no demuestra cuándo comenzó el problema.
         </p>
@@ -92,7 +92,7 @@ export default async function IncidentDetailPage({
         </div>
       </section>
       {access.canResolve && i.status !== "resolved" ? (
-        <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+        <section className="mt-6 rounded-md border border-line bg-surface p-6">
           <h2 className="mb-4 text-xl font-semibold">Seguimiento</h2>
           <IncidentForm
             key={`${i.id}:${i.version}`}
@@ -116,7 +116,7 @@ export default async function IncidentDetailPage({
                 required
                 maxLength={5000}
                 rows={3}
-                className="mt-2 block w-full rounded-xl border border-stone-300 p-3"
+                className="mt-2 block w-full rounded-md border border-line p-3"
               />
             </label>
           </IncidentForm>
@@ -126,7 +126,7 @@ export default async function IncidentDetailPage({
         <h2 className="text-xl font-semibold">Historial de seguimiento</h2>
         <ol className="mt-3 space-y-3">
           {events.map((e) => (
-            <li key={e.id} className="rounded-xl border border-stone-200 p-4">
+            <li key={e.id} className="rounded-md border border-line p-4">
               <p className="font-semibold">
                 {e.action === "incident.reported"
                   ? "Reporte"
@@ -136,7 +136,7 @@ export default async function IncidentDetailPage({
                 · {e.actorName}
               </p>
               <p className="mt-1 whitespace-pre-wrap break-words">{e.note}</p>
-              <p className="mt-1 text-sm text-stone-600">
+              <p className="mt-1 text-sm text-muted">
                 {formatAcademicTime(e.createdAt)} · {e.source}
               </p>
             </li>
@@ -148,7 +148,7 @@ export default async function IncidentDetailPage({
           <h2 className="text-xl font-semibold">
             Usos registrados antes del reporte
           </h2>
-          <p className="mt-2 text-stone-600">
+          <p className="mt-2 text-muted">
             Información de trazabilidad: no implica responsabilidad ni acredita
             quién causó el problema. Pueden existir usos simultáneos.
           </p>

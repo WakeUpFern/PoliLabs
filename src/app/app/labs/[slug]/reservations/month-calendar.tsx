@@ -23,10 +23,10 @@ export function MonthCalendar({
   dayHref: (date: string) => string;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-200">
-      <div className="grid grid-cols-7 gap-px text-center text-xs font-semibold uppercase text-stone-500">
+    <div className="overflow-hidden rounded-md border border-line bg-line">
+      <div className="grid grid-cols-7 gap-px text-center text-xs font-semibold uppercase text-muted">
         {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((day) => (
-          <div key={day} className="bg-stone-50 py-2">
+          <div key={day} className="bg-paper py-2">
             {day}
           </div>
         ))}
@@ -39,22 +39,20 @@ export function MonthCalendar({
               key={day}
               aria-label={formatCalendarDay(day, "long")}
               className={`min-h-20 p-1.5 sm:min-h-28 sm:p-2 ${
-                day.startsWith(month)
-                  ? "bg-white"
-                  : "bg-stone-50 text-stone-400"
+                day.startsWith(month) ? "bg-surface" : "bg-paper text-muted"
               }`}
             >
               <Link
                 href={dayHref(day)}
                 aria-label={`Ver ${formatCalendarDay(day, "long")}`}
                 className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${
-                  day === today ? "bg-[#7a1731] text-white" : ""
+                  day === today ? "bg-guinda text-white" : ""
                 }`}
               >
                 {Number(day.slice(8))}
               </Link>
               {dayEntries.length > 0 && (
-                <p className="mt-1 rounded-md bg-[#7a1731]/10 px-1 text-center text-xs font-semibold text-[#7a1731] sm:hidden">
+                <p className="mt-1 rounded-md bg-guinda/10 px-1 text-center text-xs font-semibold text-guinda sm:hidden">
                   {dayEntries.length}
                 </p>
               )}
@@ -68,7 +66,7 @@ export function MonthCalendar({
                   <li>
                     <Link
                       href={dayHref(day)}
-                      className="text-xs font-semibold text-[#7a1731]"
+                      className="text-xs font-semibold text-guinda"
                     >
                       +{dayEntries.length - 3} más
                     </Link>
@@ -86,8 +84,8 @@ export function MonthCalendar({
 function EntryChip({ slug, entry }: { slug: string; entry: OccupancyView }) {
   const time = `${formatCalendarTime(entry.startsAt)}–${formatCalendarTime(entry.endsAt)}`;
   const tone = entry.isMine
-    ? "border-[#7a1731] bg-[#7a1731]/10 text-[#641229]"
-    : "border-stone-300 bg-stone-100 text-stone-700";
+    ? "border-guinda bg-guinda/10 text-[#641229]"
+    : "border-line bg-paper text-muted";
   const body = (
     <>
       <span className="block font-semibold">{time}</span>

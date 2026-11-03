@@ -18,13 +18,13 @@ export function LoanCard({
   returnForm?: { canAdjust: boolean } | null;
 }) {
   return (
-    <article className="rounded-2xl border border-stone-200 bg-white p-5">
+    <article className="rounded-md border border-line bg-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <h3 className="font-semibold break-words">
           {showItem && linkItem ? (
             <Link
               href={`/app/labs/${slug}/inventory/${loan.itemId}`}
-              className="text-[#7a1731]"
+              className="text-guinda"
             >
               {loan.itemName}
             </Link>
@@ -41,7 +41,7 @@ export function LoanCard({
               ? "bg-red-100 text-red-800"
               : loan.status === "active"
                 ? "bg-amber-100 text-amber-900"
-                : "bg-stone-100 text-stone-700"
+                : "bg-paper text-muted"
           }`}
         >
           {loan.overdue
@@ -51,7 +51,7 @@ export function LoanCard({
               : "Devuelto"}
         </span>
       </div>
-      <dl className="mt-3 grid gap-1 text-sm text-stone-700 sm:grid-cols-2">
+      <dl className="mt-3 grid gap-1 text-sm text-muted sm:grid-cols-2">
         {showItem ? <div>Recibe: {loan.borrowerName}</div> : null}
         <div>Prestado: {formatAcademicTime(loan.loanedAt)}</div>
         <div>
@@ -68,7 +68,7 @@ export function LoanCard({
       </dl>
       {loan.notes ? <p className="mt-2 text-sm">{loan.notes}</p> : null}
       {loan.returns.length ? (
-        <ul className="mt-3 space-y-1 border-t border-stone-100 pt-3 text-sm">
+        <ul className="mt-3 space-y-1 border-t border-line pt-3 text-sm">
           {loan.returns.map((r) => (
             <li key={r.id}>
               {formatAcademicTime(r.returnedAt)} · {pieces(r.quantity)}{" "}

@@ -75,7 +75,7 @@ export function SessionFields({
           />
         </label>
       </div>
-      <p className="text-sm text-stone-600">
+      <p className="text-sm text-muted">
         Horario de Ciudad de México. Programar la sesión no reserva el espacio;
         consulta y gestiona su disponibilidad en Reservaciones.
       </p>
@@ -92,9 +92,9 @@ export function ParticipantFields({
   selected?: string[];
 }) {
   return (
-    <fieldset className="rounded-xl border border-stone-200 p-4">
+    <fieldset className="rounded-md border border-line p-4">
       <legend className="px-2 font-semibold">Participantes</legend>
-      <p className="mb-3 text-sm text-stone-600">
+      <p className="mb-3 text-sm text-muted">
         Lista de participantes previstos. El registro de asistencia se
         incorporará posteriormente.
       </p>
@@ -108,14 +108,14 @@ export function ParticipantFields({
                 name="participantUserIds"
                 value={m.id}
                 defaultChecked={selected.includes(m.id)}
-                className="h-4 w-4 accent-[#7a1731]"
+                className="h-4 w-4 accent-guinda"
               />
               {m.name}
             </label>
           ))}
       </div>
       {members.every((m) => m.id === actorUserId) ? (
-        <p className="text-sm text-stone-600">
+        <p className="text-sm text-muted">
           No hay otros miembros activos disponibles.
         </p>
       ) : null}

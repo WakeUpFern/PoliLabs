@@ -31,33 +31,33 @@ export default async function ReservationDetailPage({
   return (
     <div>
       <Link
-        className="text-sm font-semibold text-[#7a1731]"
+        className="text-sm font-semibold text-guinda"
         href={`/app/labs/${slug}/reservations?tab=mine`}
       >
         ← Mis reservaciones
       </Link>
       <h1 className="mt-6 text-3xl font-semibold">Detalle de reservación</h1>
-      <p className="mt-3 text-stone-600">
+      <p className="mt-3 text-muted">
         {data.laboratory.name} · America/Mexico_City
       </p>
       {created === "1" && (
         <p
           role="status"
-          className="mt-6 rounded-xl bg-emerald-50 p-4 text-emerald-900"
+          className="mt-6 rounded-md bg-emerald-50 p-4 text-emerald-900"
         >
           Reservación creada correctamente.
         </p>
       )}
-      <article className="mt-8 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+      <article className="mt-8 rounded-md border border-line bg-surface p-6 shadow-sm sm:p-8">
         <ReservationSummary reservation={reservation} />
-        <p className="mt-5 text-sm text-stone-600">
+        <p className="mt-5 text-sm text-muted">
           Creada:{" "}
           <time dateTime={reservation.createdAt}>
             {formatReservationTime(reservation.createdAt)}
           </time>
         </p>
         {reservation.cancelledAt && (
-          <p className="mt-3 text-sm text-stone-600">
+          <p className="mt-3 text-sm text-muted">
             Cancelada:{" "}
             <time dateTime={reservation.cancelledAt}>
               {formatReservationTime(reservation.cancelledAt)}
@@ -73,7 +73,7 @@ export default async function ReservationDetailPage({
           )}
         {reservation.status === "confirmed" &&
           new Date(reservation.startsAt).getTime() <= data.now && (
-            <p className="mt-6 text-sm text-stone-600">
+            <p className="mt-6 text-sm text-muted">
               Esta reservación ya inició o pasó; no se puede cancelar.
             </p>
           )}

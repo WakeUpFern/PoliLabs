@@ -41,7 +41,7 @@ export function ReportForm({
             setTarget(e.target.value);
             setUsageId("");
           }}
-          className="mt-2 block w-full rounded-xl border border-stone-300 p-3"
+          className="mt-2 block w-full rounded-md border border-line p-3"
         >
           <option value="" disabled>
             Selecciona recurso, espacio o sesión
@@ -59,7 +59,7 @@ export function ReportForm({
           name="usageId"
           value={usageId}
           onChange={(e) => setUsageId(e.target.value)}
-          className="mt-2 block w-full rounded-xl border border-stone-300 p-3"
+          className="mt-2 block w-full rounded-md border border-line p-3"
         >
           <option value="">Observado sin uso asociado</option>
           {matching.map((u) => (
@@ -69,7 +69,7 @@ export function ReportForm({
           ))}
         </select>
       </label>
-      <p className="text-sm text-stone-600">
+      <p className="text-sm text-muted">
         Puedes reportar fuera de clase, sin una sesión o reservación. Sólo
         aparecen tus usos que siguen abiertos para el recurso seleccionado.
       </p>
@@ -80,7 +80,7 @@ export function ReportForm({
           required
           maxLength={5000}
           rows={5}
-          className="mt-2 block w-full rounded-xl border border-stone-300 p-3"
+          className="mt-2 block w-full rounded-md border border-line p-3"
         />
       </label>
       <label className="block">
@@ -89,7 +89,7 @@ export function ReportForm({
           name="severity"
           defaultValue="medium"
           required
-          className="mt-2 block w-full rounded-xl border border-stone-300 p-3"
+          className="mt-2 block w-full rounded-md border border-line p-3"
         >
           <option value="low">Baja</option>
           <option value="medium">Media</option>

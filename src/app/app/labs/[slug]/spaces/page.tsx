@@ -36,33 +36,26 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
 
   return (
     <div>
-      <Link
-        href={`/app/labs/${slug}`}
-        className="text-sm font-semibold text-stone-600 transition hover:text-[#7a1731]"
-      >
-        <span aria-hidden="true">←</span> {laboratory.name}
-      </Link>
-
-      <div className="mt-6 sm:flex sm:items-end sm:justify-between sm:gap-6">
+      <div className="sm:flex sm:items-end sm:justify-between sm:gap-6">
         <div>
-          <p className="text-sm font-semibold text-[#7a1731]">Spatial I</p>
+          <p className="text-sm font-semibold text-guinda">Spatial I</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             Espacios
           </h1>
-          <p className="mt-3 max-w-2xl leading-7 text-stone-600">
+          <p className="mt-3 max-w-2xl leading-7 text-muted">
             Catálogo operativo de áreas pertenecientes a {laboratory.name}.
           </p>
         </div>
-        <p className="mt-4 text-sm text-stone-500 sm:mt-0">
+        <p className="mt-4 text-sm text-muted sm:mt-0">
           {catalog.spaces.length}{" "}
           {catalog.spaces.length === 1 ? "activo" : "activos"}
         </p>
       </div>
 
       {catalog.canManage ? (
-        <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+        <section className="mt-8 rounded-md border border-line bg-surface p-6 shadow-sm sm:p-8">
           <h2 className="text-xl font-semibold">Registrar espacio</h2>
-          <p className="mt-2 text-sm leading-6 text-stone-600">
+          <p className="mt-2 text-sm leading-6 text-muted">
             La capacidad puede dejarse vacía hasta contar con el dato validado.
           </p>
           <SpaceForm action={createAction} submitLabel="Crear espacio" />
@@ -72,7 +65,7 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
       <section className="mt-8">
         <h2 className="text-xl font-semibold">Espacios activos</h2>
         {catalog.spaces.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center text-stone-600">
+          <div className="mt-4 rounded-md border border-dashed border-line bg-paper p-8 text-center text-muted">
             Todavía no hay espacios registrados.
           </div>
         ) : (
@@ -86,12 +79,12 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
               return (
                 <article
                   key={space.id}
-                  className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm"
+                  className="rounded-md border border-line bg-surface p-6 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h3 className="text-lg font-semibold">{space.name}</h3>
-                      <p className="mt-1 font-mono text-xs text-stone-500">
+                      <p className="mt-1 font-mono text-xs text-muted">
                         {space.slug}
                       </p>
                     </div>
@@ -99,22 +92,22 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
                       Activo
                     </span>
                   </div>
-                  <p className="mt-5 text-sm text-stone-600">
+                  <p className="mt-5 text-sm text-muted">
                     {space.capacity
                       ? `Capacidad: ${space.capacity} personas`
                       : "Capacidad no especificada"}
                   </p>
                   <Link
                     href={`/app/labs/${slug}/spaces/${space.slug}`}
-                    className="mt-5 inline-flex text-sm font-semibold text-[#7a1731] transition hover:text-[#571020]"
+                    className="mt-5 inline-flex text-sm font-semibold text-guinda transition hover:text-[#571020]"
                   >
                     Abrir organización física <span aria-hidden="true">→</span>
                   </Link>
                   {catalog.canManage ? (
-                    <div className="mt-5 flex items-center gap-4 border-t border-stone-100 pt-4">
+                    <div className="mt-5 flex items-center gap-4 border-t border-line pt-4">
                       <Link
                         href={`/app/labs/${slug}/spaces/${space.slug}/edit`}
-                        className="text-sm font-semibold text-[#7a1731] transition hover:text-[#571020]"
+                        className="text-sm font-semibold text-guinda transition hover:text-[#571020]"
                       >
                         Editar
                       </Link>

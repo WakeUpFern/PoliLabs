@@ -21,9 +21,8 @@ export default async function AttendancePage({
   const history = await attendancePageData(() => attendanceWeb.mine(slug));
   return (
     <div>
-      <Link href={`/app/labs/${slug}`}>← Laboratorio</Link>
-      <h1 className="mt-6 text-3xl font-semibold">Asistencia</h1>
-      <section className="mt-6 space-y-5 rounded-2xl border border-stone-200 bg-white p-6">
+      <h1 className="text-3xl font-semibold">Asistencia</h1>
+      <section className="mt-6 space-y-5 rounded-md border border-line bg-surface p-6">
         <h2 className="text-xl font-semibold">
           {data.location?.name ?? "Sesiones abiertas"}
         </h2>
@@ -45,7 +44,7 @@ export default async function AttendancePage({
                 required
                 name="sessionId"
                 defaultValue={data.selectedSessionId ?? ""}
-                className="mt-2 block w-full rounded-xl border border-stone-300 p-3"
+                className="mt-2 block w-full rounded-md border border-line p-3"
               >
                 <option value="" disabled>
                   Selecciona una sesión
@@ -57,7 +56,7 @@ export default async function AttendancePage({
                 ))}
               </select>
             </label>
-            <p className="text-sm text-stone-600">
+            <p className="text-sm text-muted">
               Puedes cambiar entre las sesiones disponibles. Abrir este enlace
               no registra asistencia.
             </p>
@@ -69,20 +68,20 @@ export default async function AttendancePage({
           </p>
         )}
         {data.location ? (
-          <p className="text-sm text-stone-600">
+          <p className="text-sm text-muted">
             La ubicación indica el contexto del registro; no verifica tu
             presencia física.
           </p>
         ) : null}
       </section>
-      <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 rounded-md border border-line bg-surface p-6">
         <h2 className="text-xl font-semibold">Mi asistencia</h2>
         {history.length ? (
           <ul className="mt-4 space-y-3">
             {history.map((a) => (
               <li key={a.id}>
                 <Link
-                  className="font-semibold text-[#7a1731]"
+                  className="font-semibold text-guinda"
                   href={`/app/labs/${slug}/academic/sessions/${a.sessionId}`}
                 >
                   Sesión

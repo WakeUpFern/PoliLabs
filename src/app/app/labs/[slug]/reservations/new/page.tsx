@@ -42,15 +42,15 @@ export default async function NewReservationPage({
     <div>
       <Link
         href={`/app/labs/${slug}/reservations`}
-        className="text-sm font-semibold text-[#7a1731]"
+        className="text-sm font-semibold text-guinda"
       >
         ← Calendario de reservaciones
       </Link>
       <h1 className="mt-6 text-3xl font-semibold">Nueva reservación</h1>
-      <p className="mt-3 text-stone-600">
+      <p className="mt-3 text-muted">
         {data.laboratory.name} · Fechas y horas en America/Mexico_City.
       </p>
-      <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+      <section className="mt-8 rounded-md border border-line bg-surface p-6 shadow-sm sm:p-8">
         {data.spaces.length ? (
           <ReservationForm
             spaces={data.spaces}
@@ -59,7 +59,7 @@ export default async function NewReservationPage({
             action={reservationFormAction.bind(null, slug)}
           />
         ) : (
-          <p className="text-stone-600">
+          <p className="text-muted">
             Todavía no hay espacios activos disponibles para reservar.
           </p>
         )}

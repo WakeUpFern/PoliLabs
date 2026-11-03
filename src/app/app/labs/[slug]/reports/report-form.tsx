@@ -1,9 +1,7 @@
 import type { ReportDefinition } from "@/modules/reports/domain/reports";
 
-const field =
-  "mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 text-sm";
-const button =
-  "rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]";
+const field = "mt-1 w-full rounded-md border border-line px-3 py-2 text-sm";
+const button = "btn btn-primary";
 
 // Native GET form: the route handler answers with an attachment, so the page
 // stays in place and no client JavaScript is needed.
@@ -26,8 +24,8 @@ export function ReportForm({
       aria-labelledby={`report-${report.key}`}
       className={
         compact
-          ? "rounded-xl border border-stone-200 p-4"
-          : "rounded-2xl border border-stone-200 bg-white p-5 sm:p-6"
+          ? "rounded-md border border-line p-4"
+          : "rounded-md border border-line bg-surface p-5 sm:p-6"
       }
     >
       <Heading
@@ -36,9 +34,7 @@ export function ReportForm({
       >
         {report.title}
       </Heading>
-      <p className="mt-2 text-sm leading-6 text-stone-600">
-        {report.description}
-      </p>
+      <p className="mt-2 text-sm leading-6 text-muted">{report.description}</p>
       <form
         method="get"
         action={`/app/labs/${slug}/reports/${report.key}`}
@@ -47,7 +43,7 @@ export function ReportForm({
         {failure ? (
           <p
             role="alert"
-            className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-800"
+            className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-800"
           >
             {failure}
           </p>

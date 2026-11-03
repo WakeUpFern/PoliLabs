@@ -18,7 +18,7 @@ export function ArchiveForm({
   });
   return (
     <details className="mt-2 text-sm">
-      <summary className="cursor-pointer font-semibold text-[#7a1731]">
+      <summary className="cursor-pointer font-semibold text-guinda">
         Archivar
       </summary>
       <form action={action} className="mt-2 space-y-2">
@@ -30,16 +30,13 @@ export function ArchiveForm({
               required
               maxLength={1000}
               rows={2}
-              className="mt-1 block w-full rounded-xl border border-stone-300 p-2"
+              className="mt-1 block w-full rounded-md border border-line p-2"
             />
           </label>
-          <p className="text-stone-600">
+          <p className="text-muted">
             El archivo se oculta pero no se borra; el motivo queda registrado.
           </p>
-          <button
-            type="submit"
-            className="rounded-xl border border-stone-300 px-3 py-1 font-semibold"
-          >
+          <button type="submit" className="btn">
             Confirmar archivado
           </button>
         </fieldset>
