@@ -11,26 +11,20 @@ export default async function AcademicPage({
   const data = await academicPageData(() => academicWeb.list(slug));
   return (
     <div>
-      <Link
-        href={`/app/labs/${slug}`}
-        className="text-sm font-semibold text-stone-600"
-      >
-        ← {data.laboratory.name}
-      </Link>
-      <header className="mt-6 flex flex-wrap items-center justify-between gap-4">
+      <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-widest text-guinda">
             Académico
           </p>
           <h1 className="mt-2 text-3xl font-semibold">Prácticas y sesiones</h1>
-          <p className="mt-3 text-stone-600">
+          <p className="mt-3 text-muted">
             Consulta las instrucciones y las sesiones en las que participas.
           </p>
         </div>
         {data.canManage ? (
           <Link
             href={`/app/labs/${slug}/academic/practices/new`}
-            className="rounded-xl bg-guinda px-5 py-3 font-semibold text-white"
+            className="btn btn-primary"
           >
             Crear práctica
           </Link>
@@ -41,7 +35,7 @@ export default async function AcademicPage({
           <Link
             key={p.id}
             href={`/app/labs/${slug}/academic/practices/${p.id}`}
-            className="rounded-2xl border border-stone-200 bg-white p-6 transition hover:border-guinda"
+            className="rounded-md border border-line bg-surface p-6 transition hover:border-guinda"
           >
             <span className="text-xs font-bold uppercase text-guinda">
               {PRACTICE_LABELS[p.status]}
@@ -50,7 +44,7 @@ export default async function AcademicPage({
           </Link>
         ))}
         {data.practices.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-stone-300 p-8 text-stone-600">
+          <p className="rounded-md border border-dashed border-line p-8 text-muted">
             Aún no hay prácticas disponibles.
           </p>
         ) : null}

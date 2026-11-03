@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
 import { seedLaboratory, type SeededLaboratory } from "./support/seed";
 import { expectNoHorizontalOverflow, openAs } from "./support/session";
+import { openSection } from "./support/navigation";
 
 // Reports I (ADR 0018): exports reuse each domain's read permission and are
 // generated per request as CSV or PDF attachments.
@@ -65,10 +66,7 @@ test("an inventory reader exports stock as CSV and PDF", async ({
 }, testInfo) => {
   const { context, page } = await openAs(browser, testInfo, lab.users.keeper);
   await page.goto(`/app/labs/${lab.slug}`);
-  await page
-    .getByRole("navigation", { name: "Secciones del laboratorio" })
-    .getByRole("link", { name: "Reportes" })
-    .click();
+  await openSection(page, "Reportes");
   await expect(
     page.getByRole("heading", { name: "Reportes", level: 1 }),
   ).toBeVisible();
@@ -105,7 +103,7 @@ test("the inventory section offers its own exports", async ({
 }, testInfo) => {
   const { context, page } = await openAs(browser, testInfo, lab.users.keeper);
   await page.goto(`/app/labs/${lab.slug}/inventory`);
-  await page.getByText("Exportar CSV / PDF").click();
+  await page.getByText("Exportar", { exact: true }).click();
   await expect(page.getByRole("region")).toHaveCount(2);
   const csv = await download(page, "Stock actual de inventario", "CSV");
   expect(csv.bytes.toString("utf8")).toContain(

@@ -5,6 +5,7 @@ import {
   ACCOUNT_NAVIGATION,
   createActions,
   labNavigation,
+  quickSections,
 } from "@/app/_shell/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import {
@@ -43,12 +44,15 @@ export default async function LaboratoryLayout({
     getUserLaboratories.execute(actorUserId),
   ]);
 
+  const sections = labNavigation(laboratory.slug, laboratory.permissionKeys);
+
   return (
     <AppShell
       laboratory={{
         name: laboratory.name,
         href: `/app/labs/${encodeURIComponent(laboratory.slug)}`,
-        sections: labNavigation(laboratory.slug, laboratory.permissionKeys),
+        sections,
+        quick: quickSections(sections, laboratory.permissionKeys),
         create: createActions(laboratory.slug, laboratory.permissionKeys),
       }}
       laboratories={laboratories}

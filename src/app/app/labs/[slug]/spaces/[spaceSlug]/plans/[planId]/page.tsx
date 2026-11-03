@@ -154,7 +154,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
     <div>
       <Link
         href={spacePath}
-        className="text-sm font-semibold text-stone-600 transition hover:text-guinda"
+        className="text-sm font-semibold text-muted transition hover:text-guinda"
       >
         <span aria-hidden="true">←</span> {space.name}
       </Link>
@@ -164,14 +164,14 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
             Plano · {space.name}
           </p>
           <h1 className="mt-2 text-3xl font-semibold">{data.plan.name}</h1>
-          <p className="mt-2 text-sm text-stone-600">
+          <p className="mt-2 text-sm text-muted">
             {data.plan.width} × {data.plan.height} celdas
           </p>
         </div>
         {occupancy ? (
           <Link
             href={`/app/labs/${slug}/reservations?space=${space.id}`}
-            className="rounded-xl border border-guinda px-4 py-2 text-sm font-semibold text-guinda"
+            className="btn btn-outline"
           >
             Ver calendario del espacio
           </Link>
@@ -181,7 +181,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
       {occupancy !== null || intervalError ? (
         <form
           method="get"
-          className="mt-6 grid gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+          className="mt-6 grid gap-4 rounded-md border border-line bg-surface p-5 shadow-sm sm:grid-cols-[1fr_1fr_auto] sm:items-end"
         >
           <div>
             <label htmlFor="start" className="mb-2 block font-semibold">
@@ -193,7 +193,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
               type="datetime-local"
               required
               defaultValue={interval.startsLocal}
-              className="min-h-11 w-full rounded-xl border border-stone-300 px-3"
+              className="min-h-11 w-full rounded-md border border-line px-3"
             />
           </div>
           <div>
@@ -206,16 +206,13 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
               type="datetime-local"
               required
               defaultValue={interval.endsLocal}
-              className="min-h-11 w-full rounded-xl border border-stone-300 px-3"
+              className="min-h-11 w-full rounded-md border border-line px-3"
             />
           </div>
-          <button
-            type="submit"
-            className="min-h-11 rounded-xl bg-guinda px-5 font-semibold text-white"
-          >
+          <button type="submit" className="btn btn-primary">
             Ver ocupación
           </button>
-          <p className="text-sm text-stone-600 sm:col-span-3">
+          <p className="text-sm text-muted sm:col-span-3">
             {intervalError
               ? "Revisa el intervalo: el fin debe ser posterior al inicio, sin superar 42 días, en hora válida de America/Mexico_City."
               : occupancy
@@ -224,14 +221,14 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
           </p>
         </form>
       ) : (
-        <p className="mt-6 text-sm text-stone-600">
+        <p className="mt-6 text-sm text-muted">
           Necesitas permiso para consultar reservaciones para ver la ocupación.
         </p>
       )}
 
       <div className="mt-6">
         {data.elements.length === 0 ? (
-          <p className="mb-3 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-4 text-sm text-stone-600">
+          <p className="mb-3 rounded-md border border-dashed border-line bg-paper p-4 text-sm text-muted">
             El plano todavía no tiene elementos.
             {data.canManage
               ? " Coloca recursos, ubicaciones o etiquetas abajo."
@@ -244,7 +241,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
           height={data.plan.height}
           elements={elements}
         />
-        <p className="mt-3 flex flex-wrap gap-4 text-sm text-stone-600">
+        <p className="mt-3 flex flex-wrap gap-4 text-sm text-muted">
           {(["free", "occupied", "blocked"] as const).map((status) => (
             <span key={status} className="inline-flex items-center gap-2">
               <span className={`h-3 w-3 rounded-sm ${statusTone[status]}`} />
@@ -270,7 +267,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
             {placedResources.map((resource) => (
               <li
                 key={resource.id}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-stone-200 bg-white p-4"
+                className="flex items-center justify-between gap-3 rounded-md border border-line bg-surface p-4"
               >
                 <span className="font-semibold">{resource.name}</span>
                 <span className="flex items-center gap-3">
@@ -306,7 +303,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
             {occupancy.entries.map((entry, index) => (
               <li
                 key={`${entry.startsAt}-${index}`}
-                className="rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm"
+                className="rounded-md border border-line bg-surface px-4 py-3 text-sm"
               >
                 <span className="font-semibold">
                   {formatCalendarTime(entry.startsAt)}–
@@ -321,9 +318,9 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
 
       {data.canManage ? (
         <section className="mt-10 grid gap-6 xl:grid-cols-2">
-          <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
+          <div className="rounded-md border border-line bg-surface p-5 shadow-sm">
             <h2 className="text-lg font-semibold">Colocar elemento</h2>
-            <p className="mt-1 mb-4 text-sm text-stone-600">
+            <p className="mt-1 mb-4 text-sm text-muted">
               Las coordenadas son celdas desde la esquina superior izquierda
               (columna 0, fila 0).
             </p>
@@ -348,7 +345,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
                 .map(({ id, name }) => ({ id, name }))}
             />
           </div>
-          <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
+          <div className="rounded-md border border-line bg-surface p-5 shadow-sm">
             <h2 className="mb-4 text-lg font-semibold">Datos del plano</h2>
             <ActionForm
               action={updateFloorPlanAction.bind(
@@ -385,7 +382,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
                 />
               </div>
             </ActionForm>
-            <div className="mt-6 border-t border-stone-100 pt-4">
+            <div className="mt-6 border-t border-line pt-4">
               <ActionForm
                 action={deactivateFloorPlanAction.bind(
                   null,
@@ -405,12 +402,12 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
                 {elements.map((element) => (
                   <li
                     key={element.id}
-                    className="rounded-2xl border border-stone-200 bg-white p-4"
+                    className="rounded-md border border-line bg-surface p-4"
                   >
                     <details>
                       <summary className="cursor-pointer font-semibold">
                         {element.name}
-                        <span className="ml-2 text-sm font-normal text-stone-500">
+                        <span className="ml-2 text-sm font-normal text-muted">
                           ({element.x}, {element.y}) · {element.width}×
                           {element.height}
                         </span>

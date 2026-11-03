@@ -25,11 +25,11 @@ export default async function NewInventoryPage({
         ← Inventario
       </Link>
       <h1 className="mt-6 text-3xl font-semibold">Nuevo artículo</h1>
-      <p className="mt-3 text-stone-600">
+      <p className="mt-3 text-muted">
         Antes de registrar, busca si el artículo ya existe. Si llegó más
         material, registra una entrada en su detalle.
       </p>
-      <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-8 rounded-md border border-line bg-surface p-6">
         <InventoryForm
           slug={slug}
           mode="create"

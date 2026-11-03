@@ -1,6 +1,6 @@
 export default function ReservationsLoading() {
   return (
-    <p role="status" className="rounded-2xl bg-stone-50 p-8 text-stone-600">
+    <p role="status" className="rounded-md bg-paper p-8 text-muted">
       Cargando reservaciones…
     </p>
   );

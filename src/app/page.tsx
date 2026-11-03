@@ -11,11 +11,11 @@ export default function Home() {
         Un espacio para la gestión académica y operativa de nuestros
         laboratorios.
       </p>
-      <div className="mt-12 border-t border-stone-300 pt-6">
+      <div className="mt-12 border-t border-line pt-6">
         <h2 className="text-lg font-semibold">
           Estamos preparando el laboratorio digital
         </h2>
-        <p className="mt-2 max-w-xl text-stone-600">
+        <p className="mt-2 max-w-xl text-muted">
           La plataforma está en desarrollo. Las funciones académicas y
           operativas estarán disponibles en próximas etapas.
         </p>

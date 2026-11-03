@@ -8,7 +8,7 @@ import {
   unitLabels,
 } from "../../labels";
 const MAX_MATERIALS = 20;
-const field = "mt-2 block w-full rounded-xl border border-stone-300 p-3";
+const field = "mt-2 block w-full rounded-md border border-line p-3";
 export function MaintenanceForm({
   slug,
   resourceId,
@@ -113,9 +113,9 @@ export function MaintenanceForm({
           </select>
         </label>
         {items ? (
-          <fieldset className="space-y-3 rounded-xl bg-stone-50 p-4">
+          <fieldset className="space-y-3 rounded-md bg-paper p-4">
             <legend className="font-semibold">Materiales consumidos</legend>
-            <p className="text-sm text-stone-600">
+            <p className="text-sm text-muted">
               Se registra un consumo de inventario por material junto con la
               entrada; si falta existencia no se guarda nada.
             </p>
@@ -155,7 +155,7 @@ export function MaintenanceForm({
                 </label>
                 <button
                   type="button"
-                  className="self-end rounded-xl border border-stone-300 px-4 py-3 text-sm"
+                  className="self-end rounded-md border border-line px-4 py-3 text-sm"
                   onClick={() => setRows((r) => r.filter((x) => x !== row))}
                 >
                   Quitar
@@ -181,15 +181,12 @@ export function MaintenanceForm({
             ) : null}
           </fieldset>
         ) : (
-          <p className="text-sm text-stone-600">
+          <p className="text-sm text-muted">
             Registrar materiales consumidos requiere el permiso de movimientos
             de inventario.
           </p>
         )}
-        <button
-          type="submit"
-          className="rounded-xl bg-guinda px-5 py-3 font-semibold text-white disabled:opacity-50"
-        >
+        <button type="submit" className="btn btn-primary">
           {pending ? "Guardando…" : "Guardar entrada"}
         </button>
       </fieldset>

@@ -18,7 +18,7 @@ export default async function ResourceDocumentsPage({
       <h1 className="mt-6 text-3xl font-semibold break-words">
         Documentos de {resource.name}
       </h1>
-      <p className="mt-2 text-stone-600">{resource.spaceName}</p>
+      <p className="mt-2 text-muted">{resource.spaceName}</p>
       {access.canReadEvidence ? (
         <Link
           className="mt-2 inline-block text-sm font-semibold text-guinda"
@@ -28,7 +28,7 @@ export default async function ResourceDocumentsPage({
         </Link>
       ) : null}
       {access.canUpload && resource.isActive ? (
-        <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+        <section className="mt-6 rounded-md border border-line bg-surface p-6">
           <h2 className="mb-4 text-xl font-semibold">
             Subir manual o documento
           </h2>
@@ -41,7 +41,7 @@ export default async function ResourceDocumentsPage({
           />
         </section>
       ) : null}
-      <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 rounded-md border border-line bg-surface p-6">
         <h2 className="mb-4 text-xl font-semibold">Manuales y documentos</h2>
         <DocumentList
           slug={slug}

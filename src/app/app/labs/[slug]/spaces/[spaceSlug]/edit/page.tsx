@@ -53,7 +53,7 @@ export default async function EditSpacePage({ params }: EditSpacePageProps) {
     <div className="max-w-3xl">
       <Link
         href={`/app/labs/${slug}/spaces`}
-        className="text-sm font-semibold text-stone-600 transition hover:text-guinda"
+        className="text-sm font-semibold text-muted transition hover:text-guinda"
       >
         <span aria-hidden="true">←</span> Espacios
       </Link>
@@ -63,7 +63,7 @@ export default async function EditSpacePage({ params }: EditSpacePageProps) {
       <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
         Editar espacio
       </h1>
-      <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+      <section className="mt-8 rounded-md border border-line bg-surface p-6 shadow-sm sm:p-8">
         <SpaceForm
           action={updateAction}
           submitLabel="Guardar cambios"

@@ -16,7 +16,11 @@ import {
   TEMPORARY_PASSWORD_BYTES,
   withinActorPermissions,
 } from "../src/modules/identity/domain/member-administration";
-import { createActions, labNavigation } from "../src/app/_shell/navigation";
+import {
+  createActions,
+  labNavigation,
+  quickSections,
+} from "../src/app/_shell/navigation";
 
 const [responsible, teacher, student] = LABORATORY_ROLE_CATALOG;
 const laboratoryId = "20000000-0000-4000-8000-000000000001";
@@ -291,5 +295,43 @@ test("lab sections follow the practice order and depend on permissions", () => {
   assert.deepEqual(
     createActions("pesados", teacher.permissions).map((a) => a.key),
     ["new-practice", "new-reservation", "new-incident", "new-person"],
+  );
+});
+
+test("the phone's bottom bar offers each role the sections it uses most", () => {
+  const quick = (permissions: readonly string[]) =>
+    quickSections(labNavigation("pesados", permissions), permissions);
+  assert.deepEqual(quick(responsible.permissions), [
+    "home",
+    "incidents",
+    "inventory",
+    "loans",
+  ]);
+  assert.deepEqual(quick(teacher.permissions), [
+    "home",
+    "academic",
+    "attendance",
+    "reservations",
+  ]);
+  assert.deepEqual(quick(student.permissions), [
+    "home",
+    "academic",
+    "reservations",
+    "loans",
+  ]);
+  // Missing preferred sections are filled in the order of a practice.
+  assert.deepEqual(quick(["inventory.read", "space.read"]), [
+    "home",
+    "inventory",
+    "spaces",
+    "reports",
+  ]);
+});
+
+test("every laboratory section belongs to one navigation group", () => {
+  const sections = labNavigation("pesados", responsible.permissions);
+  assert.deepEqual(
+    sections.filter((item) => !item.group).map((item) => item.key),
+    ["home"],
   );
 });

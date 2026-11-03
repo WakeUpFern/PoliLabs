@@ -37,7 +37,7 @@ export default async function SessionAttendancePage({
         {rows.map((r) => (
           <article
             key={r.userId}
-            className="rounded-2xl border border-stone-200 bg-white p-6"
+            className="rounded-md border border-line bg-surface p-6"
           >
             <h2 className="font-semibold">{r.name}</h2>
             <p className="mt-2">
@@ -80,7 +80,7 @@ export default async function SessionAttendancePage({
                     <select
                       name="status"
                       defaultValue={r.attendance?.status ?? "present"}
-                      className="mt-2 block w-full rounded-xl border p-3"
+                      className="mt-2 block w-full rounded-md border p-3"
                     >
                       {Object.entries(ATTENDANCE_LABELS).map(
                         ([value, label]) => (
@@ -97,7 +97,7 @@ export default async function SessionAttendancePage({
                       name="reason"
                       required
                       maxLength={2000}
-                      className="mt-2 block w-full rounded-xl border p-3"
+                      className="mt-2 block w-full rounded-md border p-3"
                     />
                   </label>
                 </AttendanceForm>
@@ -106,7 +106,7 @@ export default async function SessionAttendancePage({
           </article>
         ))}
       </div>
-      <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 rounded-md border border-line bg-surface p-6">
         <h2 className="text-xl font-semibold">
           Historial de registros y correcciones
         </h2>

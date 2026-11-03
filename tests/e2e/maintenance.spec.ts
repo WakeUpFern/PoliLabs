@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { inventoryStocks } from "../../src/modules/inventory/infrastructure/inventory-schema";
 import { seedLaboratory, type SeededLaboratory } from "./support/seed";
 import { expectNoHorizontalOverflow, openAs, signIn } from "./support/session";
+import { openSection } from "./support/navigation";
 
 // Maintenance I (ADR 0015): a log entry changes the operational status,
 // consumes materials atomically and RB5 hides the resource from new bookings.
@@ -63,10 +64,7 @@ test("manager records an out-of-service entry with consumed oil", async ({
 }) => {
   await signIn(page, lab.users.manager.email);
   await page.goto(`/app/labs/${lab.slug}`);
-  await page
-    .getByRole("navigation", { name: "Secciones del laboratorio" })
-    .getByRole("link", { name: "Mantenimiento" })
-    .click();
+  await openSection(page, "Mantenimiento");
   await expect(
     page.getByRole("heading", { name: "Mantenimiento" }),
   ).toBeVisible();

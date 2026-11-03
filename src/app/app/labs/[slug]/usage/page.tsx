@@ -16,13 +16,12 @@ export default async function UsagePage({
   ]);
   return (
     <div>
-      <Link href={`/app/labs/${slug}`}>← Laboratorio</Link>
-      <h1 className="mt-6 text-3xl font-semibold">Uso de maquinaria</h1>
-      <p className="mt-3 text-stone-600">
+      <h1 className="text-3xl font-semibold">Uso de maquinaria</h1>
+      <p className="mt-3 text-muted">
         Registra el uso efectivo. La asistencia y las reservaciones se conservan
         por separado.
       </p>
-      <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 rounded-md border border-line bg-surface p-6">
         <h2 className="mb-4 text-xl font-semibold">Iniciar uso</h2>
         {options.length ? (
           <UsageForm slug={slug} operation="start" label="Iniciar uso">
@@ -32,7 +31,7 @@ export default async function UsagePage({
                 required
                 name="selection"
                 defaultValue=""
-                className="mt-2 block w-full rounded-xl border border-stone-300 p-3"
+                className="mt-2 block w-full rounded-md border border-line p-3"
               >
                 <option value="" disabled>
                   Selecciona un recurso y contexto
@@ -62,7 +61,7 @@ export default async function UsagePage({
         <div className="mt-4 space-y-4">
           {history.map((u) => (
             <article
-              className="rounded-2xl border border-stone-200 bg-white p-6"
+              className="rounded-md border border-line bg-surface p-6"
               key={u.id}
             >
               <p className="font-semibold">

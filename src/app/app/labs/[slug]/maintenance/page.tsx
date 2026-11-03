@@ -15,9 +15,8 @@ export default async function MaintenancePage({
   );
   return (
     <div>
-      <Link href={`/app/labs/${slug}`}>← Laboratorio</Link>
-      <h1 className="mt-6 text-3xl font-semibold">Mantenimiento</h1>
-      <p className="mt-3 text-stone-600">
+      <h1 className="text-3xl font-semibold">Mantenimiento</h1>
+      <p className="mt-3 text-muted">
         Estado operativo y bitácora de los recursos activos. Un recurso en
         mantenimiento o fuera de servicio no se ofrece para nuevas reservaciones
         ni usos.
@@ -30,7 +29,7 @@ export default async function MaintenancePage({
         {resources.map((r) => (
           <article
             key={r.id}
-            className="rounded-2xl border border-stone-200 bg-white p-6"
+            className="rounded-md border border-line bg-surface p-6"
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <Link
@@ -45,7 +44,7 @@ export default async function MaintenancePage({
                 {operationalStatusLabels[r.operationalStatus]}
               </span>
             </div>
-            <p className="mt-2 text-sm text-stone-600">{r.spaceName}</p>
+            <p className="mt-2 text-sm text-muted">{r.spaceName}</p>
             <p className="mt-2 text-sm">
               {r.lastPerformedAt
                 ? `Último mantenimiento: ${formatAcademicTime(r.lastPerformedAt)}`

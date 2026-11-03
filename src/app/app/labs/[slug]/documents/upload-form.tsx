@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 const MAX_BYTES = 10 * 1024 * 1024;
-const field = "mt-2 block w-full rounded-xl border border-stone-300 p-3";
+const field = "mt-2 block w-full rounded-md border border-line p-3";
 // Uploads go to the dedicated route handler; it repeats every check.
 export function UploadForm({
   slug,
@@ -87,15 +87,12 @@ export function UploadForm({
             className={field}
           />
         </label>
-        <p className="text-sm text-stone-600">
+        <p className="text-sm text-muted">
           PDF, PNG, JPEG o WebP; máximo 10 MB. El formato se verifica por el
           contenido del archivo. Las fotos conservan sus metadatos (p. ej.
           ubicación GPS).
         </p>
-        <button
-          type="submit"
-          className="rounded-xl bg-guinda px-4 py-2 font-semibold text-white disabled:opacity-60"
-        >
+        <button type="submit" className="btn btn-primary">
           {pending ? "Subiendo…" : "Subir"}
         </button>
       </fieldset>

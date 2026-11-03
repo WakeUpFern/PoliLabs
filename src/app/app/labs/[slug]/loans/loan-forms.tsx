@@ -5,10 +5,8 @@ import {
   type LoanActionState,
 } from "@/modules/loans/web/loans-web";
 import { lendAction, returnAction } from "./actions";
-const field =
-  "mt-2 block w-full rounded-xl border border-stone-300 bg-white p-3";
-const button =
-  "rounded-xl bg-guinda px-5 py-3 font-semibold text-white disabled:opacity-50";
+const field = "mt-2 block w-full rounded-md border border-line bg-surface p-3";
+const button = "btn btn-primary";
 const idle: LoanActionState = { status: "idle", message: "" };
 // Submit through a transition so fields survive errors; reset only after success.
 function useLoanAction(
@@ -195,7 +193,7 @@ export function ReturnForm({
           />
         </label>
         {condition !== "good" ? (
-          <p className="text-sm text-stone-600 sm:col-span-2">
+          <p className="text-sm text-muted sm:col-span-2">
             Se registrará un movimiento de{" "}
             {condition === "damaged" ? "daño" : "pérdida"} que reduce la
             existencia en la misma operación.
@@ -208,7 +206,7 @@ export function ReturnForm({
         </div>
       </fieldset>
       {!canAdjust ? (
-        <p className="text-sm text-stone-600">
+        <p className="text-sm text-muted">
           Registrar daño o pérdida requiere el permiso de movimientos de
           inventario.
         </p>

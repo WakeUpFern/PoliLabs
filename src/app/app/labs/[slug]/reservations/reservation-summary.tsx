@@ -6,10 +6,8 @@ export function ReservationSummary({
   reservation: ReservationView;
 }) {
   return (
-    <div className="space-y-3 text-sm leading-6 text-stone-600">
-      <p className="text-lg font-semibold text-stone-900">
-        {reservation.spaceName}
-      </p>
+    <div className="space-y-3 text-sm leading-6 text-muted">
+      <p className="text-lg font-semibold text-ink">{reservation.spaceName}</p>
       <p>
         <span className="font-semibold">Modalidad:</span>{" "}
         {reservation.isExclusive ? "Espacio completo" : "Recursos"}
@@ -42,7 +40,7 @@ export function ReservationSummary({
           className={
             reservation.status === "confirmed"
               ? "font-semibold text-emerald-800"
-              : "font-semibold text-stone-700"
+              : "font-semibold text-muted"
           }
         >
           {reservation.status === "confirmed" ? "Confirmada" : "Cancelada"} (

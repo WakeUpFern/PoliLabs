@@ -18,33 +18,33 @@ export function CancelReservationButton({
   );
   const [confirming, setConfirming] = useState(false);
   return (
-    <div className="mt-6 border-t border-stone-200 pt-6">
+    <div className="mt-6 border-t border-line pt-6">
       {state.status !== "success" &&
         (!confirming ? (
           <button
             type="button"
-            className="rounded-xl border border-red-300 px-5 py-3 font-semibold text-red-800"
+            className="btn btn-danger"
             onClick={() => setConfirming(true)}
           >
             Cancelar reservación
           </button>
         ) : (
           <form action={formAction}>
-            <p className="mb-4 text-sm text-stone-600">
+            <p className="mb-4 text-sm text-muted">
               ¿Confirmas la cancelación? Se conservará en tu historial.
             </p>
             <div className="flex flex-wrap gap-3">
               <button
                 disabled={pending}
                 type="submit"
-                className="rounded-xl bg-red-800 px-5 py-3 font-semibold text-white disabled:opacity-50"
+                className="rounded-md bg-red-800 px-5 py-3 font-semibold text-white disabled:opacity-50"
               >
                 {pending ? "Cancelando…" : "Sí, cancelar"}
               </button>
               <button
                 disabled={pending}
                 type="button"
-                className="rounded-xl border border-stone-300 px-5 py-3"
+                className="rounded-md border border-line px-5 py-3"
                 onClick={() => setConfirming(false)}
               >
                 Volver
@@ -55,7 +55,7 @@ export function CancelReservationButton({
       <div aria-live="polite">
         {state.message && (
           <p
-            className={`mt-4 rounded-xl p-4 text-sm ${state.status === "success" ? "bg-emerald-50 text-emerald-900" : "bg-amber-50 text-amber-900"}`}
+            className={`mt-4 rounded-md p-4 text-sm ${state.status === "success" ? "bg-emerald-50 text-emerald-900" : "bg-amber-50 text-amber-900"}`}
           >
             {state.message}
           </p>

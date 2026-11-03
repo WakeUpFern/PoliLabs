@@ -23,10 +23,10 @@ export function MonthCalendar({
   dayHref: (date: string) => string;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-200">
-      <div className="grid grid-cols-7 gap-px text-center text-xs font-semibold uppercase text-stone-500">
+    <div className="overflow-hidden rounded-md border border-line bg-line">
+      <div className="grid grid-cols-7 gap-px text-center text-xs font-semibold uppercase text-muted">
         {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((day) => (
-          <div key={day} className="bg-stone-50 py-2">
+          <div key={day} className="bg-paper py-2">
             {day}
           </div>
         ))}
@@ -39,9 +39,7 @@ export function MonthCalendar({
               key={day}
               aria-label={formatCalendarDay(day, "long")}
               className={`min-h-20 p-1.5 sm:min-h-28 sm:p-2 ${
-                day.startsWith(month)
-                  ? "bg-white"
-                  : "bg-stone-50 text-stone-400"
+                day.startsWith(month) ? "bg-surface" : "bg-paper text-muted"
               }`}
             >
               <Link
@@ -87,7 +85,7 @@ function EntryChip({ slug, entry }: { slug: string; entry: OccupancyView }) {
   const time = `${formatCalendarTime(entry.startsAt)}–${formatCalendarTime(entry.endsAt)}`;
   const tone = entry.isMine
     ? "border-guinda bg-guinda/10 text-[#641229]"
-    : "border-stone-300 bg-stone-100 text-stone-700";
+    : "border-line bg-paper text-muted";
   const body = (
     <>
       <span className="block font-semibold">{time}</span>

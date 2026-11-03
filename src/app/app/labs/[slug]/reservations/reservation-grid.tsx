@@ -48,7 +48,7 @@ type Draft = {
 
 const SLOT_PX = 28;
 const inputStyle =
-  "min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 focus:outline-none focus:ring-4 focus:ring-guinda/20";
+  "min-h-11 w-full rounded-md border border-line bg-surface px-3 focus:outline-none focus:ring-4 focus:ring-guinda/20";
 
 function overlapping(entries: readonly OccupancyView[], draft: Draft) {
   try {
@@ -183,7 +183,7 @@ export function ReservationGrid({
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-stone-600">
+        <p className="text-sm text-muted">
           {canCreate
             ? "Toca una franja libre o arrastra sobre ella para reservar."
             : "Necesitas permiso de creación para reservar desde el calendario."}
@@ -198,7 +198,7 @@ export function ReservationGrid({
                 : 18;
               open(day.date, Math.min(slot, SLOTS_PER_DAY - 2), 2);
             }}
-            className="rounded-xl bg-guinda px-4 py-2 text-sm font-semibold text-white"
+            className="btn btn-primary"
           >
             Nueva reservación
           </button>
@@ -213,7 +213,7 @@ export function ReservationGrid({
 
       <div
         ref={scroller}
-        className="max-h-[70vh] overflow-auto rounded-2xl border border-stone-200 bg-white"
+        className="max-h-[70vh] overflow-auto rounded-md border border-line bg-surface"
       >
         <div
           className="grid"
@@ -221,22 +221,27 @@ export function ReservationGrid({
             gridTemplateColumns: `3rem repeat(${days.length}, minmax(${days.length > 1 ? "6.5rem" : "0"}, 1fr))`,
           }}
         >
-          <div className="sticky top-0 z-20 border-b border-stone-200 bg-white" />
-          {days.map((day) => (
-            <div
-              key={day.date}
-              className={`sticky top-0 z-20 border-b border-l border-stone-200 bg-white px-2 py-2 text-center text-sm font-semibold capitalize ${
-                day.isToday ? "text-guinda" : ""
-              }`}
-            >
-              {days.length > 1 ? day.shortLabel : day.label}
-            </div>
-          ))}
+          {/* A single day is already named by the title above the grid. */}
+          {days.length > 1 ? (
+            <>
+              <div className="sticky top-0 z-20 border-b border-line bg-surface" />
+              {days.map((day) => (
+                <div
+                  key={day.date}
+                  className={`sticky top-0 z-20 border-b border-l border-line bg-surface px-2 py-2 text-center text-sm font-semibold first-letter:uppercase ${
+                    day.isToday ? "text-guinda" : ""
+                  }`}
+                >
+                  {day.shortLabel}
+                </div>
+              ))}
+            </>
+          ) : null}
           <div className="relative" style={{ height: SLOTS_PER_DAY * SLOT_PX }}>
             {Array.from({ length: 24 }, (_, hour) => (
               <span
                 key={hour}
-                className="absolute right-1 -translate-y-1/2 text-[11px] text-stone-500"
+                className="absolute right-1 -translate-y-1/2 text-[11px] text-muted"
                 style={{ top: hour * 2 * SLOT_PX }}
               >
                 {hour ? `${String(hour).padStart(2, "0")}:00` : ""}
@@ -252,7 +257,7 @@ export function ReservationGrid({
                 key={day.date}
                 role="group"
                 aria-label={day.label}
-                className="relative touch-pan-y select-none border-l border-stone-200"
+                className="relative touch-pan-y select-none border-l border-line"
                 style={{
                   height: SLOTS_PER_DAY * SLOT_PX,
                   backgroundImage:
@@ -298,7 +303,7 @@ export function ReservationGrid({
                 {nowMinute > 0 && (
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 top-0 bg-stone-100/70"
+                    className="pointer-events-none absolute inset-x-0 top-0 bg-paper/70"
                     style={{
                       height:
                         (Math.min(nowMinute, 1440) / SLOT_MINUTES) * SLOT_PX,
@@ -346,7 +351,7 @@ export function ReservationGrid({
                   const className = `absolute z-10 overflow-hidden rounded-lg border-l-4 px-1.5 py-0.5 text-xs leading-tight ${
                     block.entry.isMine
                       ? "border-guinda bg-[#f3e3e7] text-[#641229]"
-                      : "border-stone-400 bg-stone-200 text-stone-700"
+                      : "border-stone-400 bg-line text-muted"
                   }`;
                   const body = (
                     <>
@@ -388,7 +393,7 @@ export function ReservationGrid({
           role="dialog"
           aria-modal="false"
           aria-labelledby="grid-booking-title"
-          className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border border-stone-200 bg-white p-5 shadow-2xl sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-[26rem] sm:rounded-3xl"
+          className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-3xl border border-line bg-surface p-5 shadow-2xl sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-[26rem] sm:rounded-3xl"
         >
           <form action={formAction} onReset={(e) => e.preventDefault()}>
             <div className="flex items-start justify-between gap-3">
@@ -398,7 +403,7 @@ export function ReservationGrid({
               <button
                 type="button"
                 onClick={() => setDraft(null)}
-                className="rounded-lg px-2 text-sm font-semibold text-stone-600"
+                className="rounded-lg px-2 text-sm font-semibold text-muted"
               >
                 Cerrar
               </button>
@@ -477,7 +482,7 @@ export function ReservationGrid({
                   </select>
                 </div>
               </div>
-              <p className="text-sm text-stone-600">
+              <p className="text-sm text-muted">
                 Termina a las {endsLocal.slice(11)}
                 {endsLocal.slice(0, 10) !== draft.date
                   ? " del día siguiente"
@@ -513,7 +518,7 @@ export function ReservationGrid({
                   Uno o varios recursos
                 </label>
                 {draft.mode === "resources" && (
-                  <div className="space-y-2 rounded-xl bg-stone-50 p-3">
+                  <div className="space-y-2 rounded-md bg-paper p-3">
                     {space.resources.map((resource) => {
                       const busy = busyResource(resource.id);
                       return (
@@ -574,7 +579,7 @@ export function ReservationGrid({
               <button
                 type="submit"
                 disabled={!ready || pending}
-                className="min-h-12 w-full rounded-xl bg-guinda px-5 font-semibold text-white disabled:opacity-50"
+                className="btn btn-primary w-full"
               >
                 {pending ? "Reservando…" : "Reservar"}
               </button>

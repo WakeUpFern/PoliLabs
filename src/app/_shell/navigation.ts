@@ -2,8 +2,9 @@ import { REPORT_LIST } from "@/modules/reports/domain/reports";
 
 /**
  * Laboratory sections, in the order a practice happens: prepare it, reserve,
- * take attendance and use machines, follow up on failures. The order itself
- * is the guide; nothing needs to be labelled. Every decision is made from
+ * take attendance and use machines, follow up on failures. Sections are
+ * grouped by intent (day to day, care of the laboratory, administration) and
+ * the order inside each group is the guide. Every decision is made from
  * permissions, never role keys.
  */
 
@@ -31,7 +32,38 @@ export type NavItem = {
   icon: IconName;
   /** Active only on its own page, not on the pages below it. */
   exact?: boolean;
+  group?: NavGroup;
+  /** Shorter name for the phone's bottom bar, where space is tight. */
+  short?: string;
   counter?: number;
+};
+
+export type NavGroup = "daily" | "care" | "admin";
+
+export const NAV_GROUPS: readonly { key: NavGroup; label: string }[] = [
+  { key: "daily", label: "Día a día" },
+  { key: "care", label: "Cuidado del laboratorio" },
+  { key: "admin", label: "Administración" },
+];
+
+const GROUP_OF: Record<string, NavGroup> = {
+  academic: "daily",
+  reservations: "daily",
+  attendance: "daily",
+  usage: "daily",
+  loans: "daily",
+  incidents: "care",
+  maintenance: "care",
+  inventory: "care",
+  spaces: "care",
+  reports: "admin",
+  people: "admin",
+};
+
+const SHORT_LABEL: Record<string, string> = {
+  reservations: "Reservas",
+  maintenance: "Manten.",
+  usage: "Uso",
 };
 
 export function labNavigation(
@@ -44,7 +76,14 @@ export function labNavigation(
     { key: "home", href: base, label: "Inicio", icon: "home", exact: true },
   ];
   const add = (key: string, path: string, label: string, icon: IconName) =>
-    items.push({ key, href: `${base}${path}`, label, icon });
+    items.push({
+      key,
+      href: `${base}${path}`,
+      label,
+      icon,
+      group: GROUP_OF[key],
+      short: SHORT_LABEL[key],
+    });
 
   if (can("academic.read"))
     add("academic", "/academic", "Prácticas", "practices");
@@ -81,6 +120,32 @@ export function labNavigation(
   if (can("laboratory.membership.manage"))
     add("people", "/people", "Personas", "people");
   return items;
+}
+
+/**
+ * The phone's bottom bar: Inicio plus the three sections this person uses
+ * most, picked from what they can do. Managing stock marks whoever runs the
+ * laboratory, managing practices marks a teacher, and everyone else works
+ * through practices, reservations and loans. The rest lives under "Más".
+ */
+export function quickSections(
+  sections: readonly NavItem[],
+  permissionKeys: readonly string[],
+): string[] {
+  const can = (key: string) => permissionKeys.includes(key);
+  const preferred = can("inventory.manage")
+    ? ["incidents", "inventory", "loans"]
+    : can("academic.manage")
+      ? ["academic", "attendance", "reservations"]
+      : ["academic", "reservations", "loans"];
+  const available = new Set(sections.map((item) => item.key));
+  const picked = preferred.filter((key) => available.has(key));
+  for (const item of sections) {
+    if (picked.length >= 3) break;
+    if (item.key !== "home" && !picked.includes(item.key))
+      picked.push(item.key);
+  }
+  return available.has("home") ? ["home", ...picked] : picked;
 }
 
 /** What the "+" menu offers: the things a person starts most often. */

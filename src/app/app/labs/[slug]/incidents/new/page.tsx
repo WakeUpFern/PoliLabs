@@ -26,11 +26,11 @@ export default async function NewIncidentPage({
     <div>
       <Link href={`/app/labs/${slug}/incidents`}>← Incidencias</Link>
       <h1 className="mt-6 text-3xl font-semibold">Reportar incidencia</h1>
-      <p className="mt-3 text-stone-600">
+      <p className="mt-3 text-muted">
         El reporte quedará a tu nombre y con la hora de registro. Describe lo
         observado; no necesitas identificar a una persona responsable.
       </p>
-      <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 rounded-md border border-line bg-surface p-6">
         {options.targets.length ? (
           <ReportForm
             slug={slug}

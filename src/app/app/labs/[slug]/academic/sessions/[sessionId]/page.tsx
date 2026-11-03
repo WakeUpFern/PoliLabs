@@ -24,7 +24,7 @@ export default async function SessionPage({
     <div>
       <Link
         href={`/app/labs/${slug}/academic/practices/${s.practiceId}`}
-        className="text-sm font-semibold text-stone-600"
+        className="text-sm font-semibold text-muted"
       >
         ← {data.practice.title}
       </Link>
@@ -34,32 +34,30 @@ export default async function SessionPage({
         </p>
         <h1 className="mt-2 text-3xl font-semibold">Sesión de laboratorio</h1>
       </header>
-      <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 rounded-md border border-line bg-surface p-6">
         <dl className="grid gap-6 sm:grid-cols-2">
           <div>
-            <dt className="text-sm text-stone-600">Espacio</dt>
+            <dt className="text-sm text-muted">Espacio</dt>
             <dd className="mt-1 font-semibold">{data.spaceName}</dd>
           </div>
           <div>
-            <dt className="text-sm text-stone-600">Responsable docente</dt>
+            <dt className="text-sm text-muted">Responsable docente</dt>
             <dd className="mt-1 font-semibold">{data.teacherName}</dd>
           </div>
           <div>
-            <dt className="text-sm text-stone-600">
-              Inicio · Ciudad de México
-            </dt>
+            <dt className="text-sm text-muted">Inicio · Ciudad de México</dt>
             <dd className="mt-1 font-semibold">
               {formatAcademicTime(s.startsAt)}
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-stone-600">Fin · Ciudad de México</dt>
+            <dt className="text-sm text-muted">Fin · Ciudad de México</dt>
             <dd className="mt-1 font-semibold">
               {formatAcademicTime(s.endsAt)}
             </dd>
           </div>
         </dl>
-        <p className="mt-5 text-sm text-stone-600">
+        <p className="mt-5 text-sm text-muted">
           Esta sesión representa una actividad académica programada. La
           disponibilidad del espacio se gestiona en Reservaciones.
         </p>
@@ -100,13 +98,13 @@ export default async function SessionPage({
         ) : null}
       </div>
       {data.isParticipant ? (
-        <p className="mt-6 rounded-xl bg-stone-100 p-5">
+        <p className="mt-6 rounded-md bg-paper p-5">
           Estás registrado como participante. Confirma tu asistencia y registra
           por separado el uso efectivo de maquinaria.
         </p>
       ) : null}
       {data.canManage ? (
-        <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+        <section className="mt-6 rounded-md border border-line bg-surface p-6">
           <h2 className="text-xl font-semibold">Participantes registrados</h2>
           {data.participants.length ? (
             <ul className="mt-4 space-y-2">
@@ -115,15 +113,13 @@ export default async function SessionPage({
               ))}
             </ul>
           ) : (
-            <p className="mt-4 text-stone-600">
-              Sin participantes registrados.
-            </p>
+            <p className="mt-4 text-muted">Sin participantes registrados.</p>
           )}
         </section>
       ) : null}
       {data.options ? (
         <>
-          <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+          <section className="mt-6 rounded-md border border-line bg-surface p-6">
             <h2 className="mb-5 text-xl font-semibold">Editar sesión</h2>
             <AcademicForm
               slug={slug}
@@ -143,7 +139,7 @@ export default async function SessionPage({
               />
             </AcademicForm>
           </section>
-          <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+          <section className="mt-6 rounded-md border border-line bg-surface p-6">
             <AcademicForm
               slug={slug}
               operation="participants"
@@ -165,7 +161,7 @@ export default async function SessionPage({
         </>
       ) : null}
       {data.canEdit && (s.status === "scheduled" || s.status === "open") ? (
-        <section className="mt-6 flex flex-wrap gap-5 rounded-2xl border border-stone-200 bg-white p-6">
+        <section className="mt-6 flex flex-wrap gap-5 rounded-md border border-line bg-surface p-6">
           <AcademicForm
             slug={slug}
             operation="session-status"

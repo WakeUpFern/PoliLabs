@@ -27,7 +27,7 @@ export function DocumentList({
   return (
     <ul className="space-y-3">
       {documents.map((d) => (
-        <li key={d.id} className="rounded-xl border border-stone-200 p-3">
+        <li key={d.id} className="rounded-md border border-line p-3">
           <a
             className="font-semibold break-words text-guinda"
             href={`/app/labs/${slug}/documents/${d.id}`}
@@ -36,7 +36,7 @@ export function DocumentList({
           >
             {d.title ?? d.originalName}
           </a>
-          <p className="text-sm break-words text-stone-600">
+          <p className="text-sm break-words text-muted">
             {d.title ? `${d.originalName} · ` : ""}
             {typeLabels[d.mediaType]} · {formatBytes(d.byteSize)} ·{" "}
             {d.uploaderName} · {formatAcademicTime(d.createdAt)}

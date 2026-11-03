@@ -11,7 +11,7 @@ export default async function SecurityPage() {
     <div className="max-w-2xl">
       <h1 className="text-3xl font-bold tracking-tight">Contraseña</h1>
       {pending ? (
-        <div className="mt-5 flex gap-3 rounded-xl border border-pending/30 bg-pending/5 p-4">
+        <div className="mt-5 flex gap-3 rounded-md border border-pending/30 bg-pending/5 p-4">
           <KeyRound
             aria-hidden
             className="mt-0.5 size-5 flex-none text-pending"
@@ -30,7 +30,7 @@ export default async function SecurityPage() {
         </p>
       )}
 
-      <section className="mt-6 rounded-xl border border-line bg-surface p-5 sm:p-6">
+      <section className="mt-6 rounded-md border border-line bg-surface p-5 sm:p-6">
         <h2 className="text-xl font-bold">Cambiar contraseña</h2>
         <PasswordForm continueTo={pending ? "/app" : null} />
       </section>

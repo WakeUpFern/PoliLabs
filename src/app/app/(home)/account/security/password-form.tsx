@@ -69,7 +69,7 @@ export function PasswordForm({
       <div>
         <label
           htmlFor="currentPassword"
-          className="mb-2 block text-sm font-semibold text-stone-800"
+          className="mb-2 block text-sm font-semibold text-ink"
         >
           Contraseña actual
         </label>
@@ -80,13 +80,13 @@ export function PasswordForm({
           autoComplete="current-password"
           required
           disabled={isPending}
-          className="min-h-12 w-full rounded-xl border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
+          className="min-h-12 w-full rounded-md border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
         />
       </div>
       <div>
         <label
           htmlFor="newPassword"
-          className="mb-2 block text-sm font-semibold text-stone-800"
+          className="mb-2 block text-sm font-semibold text-ink"
         >
           Contraseña nueva
         </label>
@@ -99,9 +99,9 @@ export function PasswordForm({
           maxLength={128}
           required
           disabled={isPending}
-          className="min-h-12 w-full rounded-xl border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
+          className="min-h-12 w-full rounded-md border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
         />
-        <p className="mt-2 text-xs leading-5 text-stone-500">
+        <p className="mt-2 text-xs leading-5 text-muted">
           Usa entre 15 y 128 caracteres. Se permiten frases de paso y pegar
           desde un gestor de contraseñas.
         </p>
@@ -109,7 +109,7 @@ export function PasswordForm({
       <div>
         <label
           htmlFor="confirmation"
-          className="mb-2 block text-sm font-semibold text-stone-800"
+          className="mb-2 block text-sm font-semibold text-ink"
         >
           Confirmar contraseña nueva
         </label>
@@ -122,7 +122,7 @@ export function PasswordForm({
           maxLength={128}
           required
           disabled={isPending}
-          className="min-h-12 w-full rounded-xl border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
+          className="min-h-12 w-full rounded-md border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
         />
       </div>
 
@@ -140,11 +140,7 @@ export function PasswordForm({
         ) : null}
       </div>
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="inline-flex min-h-12 items-center justify-center rounded-lg bg-guinda px-5 font-semibold text-white transition hover:bg-guinda-deep focus:outline-none focus:ring-4 focus:ring-guinda/20 disabled:cursor-wait disabled:opacity-65"
-      >
+      <button type="submit" disabled={isPending} className="btn btn-primary">
         {isPending ? "Actualizando…" : "Cambiar contraseña"}
       </button>
     </form>

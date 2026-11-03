@@ -46,7 +46,7 @@ export function LocationForm({
           defaultValue={location?.name}
           required
           disabled={isPending}
-          className="min-h-11 w-full rounded-xl border border-stone-300 px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
+          className="min-h-11 w-full rounded-md border border-line px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
         />
       </div>
       <div>
@@ -55,14 +55,14 @@ export function LocationForm({
           className="mb-2 block text-sm font-semibold"
         >
           Ubicación padre{" "}
-          <span className="font-normal text-stone-500">(opcional)</span>
+          <span className="font-normal text-muted">(opcional)</span>
         </label>
         <select
           id={`${formId}-parent`}
           name="parentId"
           defaultValue={location?.parentId ?? ""}
           disabled={isPending}
-          className="min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
+          className="min-h-11 w-full rounded-md border border-line bg-surface px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
         >
           <option value="">Sin ubicación padre</option>
           {parentOptions.map((option) => (
@@ -73,11 +73,7 @@ export function LocationForm({
         </select>
       </div>
       <ActionFeedback state={state} />
-      <button
-        type="submit"
-        disabled={isPending}
-        className="inline-flex min-h-11 items-center justify-center rounded-xl bg-guinda px-4 text-sm font-semibold text-white transition hover:bg-guinda-deep disabled:cursor-wait disabled:opacity-65"
-      >
+      <button type="submit" disabled={isPending} className="btn btn-primary">
         {isPending ? "Guardando…" : submitLabel}
       </button>
     </form>

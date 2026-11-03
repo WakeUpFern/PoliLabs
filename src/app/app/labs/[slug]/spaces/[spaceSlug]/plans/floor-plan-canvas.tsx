@@ -28,7 +28,7 @@ const textTones: Record<ResourceOccupancyStatus | "unknown", string> = {
   free: "text-emerald-900",
   occupied: "text-[#641229]",
   blocked: "text-amber-900",
-  unknown: "text-stone-800",
+  unknown: "text-ink",
 };
 
 function fit(text: string, width: number, fontSize: number) {
@@ -56,7 +56,7 @@ export function FloorPlanCanvas({
     ...elements.filter((e) => e.kind === "resource"),
   ];
   return (
-    <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-white p-3">
+    <div className="overflow-x-auto rounded-md border border-line bg-surface p-3">
       <svg
         role="img"
         aria-label={`Plano ${name}`}
@@ -140,7 +140,7 @@ export function FloorPlanCanvas({
               ? textTones[element.status ?? "unknown"]
               : element.kind === "location"
                 ? "text-sky-900"
-                : "text-stone-600";
+                : "text-muted";
           return element.href ? (
             <a
               key={element.id}

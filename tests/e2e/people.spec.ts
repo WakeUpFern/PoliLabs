@@ -5,6 +5,7 @@ import { LABORATORY_ROLE_CATALOG } from "../../src/modules/identity/domain/acces
 import { ensureRoleCatalog } from "../../src/modules/identity/infrastructure/role-catalog";
 import { seedLaboratory, type SeededLaboratory } from "./support/seed";
 import { expectNoHorizontalOverflow, openAs } from "./support/session";
+import { laboratorySections, openSection } from "./support/navigation";
 
 // ADR 0022: a teacher finds "Personas" in the side menu, creates a student
 // with a temporary password, the student is made to choose their own password
@@ -46,11 +47,8 @@ test("a teacher enrols a student who then sets their own password", async ({
   await expect(
     page.getByRole("heading", { name: "Tus próximas sesiones" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Abrir menú" }).click();
-  const menu = page.getByRole("dialog", { name: "Menú" });
-  await expect(menu).toBeVisible();
-  await menu.getByRole("link", { name: "Personas" }).click();
-  await expect(menu).toBeHidden();
+  await openSection(page, "Personas");
+  await expect(page.getByRole("dialog", { name: "Más" })).toBeHidden();
   await expect(page.getByRole("heading", { name: "Personas" })).toBeVisible();
 
   await page.getByRole("button", { name: "Agregar persona" }).click();
@@ -98,11 +96,10 @@ test("a teacher enrols a student who then sets their own password", async ({
   await student.getByLabel("Confirmar contraseña nueva").fill(chosen);
   await student.getByRole("button", { name: "Cambiar contraseña" }).click();
   await expect(student).toHaveURL(new RegExp(`/app/labs/${lab.slug}$`));
-  const sections = student.getByRole("navigation", {
-    name: "Secciones del laboratorio",
-  });
+  const sections = await laboratorySections(student);
   await expect(sections).toContainText("Asistencia");
   await expect(sections).not.toContainText("Personas");
+  await student.keyboard.press("Escape");
   await expect(
     student.getByRole("heading", { name: "Tus próximas sesiones" }),
   ).toBeVisible();

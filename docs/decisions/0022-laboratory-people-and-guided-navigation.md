@@ -24,7 +24,7 @@ El responsable también pidió una interfaz más sencilla para el profesor: un m
 
 **D6 — Bootstrap compatible con las migraciones.** El bootstrap considera inicializada una instalación sólo si ya hay usuarios, laboratorios o membresías. Reutiliza los permisos y el rol responsable existentes (`ON CONFLICT DO NOTHING`) y garantiza que el responsable tenga todos los permisos.
 
-**D7 — Navegación al estilo de GitHub, con el flujo implícito.** Tras revisar la primera versión, el responsable pidió menos texto y una guía natural en vez de fases rotuladas, tomando como referencia los patrones de GitHub. Un shell común (`src/app/_shell`) aplica:
+**D7 — Navegación al estilo de GitHub, con el flujo implícito.** _(Reemplazada por el [ADR 0023](0023-single-navigation-and-institutional-palette.md): las pestañas y el menú lateral repetían las mismas secciones.)_ Tras revisar la primera versión, el responsable pidió menos texto y una guía natural en vez de fases rotuladas, tomando como referencia los patrones de GitHub. Un shell común (`src/app/_shell`) aplica:
 
 - **Encabezado** gris claro con botón de menú, logo y nombre del laboratorio. A la derecha, un menú «+» con lo que la persona suele empezar (nueva práctica, nueva reservación, reportar una falla, agregar persona, según permisos), la campana de notificaciones y las iniciales.
 - **Pestañas con ícono** bajo el encabezado, como las de un repositorio: subrayado guinda en la activa y desplazamiento horizontal en pantallas angostas. Su orden sigue el de una práctica (Prácticas, Reservaciones, Asistencia, Uso de equipo, Préstamos, Incidencias, Mantenimiento, Inventario, Espacios, Reportes, Personas): el orden guía, sin rótulos.

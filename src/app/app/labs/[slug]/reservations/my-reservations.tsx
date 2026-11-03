@@ -23,7 +23,7 @@ export function MyReservations({
   );
   if (reservations.length === 0)
     return (
-      <p className="mt-8 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-8 text-stone-600">
+      <p className="mt-8 rounded-md border border-dashed border-line bg-paper p-8 text-muted">
         Todavía no tienes reservaciones en este laboratorio.
         {canCreate
           ? " Elige una franja libre en el calendario para comenzar."
@@ -42,7 +42,7 @@ export function MyReservations({
             {group.rows.map((reservation) => (
               <article
                 key={reservation.id}
-                className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm"
+                className="rounded-md border border-line bg-surface p-6 shadow-sm"
               >
                 <ReservationSummary reservation={reservation} />
                 <Link

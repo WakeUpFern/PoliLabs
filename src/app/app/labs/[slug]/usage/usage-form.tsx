@@ -28,10 +28,7 @@ export function UsageForm({
     >
       <fieldset disabled={pending} className="space-y-4">
         {children}
-        <button
-          className="rounded-xl bg-guinda px-5 py-3 font-semibold text-white disabled:opacity-50"
-          type="submit"
-        >
+        <button className="btn btn-primary" type="submit">
           {pending ? "Guardando…" : label}
         </button>
       </fieldset>

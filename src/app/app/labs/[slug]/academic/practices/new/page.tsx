@@ -13,16 +13,16 @@ export default async function NewPracticePage({
     <div className="max-w-3xl">
       <Link
         href={`/app/labs/${slug}/academic`}
-        className="text-sm font-semibold text-stone-600"
+        className="text-sm font-semibold text-muted"
       >
         ← Prácticas
       </Link>
       <h1 className="mt-6 text-3xl font-semibold">Crear práctica</h1>
-      <p className="mt-3 text-stone-600">
+      <p className="mt-3 text-muted">
         Se guardará como borrador. Publícala cuando las instrucciones estén
         listas.
       </p>
-      <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 rounded-md border border-line bg-surface p-6">
         <AcademicForm
           slug={slug}
           operation="create-practice"

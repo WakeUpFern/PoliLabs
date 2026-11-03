@@ -7,7 +7,7 @@ import type {
 } from "@/modules/academic/web/academic-web";
 import { academicAction } from "./actions";
 export const field =
-  "mt-2 block w-full rounded-xl border border-stone-300 bg-white px-4 py-3";
+  "mt-2 block w-full rounded-md border border-line bg-surface px-4 py-3";
 export function AcademicForm({
   slug,
   operation,
@@ -48,22 +48,19 @@ export function AcademicForm({
         {confirming ? (
           <p
             role="status"
-            className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950"
+            className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950"
           >
             {confirmMessage}
           </p>
         ) : null}
-        <button
-          className="rounded-xl bg-guinda px-5 py-3 font-semibold text-white disabled:opacity-50"
-          type="submit"
-        >
+        <button className="btn btn-primary" type="submit">
           {pending ? "Guardando…" : confirming ? "Confirmar" : label}
         </button>
         {confirming ? (
           <button
             type="button"
             onClick={() => setConfirming(false)}
-            className="ml-3 rounded-xl border border-stone-300 px-5 py-3 font-semibold"
+            className="btn ml-3"
           >
             Volver
           </button>

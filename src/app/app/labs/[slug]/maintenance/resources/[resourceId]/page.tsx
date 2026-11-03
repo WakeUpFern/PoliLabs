@@ -36,7 +36,7 @@ export default async function MaintenanceResourcePage({
       <h1 className="mt-6 text-3xl font-semibold break-words">
         {resource.name}
       </h1>
-      <p className="mt-2 text-stone-600">{resource.spaceName}</p>
+      <p className="mt-2 text-muted">{resource.spaceName}</p>
       {documents.canRead ? (
         <Link
           className="mt-2 inline-block text-sm font-semibold text-guinda"
@@ -45,7 +45,7 @@ export default async function MaintenanceResourcePage({
           Manuales y documentos
         </Link>
       ) : null}
-      <section className="mt-6 space-y-3 rounded-2xl border border-stone-200 bg-white p-6">
+      <section className="mt-6 space-y-3 rounded-md border border-line bg-surface p-6">
         <span
           className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${statusTone(resource.operationalStatus)}`}
         >
@@ -60,7 +60,7 @@ export default async function MaintenanceResourcePage({
           </p>
         ) : null}
         {unavailable && (impact.openUsages || impact.futureReservations) ? (
-          <p role="note" className="rounded-xl bg-amber-50 p-4 text-amber-900">
+          <p role="note" className="rounded-md bg-amber-50 p-4 text-amber-900">
             Siguen vigentes {impact.openUsages} uso(s) abierto(s) y{" "}
             {impact.futureReservations} reservación(es) futura(s) que incluyen
             este recurso. No se cancelan ni cierran automáticamente; el personal
@@ -69,11 +69,11 @@ export default async function MaintenanceResourcePage({
         ) : null}
       </section>
       {access.canCreate && options ? (
-        <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6">
+        <section className="mt-6 rounded-md border border-line bg-surface p-6">
           <h2 className="mb-4 text-xl font-semibold">
             Registrar mantenimiento
           </h2>
-          <p className="mb-4 text-sm text-stone-600">
+          <p className="mb-4 text-sm text-muted">
             La entrada quedará a tu nombre. Las entradas no se editan: para
             corregir, registra otra.
           </p>
@@ -95,7 +95,7 @@ export default async function MaintenanceResourcePage({
         {logs.map((log) => (
           <article
             key={log.id}
-            className="rounded-2xl border border-stone-200 bg-white p-6"
+            className="rounded-md border border-line bg-surface p-6"
           >
             <p className="font-semibold">
               {maintenanceTypeLabels[log.type]} ·{" "}
@@ -125,7 +125,7 @@ export default async function MaintenanceResourcePage({
                 Ver incidencia relacionada
               </Link>
             ) : null}
-            <div className="mt-4 border-t border-stone-100 pt-4">
+            <div className="mt-4 border-t border-line pt-4">
               <h3 className="mb-2 font-semibold">Evidencia</h3>
               <DocumentList
                 slug={slug}
@@ -138,7 +138,7 @@ export default async function MaintenanceResourcePage({
                   <summary className="cursor-pointer text-sm font-semibold text-guinda">
                     Añadir evidencia
                   </summary>
-                  <p className="mt-2 text-sm text-stone-600">
+                  <p className="mt-2 text-sm text-muted">
                     La entrada no se modifica; la evidencia queda registrada a
                     tu nombre.
                   </p>
@@ -154,7 +154,7 @@ export default async function MaintenanceResourcePage({
                 </details>
               ) : null}
             </div>
-            <p className="mt-2 text-sm text-stone-600">
+            <p className="mt-2 text-sm text-muted">
               {log.performerName} · registrado{" "}
               {formatAcademicTime(log.createdAt)}
               {log.nextDueOn

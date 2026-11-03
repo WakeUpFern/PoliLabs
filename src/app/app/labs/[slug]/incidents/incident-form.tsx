@@ -38,10 +38,7 @@ export function IncidentForm({
         className="space-y-4"
       >
         {children}
-        <button
-          type="submit"
-          className="rounded-xl bg-guinda px-5 py-3 font-semibold text-white disabled:opacity-50"
-        >
+        <button type="submit" className="btn btn-primary">
           {pending ? "Guardando…" : label}
         </button>
       </fieldset>

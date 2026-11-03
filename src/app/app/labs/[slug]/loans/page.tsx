@@ -27,13 +27,12 @@ export default async function LoansPage({
   const overdueOnly = filter === "overdue";
   const tab = (active: boolean) =>
     `rounded-full px-4 py-2 text-sm font-semibold ${
-      active ? "bg-guinda text-white" : "border border-stone-300"
+      active ? "bg-guinda text-white" : "border border-line"
     }`;
   return (
     <div>
-      <Link href={`/app/labs/${slug}`}>← Laboratorio</Link>
-      <h1 className="mt-6 text-3xl font-semibold">Préstamos</h1>
-      <p className="mt-3 text-stone-600">
+      <h1 className="text-3xl font-semibold">Préstamos</h1>
+      <p className="mt-3 text-muted">
         Herramientas reutilizables prestadas temporalmente. Los préstamos se
         registran y devuelven desde el detalle de cada artículo de inventario.
         Un préstamo vencido es uno activo cuya fecha compromiso ya pasó; no se
@@ -68,7 +67,7 @@ export default async function LoansPage({
               />
             ))}
             {!data.laboratory.length ? (
-              <p className="text-stone-600">
+              <p className="text-muted">
                 {overdueOnly
                   ? "No hay préstamos vencidos."
                   : "No hay préstamos activos."}
@@ -91,7 +90,7 @@ export default async function LoansPage({
               />
             ))}
             {!data.own.length ? (
-              <p className="text-stone-600">No tienes préstamos registrados.</p>
+              <p className="text-muted">No tienes préstamos registrados.</p>
             ) : null}
           </div>
         </section>
