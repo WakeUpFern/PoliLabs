@@ -1,3 +1,4 @@
+import { laboratoryContext } from "./laboratory-context";
 import type { MemberAdministration } from "../application/member-administration";
 import type { GetLaboratoryBySlug } from "../application/get-laboratory-by-slug";
 import { AuthorizationDeniedError } from "../domain/access-errors";
@@ -48,12 +49,7 @@ export class MembersWeb {
   ) {}
 
   private async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const laboratory = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    return { actorUserId, laboratoryId: laboratory.id };
+    return (await laboratoryContext(this.services, slug)).actor;
   }
 
   async overview(slug: string) {

@@ -1,3 +1,4 @@
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import type { AuthorizationService } from "@/modules/identity/application/authorization-service";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
@@ -132,12 +133,7 @@ export function reservationActionError(error: unknown): ReservationActionState {
 export class ReservationWeb {
   constructor(private readonly services: Services) {}
   private async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const laboratory = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    return { laboratory, actor: { actorUserId, laboratoryId: laboratory.id } };
+    return laboratoryContext(this.services, slug);
   }
   private async catalog(actor: {
     actorUserId: string;

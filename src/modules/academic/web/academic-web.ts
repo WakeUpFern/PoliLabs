@@ -1,3 +1,4 @@
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { AcademicService } from "../application/academic";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import type { AuthorizationService } from "@/modules/identity/application/authorization-service";
@@ -62,12 +63,7 @@ export class AcademicWeb {
     },
   ) {}
   private async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const laboratory = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    const actor = { actorUserId, laboratoryId: laboratory.id };
+    const { laboratory, actor } = await laboratoryContext(this.services, slug);
     const grant = await this.services.authorization.authorize({
       ...actor,
       requiredPermission: "academic.read",

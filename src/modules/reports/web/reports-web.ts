@@ -1,3 +1,4 @@
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import { addDays, localDate, localToInstant } from "@/shared/time";
 import type { ReportService } from "../application/reports";
@@ -42,12 +43,7 @@ export class ReportsWeb {
     },
   ) {}
   private async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const lab = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    return { actorUserId, laboratoryId: lab.id };
+    return (await laboratoryContext(this.services, slug)).actor;
   }
   // Allowed reports, optionally narrowed to the ones a section offers.
   async page(slug: string, only?: readonly ReportKey[]) {

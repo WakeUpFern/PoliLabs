@@ -1,3 +1,4 @@
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { AttendanceService } from "../application/attendance";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import { AttendanceError } from "../domain/attendance";
@@ -44,12 +45,7 @@ export class AttendanceWeb {
     },
   ) {}
   async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const laboratory = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    return { actorUserId, laboratoryId: laboratory.id };
+    return (await laboratoryContext(this.services, slug)).actor;
   }
   async resolve(slug: string, locationId: string | null) {
     return this.services.attendance.resolve({

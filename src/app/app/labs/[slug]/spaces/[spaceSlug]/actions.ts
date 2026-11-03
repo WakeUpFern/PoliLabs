@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireCurrentActor } from "@/app/_lib/current-actor";
-import { getLaboratoryBySlug } from "@/modules/identity/infrastructure/services";
+import { resolveSpaceContext } from "./space-context";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import {
   InvalidLocationParentError,
@@ -22,40 +21,10 @@ import {
   createResource,
   deactivateLocation,
   deactivateResource,
-  getSpace,
   updateLocation,
   updateResource,
 } from "@/modules/spatial/infrastructure/services";
 import type { OrganizationActionState } from "./organization-form-state";
-
-type Context = {
-  actorUserId: string;
-  laboratoryId: string;
-  spaceId: string;
-  path: string;
-};
-
-async function resolveContext(
-  laboratorySlug: string,
-  spaceSlug: string,
-): Promise<Context> {
-  const { actorUserId } = await requireCurrentActor();
-  const laboratory = await getLaboratoryBySlug.execute({
-    actorUserId,
-    laboratorySlug,
-  });
-  const space = await getSpace.execute({
-    actorUserId,
-    laboratoryId: laboratory.id,
-    slug: spaceSlug,
-  });
-  return {
-    actorUserId,
-    laboratoryId: laboratory.id,
-    spaceId: space.id,
-    path: `/app/labs/${laboratorySlug}/spaces/${spaceSlug}`,
-  };
-}
 
 function failure(error: unknown): OrganizationActionState {
   if (error instanceof LocationInputError)
@@ -114,7 +83,7 @@ export async function createLocationAction(
   formData: FormData,
 ): Promise<OrganizationActionState> {
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await createLocation.execute({
       ...context,
       name: value(formData, "name"),
@@ -135,7 +104,7 @@ export async function updateLocationAction(
   formData: FormData,
 ): Promise<OrganizationActionState> {
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await updateLocation.execute({
       ...context,
       locationId,
@@ -159,7 +128,7 @@ export async function deactivateLocationAction(
   void _state;
   void _formData;
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await deactivateLocation.execute({ ...context, locationId });
     revalidatePath(context.path);
     return { status: "success", message: "Ubicación desactivada." };
@@ -175,7 +144,7 @@ export async function createResourceAction(
   formData: FormData,
 ): Promise<OrganizationActionState> {
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await createResource.execute({
       ...context,
       name: value(formData, "name"),
@@ -196,7 +165,7 @@ export async function updateResourceAction(
   formData: FormData,
 ): Promise<OrganizationActionState> {
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await updateResource.execute({
       ...context,
       resourceId,
@@ -220,7 +189,7 @@ export async function deactivateResourceAction(
   void _state;
   void _formData;
   try {
-    const context = await resolveContext(laboratorySlug, spaceSlug);
+    const context = await resolveSpaceContext(laboratorySlug, spaceSlug);
     await deactivateResource.execute({ ...context, resourceId });
     revalidatePath(context.path);
     return { status: "success", message: "Recurso desactivado." };

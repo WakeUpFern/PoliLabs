@@ -1,3 +1,4 @@
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import {
   AuthenticationRequiredError,
@@ -126,12 +127,7 @@ export class DocumentsWeb {
     },
   ) {}
   async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const lab = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    return { actorUserId, laboratoryId: lab.id };
+    return (await laboratoryContext(this.services, slug)).actor;
   }
   async access(slug: string) {
     return this.services.documents.access(await this.context(slug));

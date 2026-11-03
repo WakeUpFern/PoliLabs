@@ -1,3 +1,5 @@
+import { locationPath } from "@/modules/spatial/domain/location";
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import type { AuthorizationService } from "@/modules/identity/application/authorization-service";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
@@ -88,13 +90,7 @@ function value(form: FormData, key: string) {
 export class InventoryWeb {
   constructor(private readonly services: Services) {}
   private async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const laboratory = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    const actor = { actorUserId, laboratoryId: laboratory.id };
-    return { actor, laboratory };
+    return laboratoryContext(this.services, slug);
   }
   private async catalog(actor: ActorContext): Promise<LocationOption[]> {
     try {
@@ -108,22 +104,10 @@ export class InventoryWeb {
           const map = new Map(
             locations.map((location) => [location.id, location]),
           );
-          return locations.map((location) => {
-            const names: string[] = [];
-            const visited = new Set<string>();
-            let current: typeof location | undefined = location;
-            while (current && !visited.has(current.id)) {
-              visited.add(current.id);
-              names.unshift(current.name);
-              current = current.parentId
-                ? map.get(current.parentId)
-                : undefined;
-            }
-            return {
-              id: location.id,
-              label: [space.name, ...names].join(" > "),
-            };
-          });
+          return locations.map((location) => ({
+            id: location.id,
+            label: [space.name, ...locationPath(location, map)].join(" > "),
+          }));
         }),
       );
       return groups.flat();

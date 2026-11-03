@@ -1,3 +1,4 @@
+import { laboratoryContext } from "@/modules/identity/web/laboratory-context";
 import type { UsageService } from "../application/usage";
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import { UsageError } from "../domain/usage";
@@ -39,12 +40,7 @@ export class UsageWeb {
     },
   ) {}
   async context(slug: string) {
-    const { actorUserId } = await this.services.currentActor();
-    const lab = await this.services.laboratory.execute({
-      actorUserId,
-      laboratorySlug: slug,
-    });
-    return { actorUserId, laboratoryId: lab.id };
+    return (await laboratoryContext(this.services, slug)).actor;
   }
   async page(slug: string) {
     const context = await this.context(slug);
