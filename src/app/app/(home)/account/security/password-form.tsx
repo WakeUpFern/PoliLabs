@@ -1,9 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { authClient } from "@/modules/identity/infrastructure/auth-client";
 
-export function PasswordForm() {
+export function PasswordForm({
+  continueTo = null,
+}: {
+  /** Where to go once a required change is done. */
+  continueTo?: string | null;
+}) {
+  const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [message, setMessage] = useState<{
     kind: "error" | "success";
@@ -45,6 +52,11 @@ export function PasswordForm() {
     }
 
     formElement.reset();
+    if (continueTo) {
+      router.replace(continueTo);
+      router.refresh();
+      return;
+    }
     setMessage({
       kind: "success",
       text: "Contraseña actualizada. Las demás sesiones abiertas fueron cerradas.",
@@ -68,7 +80,7 @@ export function PasswordForm() {
           autoComplete="current-password"
           required
           disabled={isPending}
-          className="min-h-12 w-full rounded-xl border border-stone-300 px-4 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-12 w-full rounded-xl border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
         />
       </div>
       <div>
@@ -87,7 +99,7 @@ export function PasswordForm() {
           maxLength={128}
           required
           disabled={isPending}
-          className="min-h-12 w-full rounded-xl border border-stone-300 px-4 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-12 w-full rounded-xl border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
         />
         <p className="mt-2 text-xs leading-5 text-stone-500">
           Usa entre 15 y 128 caracteres. Se permiten frases de paso y pegar
@@ -110,7 +122,7 @@ export function PasswordForm() {
           maxLength={128}
           required
           disabled={isPending}
-          className="min-h-12 w-full rounded-xl border border-stone-300 px-4 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-12 w-full rounded-xl border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
         />
       </div>
 
@@ -131,7 +143,7 @@ export function PasswordForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#7a1731] px-5 font-semibold text-white transition hover:bg-[#651128] focus:outline-none focus:ring-4 focus:ring-[#7a1731]/20 disabled:cursor-wait disabled:opacity-65"
+        className="inline-flex min-h-12 items-center justify-center rounded-lg bg-guinda px-5 font-semibold text-white transition hover:bg-guinda-deep focus:outline-none focus:ring-4 focus:ring-guinda/20 disabled:cursor-wait disabled:opacity-65"
       >
         {isPending ? "Actualizando…" : "Cambiar contraseña"}
       </button>

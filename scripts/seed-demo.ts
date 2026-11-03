@@ -6,7 +6,7 @@ import { readDatabaseUrl } from "../src/config/database-env";
 import * as schema from "../src/infrastructure/database/schema";
 import { AcademicService } from "../src/modules/academic/application/academic";
 import { DrizzleAcademicStore } from "../src/modules/academic/infrastructure/academic-store";
-import { INITIAL_PERMISSION_LIST } from "../src/modules/identity/domain/access-catalog";
+import { ensureRoleCatalog } from "../src/modules/identity/infrastructure/role-catalog";
 import { createBootstrapAuth } from "../src/modules/identity/infrastructure/bootstrap-auth";
 import { CreateReservation } from "../src/modules/reservations/application/reservations";
 import { DrizzleReservationStore } from "../src/modules/reservations/infrastructure/reservation-store";
@@ -21,55 +21,12 @@ import { DrizzleFloorPlanStore } from "../src/modules/spatial/infrastructure/flo
 const LAB_SLUG = "demo-pesados";
 const DOMAIN = "demo.invalid";
 
+// Demo accounts use the real role catalog (ADR 0022), so what they see is
+// what a responsible, a teacher and a student will see.
 const ROLES = {
-  responsable: {
-    name: "Responsable demo",
-    permissions: INITIAL_PERMISSION_LIST.map((p) => p.key as string),
-  },
-  profesor: {
-    name: "Profesor demo",
-    permissions: [
-      "laboratory.read",
-      "space.read",
-      "space.manage",
-      "location.read",
-      "resource.read",
-      "academic.read",
-      "academic.manage",
-      "attendance.manage",
-      "usage.trace",
-      "reservation.read",
-      "reservation.create",
-      "reservation.cancel",
-      "incident.create",
-      "incident.read",
-      "incident.review",
-      "maintenance.read",
-      "inventory.read",
-      "document.read",
-    ],
-  },
-  alumno: {
-    name: "Alumno demo",
-    permissions: [
-      "laboratory.read",
-      "space.read",
-      "location.read",
-      "resource.read",
-      "academic.read",
-      "attendance.read",
-      "attendance.checkin",
-      "usage.read",
-      "usage.record",
-      "reservation.read",
-      "reservation.create",
-      "reservation.cancel",
-      "incident.create",
-      "incident.read",
-      "inventory.loan.read",
-      "document.read",
-    ],
-  },
+  responsable: { name: "Responsable demo", roleKey: "laboratory_responsible" },
+  profesor: { name: "Profesor demo", roleKey: "laboratory_teacher" },
+  alumno: { name: "Alumno demo", roleKey: "laboratory_student" },
 } as const;
 
 async function main() {
@@ -94,11 +51,7 @@ async function main() {
       console.log(`The demo laboratory "${LAB_SLUG}" already exists.`);
       return;
     }
-    await db
-      .insert(schema.permissions)
-      .values(INITIAL_PERMISSION_LIST)
-      .onConflictDoNothing();
-    const catalog = await db.select().from(schema.permissions);
+    const roleIds = await ensureRoleCatalog(db);
     const auth = createBootstrapAuth(db);
     const [lab] = await db
       .insert(schema.laboratories)
@@ -126,35 +79,14 @@ async function main() {
             body: { name: role.name, email, password },
           })
         ).user.id;
-      const [roleRow] = await db
-        .insert(schema.roles)
-        .values({
-          key: `demo_${key}`,
-          name: role.name,
-          description: "Rol sintético de demostración local.",
-        })
-        .onConflictDoUpdate({
-          target: schema.roles.key,
-          set: { name: role.name },
-        })
-        .returning();
-      await db
-        .insert(schema.rolePermissions)
-        .values(
-          catalog
-            .filter((p) =>
-              (role.permissions as readonly string[]).includes(p.key),
-            )
-            .map((p) => ({ roleId: roleRow.id, permissionId: p.id })),
-        )
-        .onConflictDoNothing();
+      const roleId = roleIds[role.roleKey];
       const [membership] = await db
         .insert(schema.laboratoryMemberships)
         .values({ userId: users[key], laboratoryId: lab.id })
         .returning();
       await db
         .insert(schema.membershipRoles)
-        .values({ membershipId: membership.id, roleId: roleRow.id });
+        .values({ membershipId: membership.id, roleId });
     }
 
     const [space] = await db

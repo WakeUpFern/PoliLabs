@@ -1,20 +1,47 @@
 @import "tailwindcss";
+
+/*
+ * Labora tokens. Neutral "concrete" paper so machinery photos, plans and status
+ * colors read clearly; IPN guinda is the single accent and marks where you are.
+ */
+@theme {
+  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+  --color-paper: #f2f3f1;
+  --color-surface: #ffffff;
+  --color-ink: #1f1b1d;
+  --color-muted: #625d63;
+  --color-line: #dfdfe0;
+  --color-guinda: #7a1731;
+  --color-guinda-deep: #5e1025;
+  --color-guinda-tint: #f5e9ec;
+  --color-live: #1d7350;
+  --color-pending: #9a5a07;
+}
+
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #faf9f6;
-  color: #272326;
+  font-family: var(--font-sans);
+  background: var(--color-paper);
+  color: var(--color-ink);
   text-rendering: optimizeLegibility;
+  font-feature-settings: "tnum" 1;
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 
 ::selection {
-  background: #7a1731;
+  background: var(--color-guinda);
   color: white;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-guinda) 55%, transparent);
+  outline-offset: 2px;
 }
 
 /* Reveals a hint only if client scripts never take over the element. */
@@ -27,4 +54,88 @@ input {
 .reveal-if-stalled {
   visibility: hidden;
   animation: labora-reveal 0s linear 8s forwards;
+}
+
+/* Shared rows of the side menu and the icon rail. */
+@layer components {
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.625rem;
+    color: var(--color-ink);
+    text-align: left;
+    transition: background-color 120ms ease;
+  }
+  .nav-row:hover {
+    background: color-mix(in srgb, var(--color-ink) 5%, transparent);
+  }
+  .nav-row[aria-current="page"] {
+    background: var(--color-guinda-tint);
+    color: var(--color-guinda-deep);
+    font-weight: 700;
+  }
+  .nav-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
+    stroke-width: 1.75;
+  }
+  .nav-label {
+    font-size: 0.9375rem;
+    line-height: 1.3;
+  }
+}
+
+/* Side menu: a modal <dialog> that slides in from the left edge. */
+.drawer {
+  margin: 0;
+  height: 100dvh;
+  max-height: none;
+  width: min(22rem, calc(100vw - 3rem));
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow:
+    0 0 0 1px var(--color-line),
+    12px 0 40px -12px rgb(31 27 29 / 0.25);
+  translate: -100% 0;
+  transition:
+    translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    overlay 220ms allow-discrete,
+    display 220ms allow-discrete;
+}
+.drawer[open] {
+  translate: 0 0;
+}
+@starting-style {
+  .drawer[open] {
+    translate: -100% 0;
+  }
+}
+.drawer::backdrop {
+  background: rgb(31 27 29 / 0);
+  transition:
+    background-color 220ms ease,
+    overlay 220ms allow-discrete,
+    display 220ms allow-discrete;
+}
+.drawer[open]::backdrop {
+  background: rgb(31 27 29 / 0.32);
+}
+@starting-style {
+  .drawer[open]::backdrop {
+    background: rgb(31 27 29 / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .drawer::backdrop {
+    transition: none;
+  }
 }

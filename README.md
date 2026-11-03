@@ -64,6 +64,8 @@ El esquema contiene las tablas de autenticación y el primer modelo aprobado de 
 - `0007_attendance_i.sql`: asistencia única, contexto de ubicación, eventos y permisos.
 - `0008_usage_i.sql`: uso efectivo por recurso/contexto, eventos y permisos.
 - `0009_incidents_i.sql`: reportes, seguimiento, resolución, contexto histórico y permisos.
+- `0010`–`0014`: mantenimiento, documentos, préstamos, notificaciones y planos.
+- `0015_identity_roles_members.sql`: catálogo de permisos y roles (responsable, profesor, alumno) y fecha de emisión de contraseñas temporales.
 
 Para cambios posteriores:
 
@@ -86,6 +88,10 @@ El comando crea interactivamente la primera identidad local, el Laboratorio de P
 
 Después del bootstrap, inicia `pnpm dev`, abre `/login` y usa el correo y la contraseña capturados. No hay registro público ni recuperación de contraseña en esta etapa.
 
+### Dar acceso a profesores y alumnos
+
+Las migraciones crean el catálogo de roles: **Responsable de laboratorio** (todo), **Profesor** y **Alumno** ([ADR 0022](docs/decisions/0022-laboratory-people-and-guided-navigation.md)). En el laboratorio, abre el menú y entra a **Personas**: escribe nombre, correo y rol y pulsa «Crear cuenta». Labora muestra una contraseña temporal una sola vez; entrégala en persona. Al entrar, la persona debe elegir su propia contraseña antes de continuar. Desde la misma lista se cambia el rol, se quita o devuelve el acceso y se emite una nueva contraseña temporal. Un profesor puede dar de alta a alumnos y a otros profesores, pero no a responsables.
+
 ### Datos de demostración
 
 Para probar con distintos perfiles, define `DEMO_PASSWORD` (12+ caracteres) en `.env.local` y ejecuta:
@@ -94,7 +100,7 @@ Para probar con distintos perfiles, define `DEMO_PASSWORD` (12+ caracteres) en `
 pnpm seed:demo
 ```
 
-Crea un laboratorio sintético aparte, «Laboratorio de Pesados (demo)», con tres cuentas que comparten esa contraseña: `responsable@demo.invalid` (todos los permisos), `profesor@demo.invalid` (prácticas, asistencia, planos, revisión de incidencias) y `alumno@demo.invalid` (asistencia y uso propios, reservaciones, reportes de incidencias). Incluye el Área de máquinas con cuatro recursos y un plano, una práctica publicada con una sesión de mañana y dos reservaciones. No toca otros laboratorios, se niega a correr sobre una base `_test` y no hace nada si el laboratorio demo ya existe. Los roles `demo_*` son sólo de demostración; el catálogo definitivo de roles sigue pendiente.
+Crea un laboratorio sintético aparte, «Laboratorio de Pesados (demo)», con tres cuentas que comparten esa contraseña y usan los roles reales del catálogo: `responsable@demo.invalid` (Responsable de laboratorio), `profesor@demo.invalid` (Profesor) y `alumno@demo.invalid` (Alumno). Incluye el Área de máquinas con cuatro recursos y un plano, una práctica publicada con una sesión de mañana y dos reservaciones. No toca otros laboratorios, se niega a correr sobre una base `_test` y no hace nada si el laboratorio demo ya existe.
 
 ## Flujo de autenticación disponible
 

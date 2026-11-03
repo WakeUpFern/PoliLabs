@@ -21,6 +21,14 @@ export const authOptions = {
         defaultValue: true,
         input: false,
       },
+      // Set when staff issue a temporary password (ADR 0022); the change stays
+      // pending until the credential is updated after this instant.
+      temporaryPasswordIssuedAt: {
+        type: "date",
+        required: false,
+        input: false,
+        returned: false,
+      },
     },
     deleteUser: {
       enabled: false,

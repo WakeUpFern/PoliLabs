@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { incidentsWeb } from "@/modules/incidents/web/services";
-import { maintenanceWeb } from "@/modules/maintenance/web/services";
-import { loansWeb } from "@/modules/loans/web/services";
-import { reportsWeb } from "@/modules/reports/web/services";
 import { notFound } from "next/navigation";
+import { ChevronRight } from "lucide-react";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
-import { LogoutButton } from "@/app/_components/logout-button";
+import { NavIcon } from "@/app/_shell/nav-icon";
+import { labNavigation, type NavItem } from "@/app/_shell/navigation";
 import { getLaboratoryBySlug } from "@/modules/identity/infrastructure/services";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 
@@ -13,11 +11,50 @@ type LaboratoryPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-function formatRole(roleKey: string) {
-  return roleKey
-    .split("_")
-    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
-    .join(" ");
+function greeting(now: Date) {
+  const hour = Number(
+    new Intl.DateTimeFormat("es-MX", {
+      hour: "numeric",
+      hourCycle: "h23",
+      timeZone: "America/Mexico_City",
+    }).format(now),
+  );
+  if (hour < 12) return "Buenos días";
+  if (hour < 19) return "Buenas tardes";
+  return "Buenas noches";
+}
+
+function firstName(name: string) {
+  return name.trim().split(/\s+/)[0] ?? name;
+}
+
+function ActionTile({ item }: { item: NavItem }) {
+  const hintId = `hint-${item.key}`;
+  return (
+    <Link
+      href={item.href}
+      aria-label={item.label}
+      aria-describedby={hintId}
+      className="group flex items-center gap-3.5 rounded-xl border border-line bg-surface px-4 py-3.5 transition hover:border-guinda/40 hover:bg-guinda-tint/40"
+    >
+      <span className="grid size-10 flex-none place-items-center rounded-lg bg-paper text-guinda transition group-hover:bg-surface">
+        <NavIcon name={item.icon} className="size-5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-semibold">{item.label}</span>
+        <span
+          id={hintId}
+          className="mt-0.5 block text-sm leading-snug text-muted"
+        >
+          {item.hint}
+        </span>
+      </span>
+      <ChevronRight
+        aria-hidden
+        className="size-4 flex-none text-muted transition group-hover:translate-x-0.5 group-hover:text-guinda"
+      />
+    </Link>
+  );
 }
 
 export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
@@ -37,146 +74,89 @@ export default async function LaboratoryPage({ params }: LaboratoryPageProps) {
     throw error;
   }
 
-  const [incidentAccess, maintenanceAccess, loanAccess, reports] =
-    await Promise.all([
-      incidentsWeb.access(slug),
-      maintenanceWeb.access(slug),
-      loansWeb.access(slug),
-      reportsWeb.catalog(slug),
-    ]);
+  const { groups } = labNavigation(laboratory.slug, laboratory.permissionKeys);
+  const phases = groups.filter((group) => group.step);
+  const rest = groups.filter((group) => !group.step);
+
   return (
     <div>
-      <Link
-        href="/app"
-        className="text-sm font-semibold text-stone-600 transition hover:text-[#7a1731]"
-      >
-        <span aria-hidden="true">←</span> Mis laboratorios
-      </Link>
+      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+        {greeting(new Date())}, {firstName(user.name)}
+      </h1>
+      <p className="mt-2 max-w-2xl leading-7 text-muted">
+        Todo está ordenado como ocurre una práctica: primero se prepara, luego
+        se trabaja en el laboratorio y al final se da seguimiento.
+      </p>
 
-      <section className="mt-6 overflow-hidden rounded-3xl bg-[#641229] text-white shadow-lg shadow-[#641229]/10">
-        <div className="p-7 sm:p-10">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#e2c68f]">
-            Contexto autorizado
+      {phases.length === 0 ? (
+        <section className="mt-8 rounded-xl border border-dashed border-line bg-surface p-8">
+          <h2 className="text-lg font-semibold">Aún no tienes actividades</h2>
+          <p className="mt-2 leading-6 text-muted">
+            Tu cuenta tiene acceso a este laboratorio, pero sin un rol que
+            permita trabajar en prácticas. Pide a tu profesor que revise tu rol
+            en Personas.
           </p>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">
-            {laboratory.name}
-          </h1>
-          <p className="mt-4 max-w-2xl leading-7 text-white/72">
-            Sesión activa de {user.name}. Trabaja únicamente con los datos
-            autorizados para este laboratorio.
-          </p>
-        </div>
-        <div className="grid gap-px bg-white/15 sm:grid-cols-2">
-          <div className="bg-[#641229] px-7 py-5 sm:px-10">
-            <p className="text-xs uppercase tracking-wider text-white/55">
-              Usuario
-            </p>
-            <p className="mt-1 font-semibold">{user.email}</p>
-          </div>
-          <div className="bg-[#641229] px-7 py-5 sm:px-10">
-            <p className="text-xs uppercase tracking-wider text-white/55">
-              Roles en este laboratorio
-            </p>
-            <p className="mt-1 font-semibold">
-              {laboratory.roleKeys.length > 0
-                ? laboratory.roleKeys.map(formatRole).join(" · ")
-                : "Sin roles asignados"}
-            </p>
-          </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <ol
+          aria-label="Recorrido de la práctica"
+          className="mt-9 grid gap-0 lg:grid-cols-3 lg:gap-6"
+        >
+          {phases.map((phase, index) => {
+            const last = index === phases.length - 1;
+            return (
+              <li
+                key={phase.key}
+                className="relative pb-8 pl-14 lg:pb-0 lg:pl-0"
+              >
+                {/* The line that joins the stations of the route. */}
+                {!last ? (
+                  <span
+                    aria-hidden
+                    className="absolute top-11 bottom-0 left-[1.3125rem] w-0.5 bg-guinda/20 lg:top-[1.3125rem] lg:right-[-1.5rem] lg:bottom-auto lg:left-11 lg:h-0.5 lg:w-auto"
+                  />
+                ) : null}
+                <div className="absolute top-0 left-0 lg:static">
+                  <span className="grid size-11 place-items-center rounded-full border-2 border-guinda bg-surface text-lg font-bold text-guinda">
+                    {phase.step}
+                  </span>
+                </div>
+                <div className="lg:mt-4">
+                  <h2 className="pt-2 text-xl font-bold lg:pt-0">
+                    {phase.title}
+                  </h2>
+                  <p className="mt-1 text-[0.9375rem] text-muted">
+                    {phase.summary}
+                  </p>
+                  <div className="mt-4 flex flex-col gap-2.5">
+                    {phase.items.map((item) => (
+                      <ActionTile key={item.key} item={item} />
+                    ))}
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      )}
 
-      <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6 sm:p-8">
-        <h2 className="text-lg font-semibold">Navegación del laboratorio</h2>
-        <p className="mt-2 text-sm leading-6 text-stone-600">
-          Spatial I y II habilitan espacios, ubicaciones jerárquicas y recursos
-          físicos. Reservaciones permite consultar disponibilidad y gestionar
-          tus reservaciones individuales. Inventario permite consultar
-          materiales, herramientas y movimientos. Prácticas permite gestionar
-          instrucciones, sesiones y participantes.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link
-            href={`/app/labs/${slug}/spaces`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
-          >
-            Espacios
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/reservations`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
-          >
-            Reservaciones
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/inventory`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
-          >
-            Inventario
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/academic`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]"
-          >
-            Prácticas
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/attendance`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-          >
-            Asistencia
-          </Link>
-          <Link
-            href={`/app/labs/${slug}/usage`}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-          >
-            Uso de maquinaria
-          </Link>
-          {incidentAccess.canReadOwn ||
-          incidentAccess.canReview ||
-          incidentAccess.canCreate ? (
-            <Link
-              href={
-                incidentAccess.canReadOwn
-                  ? `/app/labs/${slug}/incidents`
-                  : incidentAccess.canReview
-                    ? `/app/labs/${slug}/incidents?scope=laboratory`
-                    : `/app/labs/${slug}/incidents/new`
-              }
-              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Incidencias
-            </Link>
-          ) : null}
-          {maintenanceAccess.canRead ? (
-            <Link
-              href={`/app/labs/${slug}/maintenance`}
-              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Mantenimiento
-            </Link>
-          ) : null}
-          {loanAccess.canManage || loanAccess.canReadOwn ? (
-            <Link
-              href={`/app/labs/${slug}/loans`}
-              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Préstamos
-            </Link>
-          ) : null}
-          {reports.length ? (
-            <Link
-              href={`/app/labs/${slug}/reports`}
-              className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Reportes
-            </Link>
-          ) : null}
-        </div>
-        <div className="mt-8 border-t border-stone-200 pt-6">
-          <LogoutButton />
-        </div>
-      </section>
+      {rest.map((group) => (
+        <section
+          key={group.key}
+          className="mt-12 border-t border-line pt-6"
+          aria-labelledby={`group-${group.key}`}
+        >
+          <h2 id={`group-${group.key}`} className="text-lg font-bold">
+            {group.title}
+          </h2>
+          <p className="mt-1 text-[0.9375rem] text-muted">{group.summary}</p>
+          <div className="mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            {group.items.map((item) => (
+              <ActionTile key={item.key} item={item} />
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

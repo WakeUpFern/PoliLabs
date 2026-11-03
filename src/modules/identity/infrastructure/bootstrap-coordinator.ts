@@ -1,4 +1,4 @@
-import { count, sql } from "drizzle-orm";
+import { count, eq, inArray, sql } from "drizzle-orm";
 import type {
   BootstrapCoordinator,
   BootstrapResult,
@@ -30,13 +30,9 @@ export class DrizzleBootstrapCoordinator implements BootstrapCoordinator {
       );
 
       const existingCounts: number[] = [];
-      for (const table of [
-        users,
-        laboratories,
-        laboratoryMemberships,
-        roles,
-        permissions,
-      ]) {
+      // Migrations seed permissions and the role catalog, so only people and
+      // laboratories tell whether the installation was already initialized.
+      for (const table of [users, laboratories, laboratoryMemberships]) {
         const [result] = await transaction
           .select({ value: count() })
           .from(table);
@@ -56,15 +52,28 @@ export class DrizzleBootstrapCoordinator implements BootstrapCoordinator {
         })
         .returning({ id: laboratories.id });
 
-      const [role] = await transaction
+      await transaction
         .insert(roles)
         .values(input.role)
-        .returning({ id: roles.id });
+        .onConflictDoNothing({ target: roles.key });
+      const [role] = await transaction
+        .select({ id: roles.id })
+        .from(roles)
+        .where(eq(roles.key, input.role.key));
 
-      const createdPermissions = await transaction
+      await transaction
         .insert(permissions)
         .values(input.permissions)
-        .returning({ id: permissions.id });
+        .onConflictDoNothing({ target: permissions.key });
+      const createdPermissions = await transaction
+        .select({ id: permissions.id })
+        .from(permissions)
+        .where(
+          inArray(
+            permissions.key,
+            input.permissions.map((permission) => permission.key),
+          ),
+        );
 
       const [membership] = await transaction
         .insert(laboratoryMemberships)
@@ -79,12 +88,15 @@ export class DrizzleBootstrapCoordinator implements BootstrapCoordinator {
         roleId: role.id,
       });
 
-      await transaction.insert(rolePermissions).values(
-        createdPermissions.map(({ id }) => ({
-          roleId: role.id,
-          permissionId: id,
-        })),
-      );
+      await transaction
+        .insert(rolePermissions)
+        .values(
+          createdPermissions.map(({ id }) => ({
+            roleId: role.id,
+            permissionId: id,
+          })),
+        )
+        .onConflictDoNothing();
 
       return {
         userId: identity.userId,

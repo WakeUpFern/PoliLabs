@@ -205,3 +205,79 @@ export const INITIAL_RESPONSIBLE_ROLE = {
 } as const;
 
 export const INITIAL_PERMISSION_LIST = Object.values(INITIAL_PERMISSIONS);
+
+type RoleDefinition = {
+  key: string;
+  name: string;
+  description: string;
+  permissions: readonly PermissionKey[];
+};
+
+const TEACHER_PERMISSIONS = [
+  "laboratory.read",
+  "laboratory.membership.manage",
+  "laboratory.role.assign",
+  "space.read",
+  "space.manage",
+  "location.read",
+  "resource.read",
+  "academic.read",
+  "academic.manage",
+  "attendance.manage",
+  "usage.trace",
+  "reservation.read",
+  "reservation.create",
+  "reservation.cancel",
+  "incident.create",
+  "incident.read",
+  "incident.review",
+  "incident.resolve",
+  "maintenance.read",
+  "inventory.read",
+  "inventory.loan",
+  "document.read",
+] as const satisfies readonly PermissionKey[];
+
+const STUDENT_PERMISSIONS = [
+  "laboratory.read",
+  "space.read",
+  "location.read",
+  "resource.read",
+  "academic.read",
+  "attendance.read",
+  "attendance.checkin",
+  "usage.read",
+  "usage.record",
+  "reservation.read",
+  "reservation.create",
+  "reservation.cancel",
+  "incident.create",
+  "incident.read",
+  "inventory.loan.read",
+  "document.read",
+] as const satisfies readonly PermissionKey[];
+
+/**
+ * Laboratory role catalog (ADR 0022). Roles are compositions of permissions;
+ * code keeps checking permissions, never role keys (SRS §24).
+ */
+export const LABORATORY_ROLE_CATALOG = [
+  {
+    ...INITIAL_RESPONSIBLE_ROLE,
+    permissions: INITIAL_PERMISSION_LIST.map((permission) => permission.key),
+  },
+  {
+    key: "laboratory_teacher",
+    name: "Profesor",
+    description:
+      "Prepara prácticas y sesiones, pasa lista, registra préstamos, revisa incidencias y da de alta a sus alumnos.",
+    permissions: TEACHER_PERMISSIONS,
+  },
+  {
+    key: "laboratory_student",
+    name: "Alumno",
+    description:
+      "Consulta sus prácticas, reserva equipo, registra su asistencia y su uso de maquinaria y reporta fallas.",
+    permissions: STUDENT_PERMISSIONS,
+  },
+] as const satisfies readonly RoleDefinition[];

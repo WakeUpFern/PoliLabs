@@ -7,6 +7,8 @@ export type LaboratoryContext = {
   slug: string;
   name: string;
   roleKeys: readonly string[];
+  /** The actor's permissions here; the UI uses them only to choose what to show. */
+  permissionKeys: readonly string[];
 };
 
 export interface LaboratorySlugReader {
@@ -38,6 +40,10 @@ export class GetLaboratoryBySlug {
       requiredPermission: INITIAL_PERMISSIONS.laboratoryRead.key,
     });
 
-    return { ...laboratory, roleKeys: grant.roleKeys };
+    return {
+      ...laboratory,
+      roleKeys: grant.roleKeys,
+      permissionKeys: grant.permissionKeys,
+    };
   }
 }
