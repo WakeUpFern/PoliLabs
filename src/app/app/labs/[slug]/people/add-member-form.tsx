@@ -7,7 +7,7 @@ import { createMemberAction } from "./actions";
 import { TemporaryPassword } from "./temporary-password";
 
 const input =
-  "mt-1.5 block min-h-11 w-full rounded-lg border border-line bg-surface px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10";
+  "mt-1.5 block min-h-10 w-full rounded-md border border-line bg-surface px-3 outline-none transition focus:border-guinda focus:ring-3 focus:ring-guinda/15";
 
 export function AddMemberForm({
   slug,
@@ -60,7 +60,7 @@ export function AddMemberForm({
             {roles.map((role) => (
               <label
                 key={role.key}
-                className="flex cursor-pointer gap-3 rounded-lg border border-line bg-surface p-3 transition has-[:checked]:border-guinda has-[:checked]:bg-guinda-tint/50"
+                className="flex cursor-pointer gap-3 rounded-md border border-line bg-surface p-3 transition has-[:checked]:border-guinda has-[:checked]:bg-guinda-tint/50"
               >
                 <input
                   type="radio"
@@ -84,9 +84,9 @@ export function AddMemberForm({
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-guinda px-5 font-semibold text-white transition hover:bg-guinda-deep disabled:cursor-wait disabled:opacity-65"
+            className="btn btn-primary disabled:cursor-wait disabled:opacity-65"
           >
-            <UserRoundPlus aria-hidden className="size-5" />
+            <UserRoundPlus aria-hidden className="size-4" />
             {pending ? "Creando…" : "Crear cuenta"}
           </button>
           <p aria-live="polite" className="text-sm">

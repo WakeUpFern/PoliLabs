@@ -24,17 +24,17 @@ El responsable también pidió una interfaz más sencilla para el profesor: un m
 
 **D6 — Bootstrap compatible con las migraciones.** El bootstrap considera inicializada una instalación sólo si ya hay usuarios, laboratorios o membresías. Reutiliza los permisos y el rol responsable existentes (`ON CONFLICT DO NOTHING`) y garantiza que el responsable tenga todos los permisos.
 
-**D7 — Navegación por fases de la práctica.** Un shell común (`src/app/_shell`) reemplaza la barra y el menú anteriores:
+**D7 — Navegación al estilo de GitHub, con el flujo implícito.** Tras revisar la primera versión, el responsable pidió menos texto y una guía natural en vez de fases rotuladas, tomando como referencia los patrones de GitHub. Un shell común (`src/app/_shell`) aplica:
 
-- Barra superior con botón de menú, ruta (laboratorio y sección actual), campana de notificaciones con contador e iniciales de la persona.
-- Menú lateral como `<dialog>` modal que entra desde la izquierda, oculto hasta abrirlo. Cada opción tiene un ícono, su nombre y una línea que dice para qué sirve. Se cierra al navegar, con Esc o tocando fuera.
-- En pantallas anchas, una barra de íconos fija con el nombre de cada uno al pasar el cursor o enfocarlo.
-- Las secciones se agrupan como ocurre una práctica: **1 Antes** (prácticas y sesiones, reservaciones), **2 Durante** (asistencia, uso de maquinaria, préstamos) y **3 Después** (incidencias, mantenimiento, reportes), más «El laboratorio» (inventario, espacios y planos, personas).
-- El inicio del laboratorio muestra ese mismo recorrido con tres estaciones numeradas y acciones con verbo.
-- Los nombres cambian según lo que la persona puede hacer: el profesor ve «Pasar lista» y el alumno «Registrar asistencia»; «Reportar una falla» frente a «Incidencias». Todo se decide con permisos (`labNavigation`), nunca con claves de rol. Las fases sin acciones desaparecen y las restantes se renumeran.
-- Quien tiene un solo laboratorio entra directamente a él; «Mis laboratorios» sigue disponible en el menú.
+- **Encabezado** gris claro con botón de menú, logo y nombre del laboratorio. A la derecha, un menú «+» con lo que la persona suele empezar (nueva práctica, nueva reservación, reportar una falla, agregar persona, según permisos), la campana de notificaciones y las iniciales.
+- **Pestañas con ícono** bajo el encabezado, como las de un repositorio: subrayado guinda en la activa y desplazamiento horizontal en pantallas angostas. Su orden sigue el de una práctica (Prácticas, Reservaciones, Asistencia, Uso de equipo, Préstamos, Incidencias, Mantenimiento, Inventario, Espacios, Reportes, Personas): el orden guía, sin rótulos.
+- **Menú lateral** como `<dialog>` modal, oculto hasta abrirlo: ícono y nombre por opción, sin descripciones, separadores entre secciones del laboratorio, cuenta y «Tus laboratorios». Se cierra al navegar, con Esc o tocando fuera.
+- **Inicio como tablero.** A la izquierda, el laboratorio, el rol y una sola acción principal (profesor: «Nueva práctica»; alumno: «Reservar equipo»). A la derecha, cajas con encabezado: «Tus próximas sesiones», «Incidencias por atender» o «Tus reportes» y préstamos activos. La guía está en los datos: junto a una sesión en curso aparece «Pasar lista» para el profesor o «Registrar asistencia» para el alumno; si aún no empieza, «Ver sesión» o «Ver instrucciones».
+- **Botones** discretos con borde por defecto, y guinda sólo para la acción principal de la página. Cajas con borde fino, radio de 6 px y contadores en píldora. En «Personas», la lista va primero y el formulario aparece al pulsar «Agregar persona».
 
-La tipografía es Atkinson Hyperlegible Next (distingue bien 1/l/I y 0/O en proyector y celular), servida por `next/font`, con íconos de `lucide-react` (dependencia nueva, versión fija). Los colores se definen como tokens de Tailwind en `globals.css`: papel neutro, guinda IPN como único acento, verde para «activo» y ámbar para «pendiente».
+Las secciones y acciones se deciden con permisos (`labNavigation`, `createActions`), nunca con claves de rol. Las próximas sesiones salen de `AcademicWeb.upcoming`, que reutiliza las consultas autorizadas de prácticas: hasta 20 prácticas publicadas, y para un profesor sólo las sesiones que imparte.
+
+La tipografía es Atkinson Hyperlegible Next, que distingue bien 1/l/I y 0/O en proyector y celular, servida por `next/font`. Los íconos son de `lucide-react`, una dependencia nueva con versión fija. Los colores son tokens de Tailwind en `globals.css`: lienzo blanco, gris claro para encabezados y cajas, guinda IPN como único acento, verde para «activo» y ámbar para «pendiente».
 
 ## Alternativas consideradas
 
@@ -44,7 +44,8 @@ La tipografía es Atkinson Hyperlegible Next (distingue bien 1/l/I y 0/O en proy
 - Usar el plugin `admin` de Better Auth: añade su propio modelo de roles global, paralelo al de laboratorios y permisos.
 - Bandera booleana `must_change_password` que se limpia con una acción: cualquiera podría limpiarla sin cambiar la contraseña.
 - Menú lateral siempre visible con etiquetas: ocupa espacio en celular y el responsable pidió que permanezca oculto.
-- Agrupar el menú por módulo técnico (Spatial, Inventory…): es el orden en que se construyó el sistema, no el orden en que se usa.
+- Fases rotuladas («Antes, durante y después de la práctica») con descripciones en cada opción: fue la primera versión y el responsable la consideró texto de más.
+- Agrupar por módulo técnico (Spatial, Inventory…): es el orden en que se construyó el sistema, no el orden en que se usa.
 
 ## Consecuencias
 
@@ -53,7 +54,8 @@ La tipografía es Atkinson Hyperlegible Next (distingue bien 1/l/I y 0/O en proy
 - Sin auditoría persistente todavía (§25): las altas, cambios de rol y restablecimientos no quedan registrados hasta implementar Audit, que los cambios de permisos exigen.
 - No hay registro masivo por grupo (§23.1 menciona «grupo»): el alta es individual.
 - Las páginas de cada módulo conservan su diseño interior; ahora viven dentro del shell nuevo y se pueden alinear con los tokens poco a poco.
-- Las pruebas e2e que entraban a un módulo desde el inicio ahora buscan el enlace dentro del contenido principal, porque la barra de íconos repite los accesos en escritorio.
+- Las pruebas e2e que entraban a un módulo desde el inicio ahora usan las pestañas («Secciones del laboratorio»).
+- La consulta de próximas sesiones hace una lectura por práctica. Si el número de prácticas crece, conviene una consulta dedicada en Academic.
 
 ## Referencias SRS
 

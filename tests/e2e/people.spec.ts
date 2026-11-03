@@ -44,15 +44,16 @@ test("a teacher enrols a student who then sets their own password", async ({
 
   await page.goto(`/app/labs/${lab.slug}`);
   await expect(
-    page.getByRole("list", { name: "Recorrido de la práctica" }),
-  ).toContainText("Antes de la práctica");
+    page.getByRole("heading", { name: "Tus próximas sesiones" }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Abrir menú" }).click();
   const menu = page.getByRole("dialog", { name: "Menú" });
   await expect(menu).toBeVisible();
-  await menu.getByRole("link", { name: /^Personas/ }).click();
+  await menu.getByRole("link", { name: "Personas" }).click();
   await expect(menu).toBeHidden();
   await expect(page.getByRole("heading", { name: "Personas" })).toBeVisible();
 
+  await page.getByRole("button", { name: "Agregar persona" }).click();
   await page.getByLabel("Nombre completo").fill("Alumna e2e");
   await page.getByLabel("Correo").fill(email.toUpperCase());
   await expect(page.getByRole("radio", { name: /^Alumno/ })).toBeChecked();
@@ -97,10 +98,14 @@ test("a teacher enrols a student who then sets their own password", async ({
   await student.getByLabel("Confirmar contraseña nueva").fill(chosen);
   await student.getByRole("button", { name: "Cambiar contraseña" }).click();
   await expect(student).toHaveURL(new RegExp(`/app/labs/${lab.slug}$`));
-  const route = student.getByRole("list", { name: "Recorrido de la práctica" });
-  await expect(route).toContainText("Registrar asistencia");
-  await expect(route).toContainText("Reportar una falla");
-  await expect(route).not.toContainText("Pasar lista");
+  const sections = student.getByRole("navigation", {
+    name: "Secciones del laboratorio",
+  });
+  await expect(sections).toContainText("Asistencia");
+  await expect(sections).not.toContainText("Personas");
+  await expect(
+    student.getByRole("heading", { name: "Tus próximas sesiones" }),
+  ).toBeVisible();
   await expectNoHorizontalOverflow(student);
 
   // Back to the teacher: the account is now active, then access is removed.

@@ -65,7 +65,10 @@ test("an inventory reader exports stock as CSV and PDF", async ({
 }, testInfo) => {
   const { context, page } = await openAs(browser, testInfo, lab.users.keeper);
   await page.goto(`/app/labs/${lab.slug}`);
-  await page.getByRole("main").getByRole("link", { name: "Reportes" }).click();
+  await page
+    .getByRole("navigation", { name: "Secciones del laboratorio" })
+    .getByRole("link", { name: "Reportes" })
+    .click();
   await expect(
     page.getByRole("heading", { name: "Reportes", level: 1 }),
   ).toBeVisible();

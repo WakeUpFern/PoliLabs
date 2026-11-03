@@ -35,7 +35,7 @@ La primera prueba de Maintenance entra por el formulario de login real. Las dem�
 | `documents.spec.ts`     | Subida por route handler, cabeceras de descarga, firma de bytes, origen ajeno, evidencia en bitácora inmutable, archivado y 404 uniformes.                            |
 | `loans.spec.ts`         | Préstamo sin cambio de existencia, devolución con daño y cierre, vista de préstamos propios.                                                                          |
 | `reports.spec.ts`       | Catálogo por permisos, descarga CSV con contenido exacto y PDF válido, panel de exportación en Inventario, periodo inválido con alerta y 404 sin permisos.            |
-| `people.spec.ts`        | Profesor abre el menú lateral, da de alta a un alumno con contraseña temporal; el alumno entra, debe cambiarla y ve el recorrido de alumno; quitar acceso lo bloquea. |
+| `people.spec.ts`        | Profesor abre el menú lateral, da de alta a un alumno con contraseña temporal; el alumno entra, debe cambiarla y ve sus pestañas y sesiones; quitar acceso lo bloquea. |
 | `notifications.spec.ts` | Incidencia crítica → contador, centro y `.eml` a quien revisa, apertura de la ficha; resolución → aviso y correo a quien reportó; marcar todas como leídas.           |
 
 Todas comprueban ausencia de desbordamiento horizontal donde aplica. Las guías manuales de Academic, Attendance/Usage e Incidents siguen en `tests/e2e/*.md`; migrarlas a specs con `maintenance.spec.ts` como plantilla.

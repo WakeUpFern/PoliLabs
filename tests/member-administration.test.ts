@@ -16,7 +16,7 @@ import {
   TEMPORARY_PASSWORD_BYTES,
   withinActorPermissions,
 } from "../src/modules/identity/domain/member-administration";
-import { labNavigation } from "../src/app/_shell/navigation";
+import { createActions, labNavigation } from "../src/app/_shell/navigation";
 
 const [responsible, teacher, student] = LABORATORY_ROLE_CATALOG;
 const laboratoryId = "20000000-0000-4000-8000-000000000001";
@@ -262,34 +262,34 @@ test("overview lists only roles the actor may grant and marks manageable members
   assert.equal(overview.canAssignRoles, true);
 });
 
-test("lab navigation follows the practice and adapts its words to permissions", () => {
-  const forTeacher = labNavigation("pesados", teacher.permissions);
+test("lab sections follow the practice order and depend on permissions", () => {
+  const keys = (permissions: readonly string[]) =>
+    labNavigation("pesados", permissions).map((item) => item.key);
+  assert.deepEqual(keys(teacher.permissions), [
+    "home",
+    "academic",
+    "reservations",
+    "attendance",
+    "usage",
+    "loans",
+    "incidents",
+    "maintenance",
+    "inventory",
+    "spaces",
+    "reports",
+    "people",
+  ]);
+  const forStudent = keys(student.permissions);
+  assert.ok(forStudent.includes("attendance"));
+  assert.ok(!forStudent.includes("people"));
+  assert.ok(!forStudent.includes("maintenance"));
+
   assert.deepEqual(
-    forTeacher.groups.map((group) => [group.step ?? null, group.key]),
-    [
-      [1, "before"],
-      [2, "during"],
-      [3, "after"],
-      [null, "laboratory"],
-    ],
+    createActions("pesados", student.permissions).map((a) => a.key),
+    ["new-reservation", "new-incident"],
   );
-  const labels = (nav: ReturnType<typeof labNavigation>) =>
-    nav.groups.flatMap((group) => group.items.map((item) => item.label));
-  assert.ok(labels(forTeacher).includes("Pasar lista"));
-  assert.ok(labels(forTeacher).includes("Personas"));
-
-  const forStudent = labNavigation("pesados", student.permissions);
-  assert.ok(labels(forStudent).includes("Registrar asistencia"));
-  assert.ok(labels(forStudent).includes("Reportar una falla"));
-  assert.ok(!labels(forStudent).includes("Personas"));
-
-  // Phases without actions disappear and the remaining ones stay 1, 2, 3...
-  const onlyReports = labNavigation("pesados", ["inventory.read"]);
   assert.deepEqual(
-    onlyReports.groups.map((group) => [group.step ?? null, group.key]),
-    [
-      [1, "after"],
-      [null, "laboratory"],
-    ],
+    createActions("pesados", teacher.permissions).map((a) => a.key),
+    ["new-practice", "new-reservation", "new-incident", "new-person"],
   );
 });

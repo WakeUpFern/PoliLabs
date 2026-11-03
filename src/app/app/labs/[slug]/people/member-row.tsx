@@ -14,8 +14,7 @@ import {
 import { TemporaryPassword } from "./temporary-password";
 
 const idle: MemberActionState = { status: "idle", message: "" };
-const quiet =
-  "inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-line bg-surface px-3 text-sm font-semibold transition hover:bg-paper disabled:cursor-wait disabled:opacity-60";
+const quiet = "btn disabled:cursor-wait disabled:opacity-60";
 
 function Status({ member }: { member: MemberView }) {
   if (!member.isActive)
@@ -105,7 +104,7 @@ export function MemberRow({
                 name="roleKey"
                 value={role}
                 onChange={(event) => setRole(event.target.value)}
-                className="min-h-10 rounded-lg border border-line bg-surface px-2.5 text-sm"
+                className="min-h-9 rounded-md border border-line bg-surface px-2.5 text-sm"
               >
                 {!currentRole ? <option value="">Sin rol</option> : null}
                 {roles.map((option) => (

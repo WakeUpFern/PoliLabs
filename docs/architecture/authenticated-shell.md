@@ -40,16 +40,16 @@ La protección no depende de `proxy.ts` o middleware. Cada página servidor prot
 
 La navegación usa `/app/labs/[slug]`. El slug expresa intención, no acceso. `GetLaboratoryBySlug` resuelve un laboratorio activo y después exige `laboratory.read` mediante el `AuthorizationService` existente. Laboratorio inexistente, membresía ajena, membresía inactiva, usuario inactivo y falta de permiso producen la misma respuesta pública de no encontrado, por lo que editar la URL no revela existencia ni datos.
 
-El inicio del laboratorio muestra el recorrido de la práctica (antes, durante y después) con las acciones que los permisos de la persona habilitan; no muestra estadísticas inventadas.
+El inicio del laboratorio es un tablero con las próximas sesiones, las incidencias y los préstamos de la persona, y con la acción que corresponde a cada sesión. No muestra estadísticas inventadas.
 
 ## Shell y navegación
 
 Desde el [ADR 0022](../decisions/0022-laboratory-people-and-guided-navigation.md), `src/app/app/layout.tsx` sólo valida el actor. Cada sección monta el shell (`src/app/_shell/app-shell.tsx`) con la navegación que le corresponde:
 
 - `src/app/app/(home)/layout.tsx`: «Mis laboratorios», notificaciones y contraseña, sin contexto de laboratorio.
-- `src/app/app/labs/[slug]/layout.tsx`: resuelve el laboratorio con `GetLaboratoryBySlug` (que ahora devuelve también `permissionKeys`) y arma la navegación con `labNavigation`, una función pura que agrupa las secciones por fase de la práctica y elige nombres y destinos según permisos. La navegación sólo decide qué mostrar; cada página y servicio vuelve a autorizar.
+- `src/app/app/labs/[slug]/layout.tsx`: resuelve el laboratorio con `GetLaboratoryBySlug` (que ahora devuelve también `permissionKeys`) y arma con permisos las pestañas (`labNavigation`, en el orden de una práctica) y el menú «+» (`createActions`). La navegación sólo decide qué mostrar; cada página y servicio vuelve a autorizar.
 
-El menú lateral es un `<dialog>` modal (foco atrapado, Esc, cierre al tocar fuera y al navegar); en pantallas anchas lo acompaña una barra de íconos con etiquetas accesibles.
+El menú lateral es un `<dialog>` modal (foco atrapado, Esc, cierre al tocar fuera y al navegar) con secciones, cuenta y laboratorios.
 
 ## Logout y cambio de contraseña
 

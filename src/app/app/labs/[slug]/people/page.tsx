@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { membersWeb } from "@/modules/identity/web/services";
-import { AddMemberForm } from "./add-member-form";
+import { AddMemberPanel } from "./add-member-panel";
 import { MemberRow } from "./member-row";
 
 export default async function PeoplePage({
@@ -27,44 +27,25 @@ export default async function PeoplePage({
 
   return (
     <div>
-      <h1 className="text-3xl font-bold tracking-tight">Personas</h1>
-      <p className="mt-2 max-w-2xl leading-7 text-muted">
-        Da de alta a tus alumnos y a otros profesores. Cada cuenta nueva recibe
-        una contraseña temporal que la persona cambia la primera vez que entra.
-      </p>
+      <AddMemberPanel slug={slug} roles={roles} defaultRoleKey={defaultRole} />
 
       <section
-        aria-labelledby="add-member"
-        className="mt-8 rounded-xl border border-line bg-surface p-5 sm:p-6"
+        aria-labelledby="member-list"
+        className="box mt-6 overflow-hidden"
       >
-        <h2 id="add-member" className="text-xl font-bold">
-          Agregar a una persona
+        <h2
+          id="member-list"
+          className="flex items-center gap-2 border-b border-line bg-paper px-4 py-3 font-bold"
+        >
+          Con acceso
+          <span className="counter">{active}</span>
+          {members.length > active ? (
+            <span className="text-sm font-normal text-muted">
+              ({members.length - active} sin acceso)
+            </span>
+          ) : null}
         </h2>
-        {roles.length > 0 ? (
-          <div className="mt-4">
-            <AddMemberForm
-              slug={slug}
-              roles={roles}
-              defaultRoleKey={defaultRole}
-            />
-          </div>
-        ) : (
-          <p className="mt-2 text-muted">
-            Tu cuenta no puede asignar ningún rol en este laboratorio.
-          </p>
-        )}
-      </section>
-
-      <section aria-labelledby="member-list" className="mt-10">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 id="member-list" className="text-xl font-bold">
-            Quién tiene acceso
-          </h2>
-          <p className="text-sm text-muted">
-            {active} con acceso de {members.length}
-          </p>
-        </div>
-        <ul className="mt-4 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+        <ul className="divide-y divide-line">
           {members.map((member) => (
             <MemberRow
               key={member.membershipId}

@@ -64,7 +64,7 @@ test("manager records an out-of-service entry with consumed oil", async ({
   await signIn(page, lab.users.manager.email);
   await page.goto(`/app/labs/${lab.slug}`);
   await page
-    .getByRole("main")
+    .getByRole("navigation", { name: "Secciones del laboratorio" })
     .getByRole("link", { name: "Mantenimiento" })
     .click();
   await expect(

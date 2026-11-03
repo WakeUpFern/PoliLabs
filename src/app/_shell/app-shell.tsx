@@ -3,15 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { Bell, ChevronRight, Menu, X } from "lucide-react";
+import { Bell, Menu, Plus, X } from "lucide-react";
 import { LogoutButton } from "@/app/_components/logout-button";
 import { NavIcon } from "./nav-icon";
-import type { NavGroup, NavItem } from "./navigation";
+import type { NavItem } from "./navigation";
 
 type ShellProps = {
   /** The laboratory being worked in; absent on account pages. */
-  context: { title: string; home: NavItem } | null;
-  groups: NavGroup[];
+  laboratory: {
+    name: string;
+    href: string;
+    sections: NavItem[];
+    create: NavItem[];
+  } | null;
+  laboratories: readonly { slug: string; name: string }[];
   account: NavItem[];
   user: { name: string; email: string };
   unread: number;
@@ -43,9 +48,17 @@ function initials(name: string) {
     .join("");
 }
 
+function Logo() {
+  return (
+    <span className="grid size-8 flex-none place-items-center rounded-md bg-guinda text-sm font-bold text-white">
+      L
+    </span>
+  );
+}
+
 export function AppShell({
-  context,
-  groups,
+  laboratory,
+  laboratories,
   account,
   user,
   unread,
@@ -54,22 +67,20 @@ export function AppShell({
   const pathname = usePathname();
   const drawer = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLButtonElement>(null);
+  const createMenu = useRef<HTMLDetailsElement>(null);
 
-  const labItems = [
-    ...(context ? [context.home] : []),
-    ...groups.flatMap((group) => group.items),
-  ];
-  const current = activeItem(pathname, [...labItems, ...account]);
+  const sections = laboratory?.sections ?? [];
+  const current = activeItem(pathname, [...sections, ...account]);
 
-  // Navigating closes the menu, like following any link in a drawer should.
+  // Following a link closes whatever menu it came from.
   useEffect(() => {
     drawer.current?.close();
+    createMenu.current?.removeAttribute("open");
   }, [pathname]);
 
-  const open = () => drawer.current?.showModal();
   const close = () => drawer.current?.close();
 
-  const row = (item: NavItem, withHint: boolean) => (
+  const row = (item: NavItem) => (
     <Link
       key={item.key}
       href={item.href}
@@ -77,140 +88,125 @@ export function AppShell({
       className="nav-row"
     >
       <NavIcon name={item.icon} className="nav-icon" />
-      <span className="min-w-0">
-        <span className="nav-label block">{item.label}</span>
-        {withHint ? (
-          <span className="mt-0.5 block text-[0.8125rem] leading-snug text-muted">
-            {item.hint}
-          </span>
-        ) : null}
-      </span>
+      <span className="text-[0.9375rem]">{item.label}</span>
     </Link>
   );
 
   return (
     <div className="min-h-dvh">
-      <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
-        <div className="flex h-14 items-center gap-2 px-2 sm:px-3">
+      <header className="border-b border-line bg-paper">
+        <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
           <button
             ref={opener}
             type="button"
-            onClick={open}
+            onClick={() => drawer.current?.showModal()}
             aria-label="Abrir menú"
             aria-haspopup="dialog"
             aria-controls="app-menu"
-            className="grid size-11 place-items-center rounded-lg text-ink transition hover:bg-ink/5"
+            className="icon-btn"
           >
-            <Menu aria-hidden className="size-5" />
+            <Menu aria-hidden className="size-4.5" />
           </button>
           <Link
-            href={context ? context.home.href : "/app"}
-            className="grid size-8 flex-none place-items-center rounded-lg bg-guinda text-sm font-bold text-white"
+            href={laboratory ? laboratory.href : "/app"}
             aria-label="Labora, inicio"
           >
-            L
+            <Logo />
           </Link>
+          <p className="min-w-0 flex-1 truncate font-bold">
+            {laboratory ? (
+              <Link href={laboratory.href} className="hover:underline">
+                {laboratory.name}
+              </Link>
+            ) : (
+              "Labora"
+            )}
+          </p>
 
-          <nav aria-label="Ubicación" className="min-w-0 flex-1 pl-2">
-            <ol className="flex min-w-0 items-center gap-1 text-[0.9375rem]">
-              {context ? (
-                <li className="hidden min-w-0 truncate sm:block">
-                  <Link
-                    href={context.home.href}
-                    className="truncate text-muted hover:text-ink"
-                  >
-                    {context.title}
+          {laboratory && laboratory.create.length > 0 ? (
+            <details ref={createMenu} className="relative">
+              <summary
+                aria-label="Crear"
+                className="icon-btn cursor-pointer list-none [&::-webkit-details-marker]:hidden"
+              >
+                <Plus aria-hidden className="size-4.5" />
+              </summary>
+              <div className="absolute right-0 z-40 mt-2 w-56 rounded-md border border-line bg-surface p-1.5 shadow-lg">
+                {laboratory.create.map((action) => (
+                  <Link key={action.key} href={action.href} className="nav-row">
+                    <NavIcon name={action.icon} className="nav-icon" />
+                    <span className="text-sm">{action.label}</span>
                   </Link>
-                </li>
-              ) : null}
-              {context && current && current.key !== "home" ? (
-                <ChevronRight
-                  aria-hidden
-                  className="hidden size-4 flex-none text-muted sm:block"
-                />
-              ) : null}
-              {current && current.key !== "home" ? (
-                <li
-                  aria-current="page"
-                  className="min-w-0 truncate font-semibold"
-                >
-                  {current.label}
-                </li>
-              ) : context ? (
-                <li className="min-w-0 truncate font-semibold sm:hidden">
-                  {context.title}
-                </li>
-              ) : null}
-            </ol>
-          </nav>
-
+                ))}
+              </div>
+            </details>
+          ) : null}
           <Link
             href="/app/notifications"
-            className="relative grid size-11 place-items-center rounded-lg text-ink transition hover:bg-ink/5"
+            className="icon-btn relative"
             aria-label={
               unread > 0
                 ? `Notificaciones ${unread > 99 ? "99+" : unread} sin leer`
                 : "Notificaciones"
             }
           >
-            <Bell aria-hidden className="size-5" />
+            <Bell aria-hidden className="size-4.5" />
             {unread > 0 ? (
-              <span className="absolute top-1.5 right-1.5 grid min-w-4 place-items-center rounded-full bg-guinda px-1 text-[0.6875rem] font-bold leading-4 text-white">
-                {unread > 99 ? "99+" : unread}
-              </span>
+              <span
+                aria-hidden
+                className="absolute -top-1 -right-1 size-2.5 rounded-full border-2 border-paper bg-guinda"
+              />
             ) : null}
           </Link>
           <span
             title={`${user.name}\n${user.email}`}
-            className="grid size-9 flex-none place-items-center rounded-full bg-ink text-xs font-bold text-white"
+            className="grid size-8 flex-none place-items-center rounded-full bg-ink text-xs font-bold text-white"
           >
             {initials(user.name)}
           </span>
         </div>
+
+        {sections.length > 0 ? (
+          <nav
+            aria-label="Secciones del laboratorio"
+            className="overflow-x-auto px-2 [scrollbar-width:none] sm:px-4"
+          >
+            <ul className="flex w-max gap-0.5">
+              {sections.map((item) => {
+                const active = current?.key === item.key;
+                return (
+                  <li key={item.key} className="relative pb-2">
+                    <Link
+                      href={item.href}
+                      aria-current={active ? "page" : undefined}
+                      className={`flex h-9 items-center gap-1.5 rounded-md px-2 text-[0.875rem] whitespace-nowrap transition hover:bg-ink/6 ${active ? "font-bold" : ""}`}
+                    >
+                      <NavIcon
+                        name={item.icon}
+                        className={`size-4 ${active ? "text-ink" : "text-muted"}`}
+                      />
+                      {item.label}
+                      {item.counter ? (
+                        <span className="counter">{item.counter}</span>
+                      ) : null}
+                    </Link>
+                    {active ? (
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-1 bottom-0 h-0.5 rounded-full bg-guinda"
+                      />
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        ) : null}
       </header>
 
-      <div className="flex">
-        {/* Icon rail: always at hand on wide screens, labels in tooltips. */}
-        <nav
-          aria-label="Accesos rápidos"
-          className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-16 flex-none flex-col items-center gap-1 overflow-y-auto border-r border-line bg-surface py-3 lg:flex"
-        >
-          {[
-            // The bell in the top bar already leads to notifications.
-            ...(context
-              ? [[context.home]]
-              : [account.filter((item) => item.key !== "notifications")]),
-            ...groups.map((group) => group.items),
-          ].map((items, index) => (
-            <div
-              key={index}
-              className={`flex flex-col items-center gap-1 ${index > 0 ? "mt-1 border-t border-line pt-2" : ""}`}
-            >
-              {items.map((item) => (
-                <Link
-                  key={item.key}
-                  href={item.href}
-                  aria-current={current?.key === item.key ? "page" : undefined}
-                  className="group relative grid size-11 place-items-center rounded-[0.625rem] text-ink transition hover:bg-ink/5 aria-[current=page]:bg-guinda-tint aria-[current=page]:text-guinda-deep"
-                >
-                  <NavIcon name={item.icon} className="nav-icon" />
-                  <span className="sr-only">{item.label}</span>
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute left-full z-40 ml-3 whitespace-nowrap rounded-md bg-ink px-2.5 py-1.5 text-sm text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
-                  >
-                    {item.label}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          ))}
-        </nav>
-
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-8 lg:px-10 lg:py-9">
-          <div className="mx-auto max-w-6xl">{children}</div>
-        </main>
-      </div>
+      <main className="px-4 py-6 sm:px-6 lg:py-8">
+        <div className="mx-auto max-w-6xl">{children}</div>
+      </main>
 
       <dialog
         ref={drawer}
@@ -223,55 +219,62 @@ export function AppShell({
         }}
         onClose={() => opener.current?.focus()}
       >
-        <div className="flex h-full flex-col">
-          <div className="flex items-center gap-3 border-b border-line px-4 py-3">
-            <span className="grid size-8 flex-none place-items-center rounded-lg bg-guinda text-sm font-bold text-white">
-              L
-            </span>
-            <p className="min-w-0 flex-1 truncate font-semibold">
-              {context ? context.title : "Labora"}
-            </p>
+        <div className="flex h-full flex-col overflow-y-auto px-3 pb-4">
+          <div className="flex items-center justify-between px-1 py-4">
+            <Logo />
             <button
               type="button"
               onClick={close}
               aria-label="Cerrar menú"
-              className="grid size-10 place-items-center rounded-lg hover:bg-ink/5"
+              className="grid size-9 place-items-center rounded-md text-muted hover:bg-ink/6 hover:text-ink"
             >
               <X aria-hidden className="size-5" />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-3 py-3">
-            {context ? (
-              <div className="mb-2">{row(context.home, false)}</div>
-            ) : null}
-            {groups.map((group) => (
-              <section key={group.key} className="mt-3 first:mt-0">
-                <h2 className="flex items-center gap-2 px-3 pb-1.5 pt-2 text-[0.8125rem] font-semibold text-muted">
-                  {group.step ? (
-                    <span className="grid size-5 place-items-center rounded-full border border-current text-[0.6875rem]">
-                      {group.step}
-                    </span>
-                  ) : null}
-                  {group.title}
-                </h2>
-                <div className="flex flex-col gap-0.5">
-                  {group.items.map((item) => row(item, true))}
-                </div>
-              </section>
-            ))}
+          {sections.length > 0 ? (
+            <>
+              <nav aria-label="Laboratorio" className="flex flex-col gap-0.5">
+                {sections.map(row)}
+              </nav>
+              <hr className="my-3 border-line" />
+            </>
+          ) : null}
+          <nav aria-label="Cuenta" className="flex flex-col gap-0.5">
+            {account.map(row)}
+          </nav>
 
-            <div className="mt-4 border-t border-line pt-3">
-              <div className="px-3 pb-2 text-[0.8125rem]">
-                <p className="truncate font-semibold">{user.name}</p>
-                <p className="truncate text-muted">{user.email}</p>
-              </div>
+          {laboratories.length > 1 ? (
+            <>
+              <hr className="my-3 border-line" />
+              <p className="px-2.5 pb-1.5 text-sm font-semibold text-muted">
+                Tus laboratorios
+              </p>
               <div className="flex flex-col gap-0.5">
-                {account.map((item) => row(item, false))}
-                <LogoutButton variant="menu" />
+                {laboratories.map((lab) => (
+                  <Link
+                    key={lab.slug}
+                    href={`/app/labs/${encodeURIComponent(lab.slug)}`}
+                    className="nav-row"
+                  >
+                    <span className="grid size-5 flex-none place-items-center rounded bg-guinda-tint text-[0.6875rem] font-bold text-guinda">
+                      {lab.name.slice(0, 1)}
+                    </span>
+                    <span className="truncate text-[0.9375rem]">
+                      {lab.name}
+                    </span>
+                  </Link>
+                ))}
               </div>
-            </div>
+            </>
+          ) : null}
+
+          <hr className="my-3 border-line" />
+          <div className="px-2.5 pb-2 text-sm">
+            <p className="truncate font-semibold">{user.name}</p>
+            <p className="truncate text-muted">{user.email}</p>
           </div>
+          <LogoutButton variant="menu" />
         </div>
       </dialog>
     </div>

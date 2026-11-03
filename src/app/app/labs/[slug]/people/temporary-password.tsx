@@ -13,7 +13,7 @@ export function TemporaryPassword({
   return (
     <div
       role="status"
-      className="rounded-xl border border-live/30 bg-live/5 p-4 sm:p-5"
+      className="rounded-md border border-live/30 bg-live/5 p-4"
     >
       <p className="flex items-center gap-2 font-semibold text-live">
         <KeyRound aria-hidden className="size-5" />
@@ -27,7 +27,7 @@ export function TemporaryPassword({
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <code
           aria-label="Contraseña temporal"
-          className="rounded-lg border border-line bg-surface px-3 py-2 text-lg font-semibold tracking-wide"
+          className="rounded-md border border-line bg-surface px-3 py-1.5 text-lg font-semibold tracking-wide"
         >
           {password}
         </code>
@@ -41,7 +41,7 @@ export function TemporaryPassword({
               setCopied(false);
             }
           }}
-          className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-line bg-surface px-3 text-sm font-semibold hover:bg-paper"
+          className="btn"
         >
           {copied ? (
             <Check aria-hidden className="size-4" />
