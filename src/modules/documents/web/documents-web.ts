@@ -79,7 +79,7 @@ const documentMessages: Record<DocumentError["code"], UploadResult> = {
   },
   "too-large": {
     status: 413,
-    message: "El archivo supera el máximo de 10 MB.",
+    message: "El archivo supera el máximo de 4 MB.",
   },
   limit: {
     status: 409,
@@ -149,7 +149,7 @@ export class DocumentsWeb {
     return { access, evidence };
   }
   // Called by the upload route after the origin check. The session and
-  // laboratory are resolved before reading up to 10 MB of request body.
+  // laboratory are resolved before reading up to 4 MB of request body.
   async upload(
     slug: string,
     headers: Headers,

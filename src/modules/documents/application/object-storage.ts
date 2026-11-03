@@ -1,6 +1,6 @@
 export type StoredObject = { key: string; modifiedAt: Date };
-// Binary storage port. Local disk in development; an S3 adapter will
-// implement the same contract without changing services.
+// Binary storage port. Local disk in development, S3 (or an S3-compatible
+// service) when deployed; services do not know which one is in use.
 export interface ObjectStorage {
   put(key: string, bytes: Uint8Array): Promise<void>;
   // null when the object does not exist.

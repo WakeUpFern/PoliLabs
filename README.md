@@ -131,6 +131,10 @@ Entra a un laboratorio y abre **Inventario**. Busca artículos por nombre, filtr
 
 Rutas: `/app/labs/[slug]/inventory`, `/inventory/new` y `/inventory/[itemId]` dentro del mismo laboratorio. Permisos locales: `inventory.read`, `inventory.manage`, `inventory.adjust`; la migración los asigna al responsable inicial. Consulta [Inventory I](docs/architecture/inventory.md) y sus [resultados de validación](docs/architecture/inventory-validation.md).
 
+## Despliegue
+
+La primera instalación para el laboratorio corre en Vercel con PostgreSQL en Neon y documentos en S3. Sigue la [guía de despliegue](docs/architecture/deployment-vercel.md); la decisión está en el [ADR 0024](docs/decisions/0024-vercel-deployment.md).
+
 ## Validación
 
 ```bash

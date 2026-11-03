@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = 4 * 1024 * 1024;
 const field = "mt-2 block w-full rounded-md border border-line p-3";
 // Uploads go to the dedicated route handler; it repeats every check.
 export function UploadForm({
@@ -35,7 +35,7 @@ export function UploadForm({
         if (file instanceof File && file.size > MAX_BYTES) {
           setState({
             status: "error",
-            message: "El archivo supera el máximo de 10 MB.",
+            message: "El archivo supera el máximo de 4 MB.",
           });
           return;
         }
@@ -88,7 +88,7 @@ export function UploadForm({
           />
         </label>
         <p className="text-sm text-muted">
-          PDF, PNG, JPEG o WebP; máximo 10 MB. El formato se verifica por el
+          PDF, PNG, JPEG o WebP; máximo 4 MB. El formato se verifica por el
           contenido del archivo. Las fotos conservan sus metadatos (p. ej.
           ubicación GPS).
         </p>
