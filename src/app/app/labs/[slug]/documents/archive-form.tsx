@@ -18,7 +18,7 @@ export function ArchiveForm({
   });
   return (
     <details className="mt-2 text-sm">
-      <summary className="cursor-pointer font-semibold text-[#7a1731]">
+      <summary className="cursor-pointer font-semibold text-guinda">
         Archivar
       </summary>
       <form action={action} className="mt-2 space-y-2">

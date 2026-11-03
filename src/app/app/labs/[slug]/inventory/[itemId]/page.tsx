@@ -38,7 +38,7 @@ export default async function InventoryDetailPage({
     <div>
       <Link
         href={`/app/labs/${slug}/inventory`}
-        className="font-semibold text-[#7a1731]"
+        className="font-semibold text-guinda"
       >
         ← Inventario
       </Link>

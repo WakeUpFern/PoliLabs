@@ -46,7 +46,7 @@ export function MyReservations({
               >
                 <ReservationSummary reservation={reservation} />
                 <Link
-                  className="mt-5 inline-block font-semibold text-[#7a1731]"
+                  className="mt-5 inline-block font-semibold text-guinda"
                   href={`/app/labs/${slug}/reservations/${reservation.id}`}
                 >
                   Ver detalle →

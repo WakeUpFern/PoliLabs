@@ -56,7 +56,7 @@ export default async function SessionAttendancePage({
             ) : null}
             {!own && (r.attendance ? policy.canCorrect : policy.canRecord) ? (
               <details className="mt-4">
-                <summary className="cursor-pointer font-semibold text-[#7a1731]">
+                <summary className="cursor-pointer font-semibold text-guinda">
                   {r.attendance
                     ? "Corregir asistencia"
                     : "Registrar por personal"}

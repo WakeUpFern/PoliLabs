@@ -34,7 +34,7 @@ export default async function MaintenancePage({
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <Link
-                className="font-semibold break-words text-[#7a1731]"
+                className="font-semibold break-words text-guinda"
                 href={`/app/labs/${slug}/maintenance/resources/${r.id}`}
               >
                 {r.name}

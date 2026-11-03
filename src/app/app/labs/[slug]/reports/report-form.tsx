@@ -3,7 +3,7 @@ import type { ReportDefinition } from "@/modules/reports/domain/reports";
 const field =
   "mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 text-sm";
 const button =
-  "rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#651128]";
+  "rounded-xl bg-guinda px-4 py-2 text-sm font-semibold text-white transition hover:bg-guinda-deep";
 
 // Native GET form: the route handler answers with an attachment, so the page
 // stays in place and no client JavaScript is needed.

@@ -46,7 +46,7 @@ type Props = {
 const LOCAL = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 const statusTone = {
   free: "bg-emerald-100 text-emerald-900",
-  occupied: "bg-[#7a1731]/15 text-[#641229]",
+  occupied: "bg-guinda/15 text-[#641229]",
   blocked: "bg-amber-100 text-amber-900",
 };
 
@@ -154,13 +154,13 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
     <div>
       <Link
         href={spacePath}
-        className="text-sm font-semibold text-stone-600 transition hover:text-[#7a1731]"
+        className="text-sm font-semibold text-stone-600 transition hover:text-guinda"
       >
         <span aria-hidden="true">←</span> {space.name}
       </Link>
       <header className="mt-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7a1731]">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-guinda">
             Plano · {space.name}
           </p>
           <h1 className="mt-2 text-3xl font-semibold">{data.plan.name}</h1>
@@ -171,7 +171,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
         {occupancy ? (
           <Link
             href={`/app/labs/${slug}/reservations?space=${space.id}`}
-            className="rounded-xl border border-[#7a1731] px-4 py-2 text-sm font-semibold text-[#7a1731]"
+            className="rounded-xl border border-guinda px-4 py-2 text-sm font-semibold text-guinda"
           >
             Ver calendario del espacio
           </Link>
@@ -211,7 +211,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
           </div>
           <button
             type="submit"
-            className="min-h-11 rounded-xl bg-[#7a1731] px-5 font-semibold text-white"
+            className="min-h-11 rounded-xl bg-guinda px-5 font-semibold text-white"
           >
             Ver ocupación
           </button>
@@ -284,7 +284,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
                   {resource.href ? (
                     <Link
                       href={resource.href}
-                      className="text-sm font-semibold text-[#7a1731]"
+                      className="text-sm font-semibold text-guinda"
                       aria-label={`Reservar ${resource.name}`}
                     >
                       Reservar

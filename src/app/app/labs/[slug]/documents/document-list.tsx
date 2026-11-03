@@ -29,7 +29,7 @@ export function DocumentList({
       {documents.map((d) => (
         <li key={d.id} className="rounded-xl border border-stone-200 p-3">
           <a
-            className="font-semibold break-words text-[#7a1731]"
+            className="font-semibold break-words text-guinda"
             href={`/app/labs/${slug}/documents/${d.id}`}
             target="_blank"
             rel="noopener"

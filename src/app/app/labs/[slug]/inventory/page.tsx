@@ -36,7 +36,7 @@ export default async function InventoryPage({
     <div>
       <Link
         href={`/app/labs/${slug}`}
-        className="text-sm font-semibold text-[#7a1731]"
+        className="text-sm font-semibold text-guinda"
       >
         ← {data.laboratory.name}
       </Link>
@@ -50,7 +50,7 @@ export default async function InventoryPage({
         {data.canManage && (
           <Link
             href={`/app/labs/${slug}/inventory/new`}
-            className="rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white"
+            className="rounded-xl bg-guinda px-5 py-3 font-semibold text-white"
           >
             Nuevo artículo
           </Link>
@@ -95,7 +95,7 @@ export default async function InventoryPage({
           />
           Incluir desactivados
         </label>
-        <button className="rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white">
+        <button className="rounded-xl bg-guinda px-5 py-3 font-semibold text-white">
           Buscar
         </button>
       </form>
@@ -130,7 +130,7 @@ export default async function InventoryPage({
               </p>
               <Link
                 href={`/app/labs/${slug}/inventory/${item.id}`}
-                className="mt-5 inline-block font-semibold text-[#7a1731]"
+                className="mt-5 inline-block font-semibold text-guinda"
               >
                 Ver detalle y movimientos →
               </Link>

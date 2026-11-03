@@ -33,7 +33,7 @@ export function SpaceForm({ action, submitLabel, space }: SpaceFormProps) {
           defaultValue={space?.name}
           required
           disabled={isPending}
-          className="min-h-12 w-full rounded-xl border border-stone-300 px-4 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-12 w-full rounded-xl border border-stone-300 px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
         />
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
@@ -48,7 +48,7 @@ export function SpaceForm({ action, submitLabel, space }: SpaceFormProps) {
             pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
             required
             disabled={isPending}
-            className="min-h-12 w-full rounded-xl border border-stone-300 px-4 font-mono text-sm outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+            className="min-h-12 w-full rounded-xl border border-stone-300 px-4 font-mono text-sm outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
           />
           <p className="mt-2 text-xs leading-5 text-stone-500">
             Minúsculas, números y guiones; único en este laboratorio.
@@ -70,7 +70,7 @@ export function SpaceForm({ action, submitLabel, space }: SpaceFormProps) {
             step={1}
             defaultValue={space?.capacity ?? ""}
             disabled={isPending}
-            className="min-h-12 w-full rounded-xl border border-stone-300 px-4 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+            className="min-h-12 w-full rounded-xl border border-stone-300 px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
           />
         </div>
       </div>
@@ -86,7 +86,7 @@ export function SpaceForm({ action, submitLabel, space }: SpaceFormProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#7a1731] px-5 font-semibold text-white transition hover:bg-[#651128] focus:outline-none focus:ring-4 focus:ring-[#7a1731]/20 disabled:cursor-wait disabled:opacity-65"
+        className="inline-flex min-h-12 items-center justify-center rounded-xl bg-guinda px-5 font-semibold text-white transition hover:bg-guinda-deep focus:outline-none focus:ring-4 focus:ring-guinda/20 disabled:cursor-wait disabled:opacity-65"
       >
         {isPending ? "Guardando…" : submitLabel}
       </button>

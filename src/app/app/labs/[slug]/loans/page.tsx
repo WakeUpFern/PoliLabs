@@ -27,7 +27,7 @@ export default async function LoansPage({
   const overdueOnly = filter === "overdue";
   const tab = (active: boolean) =>
     `rounded-full px-4 py-2 text-sm font-semibold ${
-      active ? "bg-[#7a1731] text-white" : "border border-stone-300"
+      active ? "bg-guinda text-white" : "border border-stone-300"
     }`;
   return (
     <div>

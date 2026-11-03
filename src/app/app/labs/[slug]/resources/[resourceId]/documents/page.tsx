@@ -21,7 +21,7 @@ export default async function ResourceDocumentsPage({
       <p className="mt-2 text-stone-600">{resource.spaceName}</p>
       {access.canReadEvidence ? (
         <Link
-          className="mt-2 inline-block text-sm font-semibold text-[#7a1731]"
+          className="mt-2 inline-block text-sm font-semibold text-guinda"
           href={`/app/labs/${slug}/maintenance/resources/${resource.id}`}
         >
           Ver mantenimiento y evidencias

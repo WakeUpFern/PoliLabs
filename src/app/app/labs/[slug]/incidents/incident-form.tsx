@@ -40,7 +40,7 @@ export function IncidentForm({
         {children}
         <button
           type="submit"
-          className="rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white disabled:opacity-50"
+          className="rounded-xl bg-guinda px-5 py-3 font-semibold text-white disabled:opacity-50"
         >
           {pending ? "Guardando…" : label}
         </button>
@@ -52,7 +52,7 @@ export function IncidentForm({
       ) : null}
       {operation === "report" && state.incidentId ? (
         <Link
-          className="inline-block font-semibold text-[#7a1731]"
+          className="inline-block font-semibold text-guinda"
           href={`/app/labs/${slug}/incidents/${state.incidentId}`}
         >
           Ver reporte y seguimiento

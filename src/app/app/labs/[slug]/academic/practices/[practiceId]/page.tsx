@@ -27,7 +27,7 @@ export default async function PracticePage({
         ← Prácticas
       </Link>
       <header className="mt-6">
-        <p className="text-xs font-bold uppercase text-[#7a1731]">
+        <p className="text-xs font-bold uppercase text-guinda">
           {PRACTICE_LABELS[p.status]}
         </p>
         <h1 className="mt-2 text-3xl font-semibold">{p.title}</h1>
@@ -113,7 +113,7 @@ export default async function PracticePage({
                 {formatAcademicTime(s.startsAt)} →{" "}
                 {formatAcademicTime(s.endsAt)}
               </p>
-              <p className="mt-2 text-sm text-[#7a1731]">
+              <p className="mt-2 text-sm text-guinda">
                 {SESSION_LABELS[s.status]}
               </p>
             </Link>

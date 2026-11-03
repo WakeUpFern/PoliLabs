@@ -6,13 +6,13 @@ export default async function NotificationsPage() {
   const unread = entries.some((n) => !n.readAt);
   return (
     <div>
-      <p className="text-sm font-semibold text-[#7a1731]">Avisos</p>
+      <p className="text-sm font-semibold text-guinda">Avisos</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">
         Notificaciones
       </h1>
       {unread ? (
         <form action={markAllNotificationsRead} className="mt-4">
-          <button className="text-sm font-semibold text-[#7a1731] underline-offset-4 hover:underline">
+          <button className="text-sm font-semibold text-guinda underline-offset-4 hover:underline">
             Marcar todas como leídas
           </button>
         </form>
@@ -21,7 +21,7 @@ export default async function NotificationsPage() {
         {entries.map((n) => (
           <li
             key={n.id}
-            className={`rounded-2xl border bg-white p-5 ${n.readAt ? "border-stone-200" : "border-[#7a1731]/40 shadow-sm"}`}
+            className={`rounded-2xl border bg-white p-5 ${n.readAt ? "border-stone-200" : "border-guinda/40 shadow-sm"}`}
           >
             <form action={openNotification}>
               <input type="hidden" name="notificationId" value={n.id} />
@@ -34,7 +34,7 @@ export default async function NotificationsPage() {
                 {formatAcademicTime(n.createdAt)}
               </p>
               <button
-                className="mt-3 text-sm font-semibold text-[#7a1731]"
+                className="mt-3 text-sm font-semibold text-guinda"
                 aria-label={`Abrir: ${n.title}`}
               >
                 Abrir

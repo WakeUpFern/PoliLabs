@@ -42,7 +42,7 @@ export default async function NewReservationPage({
     <div>
       <Link
         href={`/app/labs/${slug}/reservations`}
-        className="text-sm font-semibold text-[#7a1731]"
+        className="text-sm font-semibold text-guinda"
       >
         ← Calendario de reservaciones
       </Link>

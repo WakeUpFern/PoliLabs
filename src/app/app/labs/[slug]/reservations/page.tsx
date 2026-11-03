@@ -21,7 +21,7 @@ const viewLabels: Record<CalendarView, string> = {
   month: "Mes",
 };
 const inputStyle =
-  "min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 focus:outline-none focus:ring-4 focus:ring-[#7a1731]/20";
+  "min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 focus:outline-none focus:ring-4 focus:ring-guinda/20";
 
 // Reservaciones opens on the interactive calendar (ADR 0021); "Mis
 // reservaciones" stays as a list tab and the form remains at /new.
@@ -51,7 +51,7 @@ export default async function ReservationsPage({
     <div>
       <Link
         href={`/app/labs/${slug}`}
-        className="text-sm font-semibold text-[#7a1731]"
+        className="text-sm font-semibold text-guinda"
       >
         ← {laboratory.name}
       </Link>
@@ -67,7 +67,7 @@ export default async function ReservationsPage({
         {canCreate && (
           <Link
             href={`${base}/new`}
-            className="text-sm font-semibold text-[#7a1731] underline-offset-4 hover:underline"
+            className="text-sm font-semibold text-guinda underline-offset-4 hover:underline"
           >
             Usar el formulario
           </Link>
@@ -91,7 +91,7 @@ export default async function ReservationsPage({
             aria-current={tab.current ? "page" : undefined}
             className={`-mb-px border-b-2 px-4 py-2 font-semibold ${
               tab.current
-                ? "border-[#7a1731] text-[#7a1731]"
+                ? "border-guinda text-guinda"
                 : "border-transparent text-stone-600"
             }`}
           >
@@ -196,7 +196,7 @@ function Calendar({
         </div>
         <button
           type="submit"
-          className="min-h-11 rounded-xl bg-[#7a1731] px-5 font-semibold text-white"
+          className="min-h-11 rounded-xl bg-guinda px-5 font-semibold text-white"
         >
           Mostrar
         </button>
@@ -225,7 +225,7 @@ function Calendar({
               aria-current={view === data.view ? "page" : undefined}
               className={`rounded-lg px-4 py-2 text-sm font-semibold ${
                 view === data.view
-                  ? "bg-white text-[#7a1731] shadow-sm"
+                  ? "bg-white text-guinda shadow-sm"
                   : "text-stone-600"
               }`}
             >
@@ -268,7 +268,7 @@ function Calendar({
       )}
       <p className="mt-4 flex flex-wrap gap-4 text-sm text-stone-600">
         <span className="inline-flex items-center gap-2">
-          <span className="h-3 w-3 rounded-sm bg-[#7a1731]" /> Mis reservaciones
+          <span className="h-3 w-3 rounded-sm bg-guinda" /> Mis reservaciones
         </span>
         <span className="inline-flex items-center gap-2">
           <span className="h-3 w-3 rounded-sm bg-stone-400" /> Ocupado por otra

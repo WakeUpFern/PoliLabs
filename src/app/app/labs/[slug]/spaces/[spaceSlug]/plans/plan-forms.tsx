@@ -12,7 +12,7 @@ type Action = (
 ) => Promise<OrganizationActionState>;
 
 const inputStyle =
-  "min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10";
+  "min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10";
 
 export function ActionForm({
   action,
@@ -46,7 +46,7 @@ export function ActionForm({
           className={
             danger
               ? "text-sm font-semibold text-red-700 transition hover:text-red-900 disabled:opacity-60"
-              : "inline-flex min-h-11 items-center justify-center rounded-xl bg-[#7a1731] px-4 text-sm font-semibold text-white transition hover:bg-[#651128] disabled:cursor-wait disabled:opacity-65"
+              : "inline-flex min-h-11 items-center justify-center rounded-xl bg-guinda px-4 text-sm font-semibold text-white transition hover:bg-guinda-deep disabled:cursor-wait disabled:opacity-65"
           }
         >
           {pending ? "Guardando…" : submitLabel}

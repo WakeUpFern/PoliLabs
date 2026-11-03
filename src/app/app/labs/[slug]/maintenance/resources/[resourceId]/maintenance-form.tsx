@@ -165,7 +165,7 @@ export function MaintenanceForm({
             {rows.length < MAX_MATERIALS && items.length ? (
               <button
                 type="button"
-                className="text-sm font-semibold text-[#7a1731]"
+                className="text-sm font-semibold text-guinda"
                 onClick={() => {
                   setRows((r) => [...r, next]);
                   setNext((n) => n + 1);
@@ -188,7 +188,7 @@ export function MaintenanceForm({
         )}
         <button
           type="submit"
-          className="rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white disabled:opacity-50"
+          className="rounded-xl bg-guinda px-5 py-3 font-semibold text-white disabled:opacity-50"
         >
           {pending ? "Guardando…" : "Guardar entrada"}
         </button>

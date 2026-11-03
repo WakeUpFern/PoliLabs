@@ -39,7 +39,7 @@ export default async function MaintenanceResourcePage({
       <p className="mt-2 text-stone-600">{resource.spaceName}</p>
       {documents.canRead ? (
         <Link
-          className="mt-2 inline-block text-sm font-semibold text-[#7a1731]"
+          className="mt-2 inline-block text-sm font-semibold text-guinda"
           href={`/app/labs/${slug}/resources/${resource.id}/documents`}
         >
           Manuales y documentos
@@ -119,7 +119,7 @@ export default async function MaintenanceResourcePage({
             ) : null}
             {log.incidentId ? (
               <Link
-                className="mt-2 inline-block text-sm font-semibold text-[#7a1731]"
+                className="mt-2 inline-block text-sm font-semibold text-guinda"
                 href={`/app/labs/${slug}/incidents/${log.incidentId}?scope=laboratory`}
               >
                 Ver incidencia relacionada
@@ -135,7 +135,7 @@ export default async function MaintenanceResourcePage({
               />
               {documents.canAddEvidence ? (
                 <details className="mt-3">
-                  <summary className="cursor-pointer text-sm font-semibold text-[#7a1731]">
+                  <summary className="cursor-pointer text-sm font-semibold text-guinda">
                     Añadir evidencia
                   </summary>
                   <p className="mt-2 text-sm text-stone-600">

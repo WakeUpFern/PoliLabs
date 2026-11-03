@@ -12,7 +12,7 @@ import { inventoryAction } from "./actions";
 const field =
   "mt-2 block w-full rounded-xl border border-stone-300 bg-white px-4 py-3";
 const button =
-  "rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white disabled:opacity-50";
+  "rounded-xl bg-guinda px-5 py-3 font-semibold text-white disabled:opacity-50";
 export function InventoryForm({
   slug,
   mode,

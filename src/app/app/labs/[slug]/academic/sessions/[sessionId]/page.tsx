@@ -29,7 +29,7 @@ export default async function SessionPage({
         ← {data.practice.title}
       </Link>
       <header className="mt-6">
-        <p className="text-xs font-bold uppercase text-[#7a1731]">
+        <p className="text-xs font-bold uppercase text-guinda">
           {SESSION_LABELS[s.status]}
         </p>
         <h1 className="mt-2 text-3xl font-semibold">Sesión de laboratorio</h1>
@@ -67,7 +67,7 @@ export default async function SessionPage({
       <div className="mt-6 flex flex-wrap gap-4">
         {incidentAccess.canCreate ? (
           <Link
-            className="font-semibold text-[#7a1731]"
+            className="font-semibold text-guinda"
             href={`/app/labs/${slug}/incidents/new?target=session:${s.id}`}
           >
             Reportar problema de la sesión
@@ -76,7 +76,7 @@ export default async function SessionPage({
 
         {data.canCheckIn ? (
           <Link
-            className="font-semibold text-[#7a1731]"
+            className="font-semibold text-guinda"
             href={`/app/labs/${slug}/attendance`}
           >
             Registrar mi asistencia
@@ -84,7 +84,7 @@ export default async function SessionPage({
         ) : null}
         {data.canManageAttendance ? (
           <Link
-            className="font-semibold text-[#7a1731]"
+            className="font-semibold text-guinda"
             href={`/app/labs/${slug}/attendance/sessions/${s.id}`}
           >
             Consultar asistencia de la sesión
@@ -92,7 +92,7 @@ export default async function SessionPage({
         ) : null}
         {data.canRecordUsage ? (
           <Link
-            className="font-semibold text-[#7a1731]"
+            className="font-semibold text-guinda"
             href={`/app/labs/${slug}/usage`}
           >
             Registrar uso de maquinaria

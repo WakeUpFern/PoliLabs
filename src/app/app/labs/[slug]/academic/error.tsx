@@ -10,7 +10,7 @@ export default function AcademicErrorPage({ reset }: { reset: () => void }) {
       </p>
       <button
         onClick={reset}
-        className="mt-5 rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white"
+        className="mt-5 rounded-xl bg-guinda px-5 py-3 font-semibold text-white"
       >
         Reintentar
       </button>

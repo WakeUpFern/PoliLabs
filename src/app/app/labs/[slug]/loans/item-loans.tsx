@@ -43,7 +43,7 @@ export async function ItemLoans({
             {" "}
             <Link
               href={`/app/labs/${slug}/loans`}
-              className="font-semibold text-[#7a1731]"
+              className="font-semibold text-guinda"
             >
               Ver préstamos del laboratorio
             </Link>

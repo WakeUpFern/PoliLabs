@@ -31,7 +31,7 @@ export default async function ReservationDetailPage({
   return (
     <div>
       <Link
-        className="text-sm font-semibold text-[#7a1731]"
+        className="text-sm font-semibold text-guinda"
         href={`/app/labs/${slug}/reservations?tab=mine`}
       >
         ← Mis reservaciones

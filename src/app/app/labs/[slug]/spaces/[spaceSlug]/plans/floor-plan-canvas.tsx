@@ -20,7 +20,7 @@ export const occupancyLabels: Record<ResourceOccupancyStatus, string> = {
 
 const tones: Record<ResourceOccupancyStatus | "unknown", string> = {
   free: "fill-emerald-100 stroke-emerald-600",
-  occupied: "fill-[#7a1731]/20 stroke-[#7a1731]",
+  occupied: "fill-guinda/20 stroke-guinda",
   blocked: "fill-amber-100 stroke-amber-600",
   unknown: "fill-white stroke-stone-500",
 };

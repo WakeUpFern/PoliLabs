@@ -46,7 +46,7 @@ export function ResourceForm({
           defaultValue={resource?.name}
           required
           disabled={isPending}
-          className="min-h-11 w-full rounded-xl border border-stone-300 px-3 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-11 w-full rounded-xl border border-stone-300 px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
         />
       </div>
       <div>
@@ -62,7 +62,7 @@ export function ResourceForm({
           name="locationId"
           defaultValue={resource?.locationId ?? ""}
           disabled={isPending}
-          className="min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none transition focus:border-[#7a1731] focus:ring-4 focus:ring-[#7a1731]/10 disabled:bg-stone-100"
+          className="min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-stone-100"
         >
           <option value="">Sin ubicación específica</option>
           {locations.map((location) => (
@@ -89,7 +89,7 @@ export function ResourceForm({
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#7a1731] px-4 text-sm font-semibold text-white transition hover:bg-[#651128] disabled:cursor-wait disabled:opacity-65"
+        className="inline-flex min-h-11 items-center justify-center rounded-xl bg-guinda px-4 text-sm font-semibold text-white transition hover:bg-guinda-deep disabled:cursor-wait disabled:opacity-65"
       >
         {isPending ? "Guardando…" : submitLabel}
       </button>

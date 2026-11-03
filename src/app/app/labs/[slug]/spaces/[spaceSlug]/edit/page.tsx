@@ -53,11 +53,11 @@ export default async function EditSpacePage({ params }: EditSpacePageProps) {
     <div className="max-w-3xl">
       <Link
         href={`/app/labs/${slug}/spaces`}
-        className="text-sm font-semibold text-stone-600 transition hover:text-[#7a1731]"
+        className="text-sm font-semibold text-stone-600 transition hover:text-guinda"
       >
         <span aria-hidden="true">←</span> Espacios
       </Link>
-      <p className="mt-7 text-sm font-semibold text-[#7a1731]">
+      <p className="mt-7 text-sm font-semibold text-guinda">
         {laboratory.name}
       </p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">

@@ -48,9 +48,11 @@ function initials(name: string) {
     .join("");
 }
 
-function Logo() {
+function Logo({ onGuinda = false }: { onGuinda?: boolean }) {
   return (
-    <span className="grid size-8 flex-none place-items-center rounded-md bg-guinda text-sm font-bold text-white">
+    <span
+      className={`grid size-8 flex-none place-items-center rounded-md text-sm font-bold ${onGuinda ? "bg-white text-guinda" : "bg-guinda text-white"}`}
+    >
       L
     </span>
   );
@@ -95,7 +97,7 @@ export function AppShell({
   return (
     <div className="min-h-dvh">
       <header className="border-b border-line bg-paper">
-        <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
+        <div className="topbar flex h-16 items-center gap-3 px-4 sm:px-6">
           <button
             ref={opener}
             type="button"
@@ -111,9 +113,9 @@ export function AppShell({
             href={laboratory ? laboratory.href : "/app"}
             aria-label="Labora, inicio"
           >
-            <Logo />
+            <Logo onGuinda />
           </Link>
-          <p className="min-w-0 flex-1 truncate font-bold">
+          <p className="min-w-0 flex-1 truncate font-bold text-white">
             {laboratory ? (
               <Link href={laboratory.href} className="hover:underline">
                 {laboratory.name}
@@ -154,13 +156,13 @@ export function AppShell({
             {unread > 0 ? (
               <span
                 aria-hidden
-                className="absolute -top-1 -right-1 size-2.5 rounded-full border-2 border-paper bg-guinda"
+                className="absolute -top-1 -right-1 size-2.5 rounded-full border-2 border-guinda bg-oro-light"
               />
             ) : null}
           </Link>
           <span
             title={`${user.name}\n${user.email}`}
-            className="grid size-8 flex-none place-items-center rounded-full bg-ink text-xs font-bold text-white"
+            className="grid size-8 flex-none place-items-center rounded-full bg-white/15 text-xs font-bold text-white ring-1 ring-white/30"
           >
             {initials(user.name)}
           </span>

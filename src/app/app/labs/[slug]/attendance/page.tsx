@@ -82,7 +82,7 @@ export default async function AttendancePage({
             {history.map((a) => (
               <li key={a.id}>
                 <Link
-                  className="font-semibold text-[#7a1731]"
+                  className="font-semibold text-guinda"
                   href={`/app/labs/${slug}/academic/sessions/${a.sessionId}`}
                 >
                   Sesión

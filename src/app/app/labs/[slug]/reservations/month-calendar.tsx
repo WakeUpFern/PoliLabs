@@ -48,13 +48,13 @@ export function MonthCalendar({
                 href={dayHref(day)}
                 aria-label={`Ver ${formatCalendarDay(day, "long")}`}
                 className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${
-                  day === today ? "bg-[#7a1731] text-white" : ""
+                  day === today ? "bg-guinda text-white" : ""
                 }`}
               >
                 {Number(day.slice(8))}
               </Link>
               {dayEntries.length > 0 && (
-                <p className="mt-1 rounded-md bg-[#7a1731]/10 px-1 text-center text-xs font-semibold text-[#7a1731] sm:hidden">
+                <p className="mt-1 rounded-md bg-guinda/10 px-1 text-center text-xs font-semibold text-guinda sm:hidden">
                   {dayEntries.length}
                 </p>
               )}
@@ -68,7 +68,7 @@ export function MonthCalendar({
                   <li>
                     <Link
                       href={dayHref(day)}
-                      className="text-xs font-semibold text-[#7a1731]"
+                      className="text-xs font-semibold text-guinda"
                     >
                       +{dayEntries.length - 3} más
                     </Link>
@@ -86,7 +86,7 @@ export function MonthCalendar({
 function EntryChip({ slug, entry }: { slug: string; entry: OccupancyView }) {
   const time = `${formatCalendarTime(entry.startsAt)}–${formatCalendarTime(entry.endsAt)}`;
   const tone = entry.isMine
-    ? "border-[#7a1731] bg-[#7a1731]/10 text-[#641229]"
+    ? "border-guinda bg-guinda/10 text-[#641229]"
     : "border-stone-300 bg-stone-100 text-stone-700";
   const body = (
     <>

@@ -108,7 +108,7 @@ export function ParticipantFields({
                 name="participantUserIds"
                 value={m.id}
                 defaultChecked={selected.includes(m.id)}
-                className="h-4 w-4 accent-[#7a1731]"
+                className="h-4 w-4 accent-guinda"
               />
               {m.name}
             </label>

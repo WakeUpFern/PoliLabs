@@ -118,14 +118,14 @@ export default async function SpaceOrganizationPage({ params }: Props) {
     <div>
       <Link
         href={`/app/labs/${slug}/spaces`}
-        className="text-sm font-semibold text-stone-600 transition hover:text-[#7a1731]"
+        className="text-sm font-semibold text-stone-600 transition hover:text-guinda"
       >
         <span aria-hidden="true">←</span> Espacios
       </Link>
 
       {incidentAccess.canCreate ? (
         <Link
-          className="mt-4 block font-semibold text-[#7a1731]"
+          className="mt-4 block font-semibold text-guinda"
           href={`/app/labs/${slug}/incidents/new?target=space:${space.id}`}
         >
           Reportar problema del espacio
@@ -166,7 +166,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                 <Link
                   key={plan.id}
                   href={`/app/labs/${slug}/spaces/${spaceSlug}/plans/${plan.id}`}
-                  className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white p-5 font-semibold shadow-sm transition hover:border-[#7a1731]"
+                  className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white p-5 font-semibold shadow-sm transition hover:border-guinda"
                 >
                   {plan.name}
                   <span className="text-sm font-normal text-stone-500">
@@ -266,7 +266,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                       {locationPath(location, locationsById)}
                     </p>
                     <Link
-                      className="mt-3 inline-block text-sm font-semibold text-[#7a1731]"
+                      className="mt-3 inline-block text-sm font-semibold text-guinda"
                       href={`/check-in/${slug}/${location.id}`}
                     >
                       Enlace estable de asistencia
@@ -274,7 +274,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                     {locationCatalog.canManage ? (
                       <div className="mt-4 border-t border-stone-100 pt-4">
                         <details>
-                          <summary className="cursor-pointer text-sm font-semibold text-[#7a1731]">
+                          <summary className="cursor-pointer text-sm font-semibold text-guinda">
                             Editar ubicación
                           </summary>
                           <LocationForm
@@ -371,7 +371,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                     </div>
                     {incidentAccess.canCreate ? (
                       <Link
-                        className="mt-3 inline-block text-sm font-semibold text-[#7a1731]"
+                        className="mt-3 inline-block text-sm font-semibold text-guinda"
                         href={`/app/labs/${slug}/incidents/new?target=resource:${resource.id}`}
                       >
                         Reportar problema
@@ -379,7 +379,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                     ) : null}
                     {maintenanceAccess.canRead ? (
                       <Link
-                        className="mt-3 ml-4 inline-block text-sm font-semibold text-[#7a1731]"
+                        className="mt-3 ml-4 inline-block text-sm font-semibold text-guinda"
                         href={`/app/labs/${slug}/maintenance/resources/${resource.id}`}
                       >
                         Mantenimiento
@@ -387,7 +387,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                     ) : null}
                     {documentAccess.canRead ? (
                       <Link
-                        className="mt-3 ml-4 inline-block text-sm font-semibold text-[#7a1731]"
+                        className="mt-3 ml-4 inline-block text-sm font-semibold text-guinda"
                         href={`/app/labs/${slug}/resources/${resource.id}/documents`}
                       >
                         Documentos
@@ -395,7 +395,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                     ) : null}
                     {resourceCatalog.canManage ? (
                       <Link
-                        className="mt-3 inline-block text-sm font-semibold text-[#7a1731]"
+                        className="mt-3 inline-block text-sm font-semibold text-guinda"
                         href={`/app/labs/${slug}/usage/resources/${resource.id}`}
                       >
                         Historial de uso
@@ -404,7 +404,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                     {resourceCatalog.canManage ? (
                       <div className="mt-4 border-t border-stone-100 pt-4">
                         <details>
-                          <summary className="cursor-pointer text-sm font-semibold text-[#7a1731]">
+                          <summary className="cursor-pointer text-sm font-semibold text-guinda">
                             Editar recurso
                           </summary>
                           <ResourceForm

@@ -48,7 +48,7 @@ type Draft = {
 
 const SLOT_PX = 28;
 const inputStyle =
-  "min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 focus:outline-none focus:ring-4 focus:ring-[#7a1731]/20";
+  "min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 focus:outline-none focus:ring-4 focus:ring-guinda/20";
 
 function overlapping(entries: readonly OccupancyView[], draft: Draft) {
   try {
@@ -198,7 +198,7 @@ export function ReservationGrid({
                 : 18;
               open(day.date, Math.min(slot, SLOTS_PER_DAY - 2), 2);
             }}
-            className="rounded-xl bg-[#7a1731] px-4 py-2 text-sm font-semibold text-white"
+            className="rounded-xl bg-guinda px-4 py-2 text-sm font-semibold text-white"
           >
             Nueva reservación
           </button>
@@ -226,7 +226,7 @@ export function ReservationGrid({
             <div
               key={day.date}
               className={`sticky top-0 z-20 border-b border-l border-stone-200 bg-white px-2 py-2 text-center text-sm font-semibold capitalize ${
-                day.isToday ? "text-[#7a1731]" : ""
+                day.isToday ? "text-guinda" : ""
               }`}
             >
               {days.length > 1 ? day.shortLabel : day.label}
@@ -308,7 +308,7 @@ export function ReservationGrid({
                 {selecting && (
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-1 z-10 rounded-lg border-2 border-dashed border-[#7a1731] bg-[#7a1731]/10"
+                    className="pointer-events-none absolute inset-x-1 z-10 rounded-lg border-2 border-dashed border-guinda bg-guinda/10"
                     style={{
                       top: selecting.from * SLOT_PX,
                       height: (selecting.to - selecting.from + 1) * SLOT_PX,
@@ -318,7 +318,7 @@ export function ReservationGrid({
                 {draft?.date === day.date && (
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-1 z-10 rounded-lg border-2 border-[#7a1731] bg-[#7a1731]/15"
+                    className="pointer-events-none absolute inset-x-1 z-10 rounded-lg border-2 border-guinda bg-guinda/15"
                     style={{
                       top:
                         ((Number(draft.time.slice(0, 2)) * 60 +
@@ -345,7 +345,7 @@ export function ReservationGrid({
                   };
                   const className = `absolute z-10 overflow-hidden rounded-lg border-l-4 px-1.5 py-0.5 text-xs leading-tight ${
                     block.entry.isMine
-                      ? "border-[#7a1731] bg-[#f3e3e7] text-[#641229]"
+                      ? "border-guinda bg-[#f3e3e7] text-[#641229]"
                       : "border-stone-400 bg-stone-200 text-stone-700"
                   }`;
                   const body = (
@@ -496,7 +496,7 @@ export function ReservationGrid({
                   />
                   Espacio completo
                   {spaceBusy && (
-                    <span className="text-xs text-[#7a1731]">
+                    <span className="text-xs text-guinda">
                       (hay reservaciones)
                     </span>
                   )}
@@ -541,11 +541,11 @@ export function ReservationGrid({
                           <span>
                             {resource.name}
                             {!resource.available ? (
-                              <span className="block text-xs text-[#7a1731]">
+                              <span className="block text-xs text-guinda">
                                 En mantenimiento o fuera de servicio
                               </span>
                             ) : busy ? (
-                              <span className="block text-xs text-[#7a1731]">
+                              <span className="block text-xs text-guinda">
                                 Ocupado en ese horario
                               </span>
                             ) : null}
@@ -574,7 +574,7 @@ export function ReservationGrid({
               <button
                 type="submit"
                 disabled={!ready || pending}
-                className="min-h-12 w-full rounded-xl bg-[#7a1731] px-5 font-semibold text-white disabled:opacity-50"
+                className="min-h-12 w-full rounded-xl bg-guinda px-5 font-semibold text-white disabled:opacity-50"
               >
                 {pending ? "Reservando…" : "Reservar"}
               </button>

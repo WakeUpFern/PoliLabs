@@ -1,9 +1,12 @@
 @import "tailwindcss";
 
 /*
- * Labora tokens. White canvas with a cool gray for chrome and boxes, hairline
- * borders and 6px radii, so content and status colors carry the page; IPN
- * guinda is the single accent and marks where you are.
+ * Labora tokens. White canvas with a cool gray for boxes, hairline borders and
+ * 6px radii, so content and status colors carry the page. The palette follows
+ * the IPN and UPIITA identity: IPN guinda paints the top bar and the one main
+ * action and marks where you are; UPIITA gold is a thin accent, never body
+ * text on white below its AA shade (oro). Contrast on white: guinda 11:1,
+ * guinda-deep 14:1, oro 4.9:1; oro-light on guinda 7.5:1.
  */
 @theme {
   --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
@@ -12,9 +15,12 @@
   --color-ink: #1f2328;
   --color-muted: #59636e;
   --color-line: #d1d9e0;
-  --color-guinda: #7a1731;
-  --color-guinda-deep: #5e1025;
-  --color-guinda-tint: #f5e9ec;
+  --color-guinda: #6c1d45;
+  --color-guinda-deep: #4f1330;
+  --color-guinda-tint: #f6e9ef;
+  --color-oro: #866f16;
+  --color-oro-light: #e8d48a;
+  --color-carbon: #333333;
   --color-live: #1d7350;
   --color-pending: #9a5a07;
 }
@@ -134,6 +140,23 @@ textarea {
   .icon-btn:hover {
     background: color-mix(in srgb, var(--color-ink) 6%, transparent);
     color: var(--color-ink);
+  }
+  /* Guinda top bar with a thin UPIITA gold rule, as on the institutional sites. */
+  .topbar {
+    background: var(--color-guinda);
+    color: white;
+    box-shadow: inset 0 -3px 0 var(--color-oro-light);
+  }
+  .topbar .icon-btn {
+    border-color: rgb(255 255 255 / 0.3);
+    color: white;
+  }
+  .topbar .icon-btn:hover {
+    background: rgb(255 255 255 / 0.12);
+    color: white;
+  }
+  .topbar :focus-visible {
+    outline-color: var(--color-oro-light);
   }
   .counter {
     display: inline-grid;

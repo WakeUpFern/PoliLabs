@@ -7,7 +7,7 @@ import {
   type ReservationActionState,
 } from "@/modules/reservations/web/form-state";
 const inputStyle =
-  "min-h-12 w-full rounded-xl border border-stone-300 px-4 focus:outline-none focus:ring-4 focus:ring-[#7a1731]/20";
+  "min-h-12 w-full rounded-xl border border-stone-300 px-4 focus:outline-none focus:ring-4 focus:ring-guinda/20";
 export function ReservationForm({
   spaces,
   canCreate,
@@ -153,7 +153,7 @@ export function ReservationForm({
                     <span>
                       {resource.name}
                       {!resource.available && (
-                        <span className="block text-sm text-[#7a1731]">
+                        <span className="block text-sm text-guinda">
                           No disponible: en mantenimiento o fuera de servicio
                         </span>
                       )}
@@ -211,7 +211,7 @@ export function ReservationForm({
             name="intent"
             value="check"
             disabled={!ready}
-            className="min-h-12 rounded-xl border border-[#7a1731] px-5 font-semibold text-[#7a1731] disabled:opacity-50"
+            className="min-h-12 rounded-xl border border-guinda px-5 font-semibold text-guinda disabled:opacity-50"
           >
             Consultar disponibilidad
           </button>
@@ -221,7 +221,7 @@ export function ReservationForm({
               name="intent"
               value="create"
               disabled={!ready}
-              className="min-h-12 rounded-xl bg-[#7a1731] px-5 font-semibold text-white disabled:opacity-50"
+              className="min-h-12 rounded-xl bg-guinda px-5 font-semibold text-white disabled:opacity-50"
             >
               Confirmar reservación
             </button>

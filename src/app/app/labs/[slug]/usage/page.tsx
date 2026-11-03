@@ -75,14 +75,14 @@ export default async function UsagePage({
               </p>
               {u.sessionId ? (
                 <Link
-                  className="mt-2 inline-block text-[#7a1731]"
+                  className="mt-2 inline-block text-guinda"
                   href={`/app/labs/${slug}/academic/sessions/${u.sessionId}`}
                 >
                   Ver sesión
                 </Link>
               ) : (
                 <Link
-                  className="mt-2 inline-block text-[#7a1731]"
+                  className="mt-2 inline-block text-guinda"
                   href={`/app/labs/${slug}/reservations/${u.reservationId}`}
                 >
                   Ver reservación
@@ -90,7 +90,7 @@ export default async function UsagePage({
               )}
               {incidentAccess.canCreate ? (
                 <Link
-                  className="mt-3 block font-semibold text-[#7a1731]"
+                  className="mt-3 block font-semibold text-guinda"
                   href={`/app/labs/${slug}/incidents/new?target=resource:${u.resourceId}${!u.endedAt ? `&usage=${u.id}` : ""}`}
                 >
                   Reportar problema

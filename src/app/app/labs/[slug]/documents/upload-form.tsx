@@ -94,7 +94,7 @@ export function UploadForm({
         </p>
         <button
           type="submit"
-          className="rounded-xl bg-[#7a1731] px-4 py-2 font-semibold text-white disabled:opacity-60"
+          className="rounded-xl bg-guinda px-4 py-2 font-semibold text-white disabled:opacity-60"
         >
           {pending ? "Subiendo…" : "Subir"}
         </button>

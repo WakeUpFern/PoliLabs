@@ -13,7 +13,7 @@ export default function ReservationsError({ reset }: { reset: () => void }) {
         reservaciones antes de repetirla.
       </p>
       <button
-        className="mt-5 rounded-xl bg-[#7a1731] px-5 py-3 font-semibold text-white"
+        className="mt-5 rounded-xl bg-guinda px-5 py-3 font-semibold text-white"
         onClick={reset}
       >
         Volver a intentar

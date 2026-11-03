@@ -24,7 +24,7 @@ export function LoanCard({
           {showItem && linkItem ? (
             <Link
               href={`/app/labs/${slug}/inventory/${loan.itemId}`}
-              className="text-[#7a1731]"
+              className="text-guinda"
             >
               {loan.itemName}
             </Link>

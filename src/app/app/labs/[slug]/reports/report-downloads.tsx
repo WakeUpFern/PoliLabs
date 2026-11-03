@@ -15,7 +15,7 @@ export async function ReportDownloads({
   if (!data.reports.length) return null;
   return (
     <details className="mt-6 rounded-2xl border border-stone-200 bg-white p-4 sm:p-5">
-      <summary className="cursor-pointer font-semibold text-[#7a1731]">
+      <summary className="cursor-pointer font-semibold text-guinda">
         Exportar CSV / PDF
       </summary>
       <div className="mt-4 grid gap-4 lg:grid-cols-2">

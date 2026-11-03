@@ -23,7 +23,7 @@ export default async function IncidentsPage({
       <div className="mt-4 flex flex-wrap gap-4">
         {access.canCreate ? (
           <Link
-            className="font-semibold text-[#7a1731]"
+            className="font-semibold text-guinda"
             href={`/app/labs/${slug}/incidents/new`}
           >
             Reportar incidencia
@@ -51,7 +51,7 @@ export default async function IncidentsPage({
             className="rounded-2xl border border-stone-200 bg-white p-6"
           >
             <Link
-              className="font-semibold text-[#7a1731]"
+              className="font-semibold text-guinda"
               href={`/app/labs/${slug}/incidents/${i.id}?scope=${scope}`}
             >
               {targetLabels[i.targetKind]}: {i.targetSnapshot.name}

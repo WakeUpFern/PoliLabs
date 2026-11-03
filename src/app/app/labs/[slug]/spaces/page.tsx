@@ -38,14 +38,14 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
     <div>
       <Link
         href={`/app/labs/${slug}`}
-        className="text-sm font-semibold text-stone-600 transition hover:text-[#7a1731]"
+        className="text-sm font-semibold text-stone-600 transition hover:text-guinda"
       >
         <span aria-hidden="true">←</span> {laboratory.name}
       </Link>
 
       <div className="mt-6 sm:flex sm:items-end sm:justify-between sm:gap-6">
         <div>
-          <p className="text-sm font-semibold text-[#7a1731]">Spatial I</p>
+          <p className="text-sm font-semibold text-guinda">Spatial I</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             Espacios
           </h1>
@@ -106,7 +106,7 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
                   </p>
                   <Link
                     href={`/app/labs/${slug}/spaces/${space.slug}`}
-                    className="mt-5 inline-flex text-sm font-semibold text-[#7a1731] transition hover:text-[#571020]"
+                    className="mt-5 inline-flex text-sm font-semibold text-guinda transition hover:text-[#571020]"
                   >
                     Abrir organización física <span aria-hidden="true">→</span>
                   </Link>
@@ -114,7 +114,7 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
                     <div className="mt-5 flex items-center gap-4 border-t border-stone-100 pt-4">
                       <Link
                         href={`/app/labs/${slug}/spaces/${space.slug}/edit`}
-                        className="text-sm font-semibold text-[#7a1731] transition hover:text-[#571020]"
+                        className="text-sm font-semibold text-guinda transition hover:text-[#571020]"
                       >
                         Editar
                       </Link>
