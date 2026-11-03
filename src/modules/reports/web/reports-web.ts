@@ -1,13 +1,10 @@
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
-import { AcademicError } from "@/modules/academic/domain/academic";
-import { localToInstant } from "@/modules/academic/web/time";
+import { addDays, localDate, localToInstant } from "@/shared/time";
 import type { ReportService } from "../application/reports";
 import { toCsv } from "../domain/csv";
 import {
-  addDays,
   MAX_PERIOD_DAYS,
   MAX_REPORT_ROWS,
-  reportDate,
   ReportError,
   reportFileName,
   reportFormat,
@@ -25,12 +22,7 @@ export const REPORT_ERROR_MESSAGES = {
 function localDay(value: string | null) {
   if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value))
     throw new ReportError("input");
-  try {
-    return localToInstant(`${value}T00:00`);
-  } catch (error) {
-    if (error instanceof AcademicError) throw new ReportError("input");
-    throw error;
-  }
+  return localToInstant(`${value}T00:00`, () => new ReportError("input"));
 }
 function localRange(from: string | null, to: string | null) {
   if (!from && !to) return { from: null, to: null };
@@ -62,7 +54,7 @@ export class ReportsWeb {
     const reports = (
       await this.services.reports.catalog(await this.context(slug))
     ).filter((report) => !only || only.includes(report.key));
-    const today = reportDate(this.services.clock?.() ?? new Date());
+    const today = localDate(this.services.clock?.() ?? new Date());
     return { reports, defaults: { from: addDays(today, -29), to: today } };
   }
   async catalog(slug: string) {

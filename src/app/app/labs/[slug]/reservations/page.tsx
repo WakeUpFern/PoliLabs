@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
+import { addDays } from "@/shared/time";
 import {
-  addDays,
   CALENDAR_VIEWS,
   dayStart,
   formatCalendarDay,

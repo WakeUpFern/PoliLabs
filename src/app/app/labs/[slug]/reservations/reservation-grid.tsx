@@ -27,7 +27,8 @@ import type {
   OccupancyView,
   ReservationSpaceOption,
 } from "@/modules/reservations/web/reservation-web";
-import { localToInstant } from "@/modules/reservations/web/time";
+import { localToInstant } from "@/shared/time";
+import { ReservationInputError } from "@/modules/reservations/domain/reservation";
 
 export type GridDay = {
   date: string;
@@ -52,9 +53,15 @@ const inputStyle =
 
 function overlapping(entries: readonly OccupancyView[], draft: Draft) {
   try {
-    const start = Date.parse(localToInstant(`${draft.date}T${draft.time}`));
+    const invalid = () => new ReservationInputError();
+    const start = Date.parse(
+      localToInstant(`${draft.date}T${draft.time}`, invalid),
+    );
     const end = Date.parse(
-      localToInstant(addLocalMinutes(draft.date, draft.time, draft.duration)),
+      localToInstant(
+        addLocalMinutes(draft.date, draft.time, draft.duration),
+        invalid,
+      ),
     );
     return {
       valid: true,

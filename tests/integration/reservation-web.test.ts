@@ -46,7 +46,7 @@ import {
   ReservationWeb,
   reservationActionError,
 } from "../../src/modules/reservations/web/reservation-web";
-import { localToInstant } from "../../src/modules/reservations/web/time";
+import { localToInstant } from "../../src/shared/time";
 import { AuthorizationService } from "../../src/modules/identity/application/authorization-service";
 import { GetLaboratoryBySlug } from "../../src/modules/identity/application/get-laboratory-by-slug";
 import { resolveSessionActor } from "../../src/modules/identity/application/resolve-session-actor";
@@ -60,6 +60,7 @@ import { ListResources } from "../../src/modules/spatial/application/list-resour
 import { ListLocations } from "../../src/modules/spatial/application/list-locations";
 import { DrizzleSpaceRepository } from "../../src/modules/spatial/infrastructure/space-repository";
 import { DrizzleSpatialOrganizationRepository } from "../../src/modules/spatial/infrastructure/spatial-organization-repository";
+const invalid = () => new ReservationInputError();
 
 test("Reservations II web adapter with real authorized services", async (context) => {
   const pool = new Pool({
@@ -307,7 +308,7 @@ test("Reservations II web adapter with real authorized services", async (context
         assert.equal(detail.reservation.spaceName, "Reservation space 0");
         assert.equal(
           detail.reservation.startsAt,
-          localToInstant(String(data.get("startsLocal"))),
+          localToInstant(String(data.get("startsLocal")), invalid),
         );
       },
     );
@@ -337,8 +338,8 @@ test("Reservations II web adapter with real authorized services", async (context
           spaceId: spaceIds[0],
           isExclusive: true,
           resourceIds: [],
-          startsAt: localToInstant(String(data.get("startsLocal"))),
-          endsAt: localToInstant(String(data.get("endsLocal"))),
+          startsAt: localToInstant(String(data.get("startsLocal")), invalid),
+          endsAt: localToInstant(String(data.get("endsLocal")), invalid),
         });
         data.set("intent", "create");
         await assert.rejects(web.submit(slug, data), (error) => {
@@ -441,8 +442,8 @@ test("Reservations II web adapter with real authorized services", async (context
           spaceId: spaceIds[1],
           isExclusive: true,
           resourceIds: [],
-          startsAt: localToInstant(`${futureDate}T18:00`),
-          endsAt: localToInstant(`${futureDate}T19:00`),
+          startsAt: localToInstant(`${futureDate}T18:00`, invalid),
+          endsAt: localToInstant(`${futureDate}T19:00`, invalid),
         });
         await assert.rejects(
           web.cancel(slug, other.id),

@@ -9,7 +9,7 @@ import {
   nextHourInterval,
 } from "@/modules/reservations/web/calendar";
 import { reservationWeb } from "@/modules/reservations/web/services";
-import { formatReservationTime } from "@/modules/reservations/web/time";
+import { formatTime } from "@/shared/time";
 import { FloorPlanError } from "@/modules/spatial/domain/floor-plan";
 import { SpaceNotFoundError } from "@/modules/spatial/domain/space";
 import {
@@ -216,7 +216,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
             {intervalError
               ? "Revisa el intervalo: el fin debe ser posterior al inicio, sin superar 42 días, en hora válida de America/Mexico_City."
               : occupancy
-                ? `Ocupación de ${formatReservationTime(occupancy.startsAt)} a ${formatReservationTime(occupancy.endsAt)}. ${occupancy.canCreate ? "Selecciona un recurso libre para reservarlo." : ""}`
+                ? `Ocupación de ${formatTime(occupancy.startsAt)} a ${formatTime(occupancy.endsAt)}. ${occupancy.canCreate ? "Selecciona un recurso libre para reservarlo." : ""}`
                 : null}
           </p>
         </form>

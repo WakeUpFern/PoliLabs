@@ -1,8 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import {
-  formatCalendarDay,
-  localDateTime,
-} from "../../src/modules/reservations/web/calendar";
+import { formatCalendarDay } from "../../src/modules/reservations/web/calendar";
+import { instantToLocal as localDateTime } from "../../src/shared/time";
 import { seedLaboratory, type SeededLaboratory } from "./support/seed";
 import { expectNoHorizontalOverflow, openAs } from "./support/session";
 

@@ -2,10 +2,7 @@ import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
 import { academicWeb } from "@/modules/academic/web/services";
 import { SESSION_LABELS } from "@/modules/academic/web/academic-web";
-import {
-  formatAcademicTime,
-  instantToLocal,
-} from "@/modules/academic/web/time";
+import { formatTime, instantToLocal } from "@/shared/time";
 import { academicPageData } from "../../page-data";
 import { AcademicForm } from "../../academic-form";
 import { SessionFields, ParticipantFields } from "../../session-fields";
@@ -46,15 +43,11 @@ export default async function SessionPage({
           </div>
           <div>
             <dt className="text-sm text-muted">Inicio · Ciudad de México</dt>
-            <dd className="mt-1 font-semibold">
-              {formatAcademicTime(s.startsAt)}
-            </dd>
+            <dd className="mt-1 font-semibold">{formatTime(s.startsAt)}</dd>
           </div>
           <div>
             <dt className="text-sm text-muted">Fin · Ciudad de México</dt>
-            <dd className="mt-1 font-semibold">
-              {formatAcademicTime(s.endsAt)}
-            </dd>
+            <dd className="mt-1 font-semibold">{formatTime(s.endsAt)}</dd>
           </div>
         </dl>
         <p className="mt-5 text-sm text-muted">

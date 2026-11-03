@@ -1,4 +1,11 @@
-import { localToInstant, RESERVATION_TIME_ZONE } from "./time";
+import {
+  addDays,
+  instantToLocal,
+  localDate,
+  localToInstant,
+  TIME_ZONE,
+} from "@/shared/time";
+import { ReservationInputError } from "../domain/reservation";
 
 // Calendar days are wall dates in the interface time zone (ADR 0009); every
 // boundary is converted with localToInstant, never with the process zone.
@@ -6,12 +13,6 @@ export const CALENDAR_VIEWS = ["day", "week", "month"] as const;
 export type CalendarView = (typeof CALENDAR_VIEWS)[number];
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
-const dayFormatter = new Intl.DateTimeFormat("en-CA", {
-  timeZone: RESERVATION_TIME_ZONE,
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
 
 function utc(date: string) {
   return new Date(`${date}T00:00:00Z`);
@@ -19,19 +20,10 @@ function utc(date: string) {
 function iso(date: Date) {
   return date.toISOString().slice(0, 10);
 }
-export function addDays(date: string, days: number) {
-  const value = utc(date);
-  value.setUTCDate(value.getUTCDate() + days);
-  return iso(value);
-}
 function isDate(value: unknown): value is string {
   return (
     typeof value === "string" && DATE.test(value) && iso(utc(value)) === value
   );
-}
-
-export function localDate(instant: Date | string | number) {
-  return dayFormatter.format(new Date(instant));
 }
 
 export function parseCalendarQuery(
@@ -66,7 +58,7 @@ export function calendarDays(view: CalendarView, date: string): string[] {
 }
 
 export function dayStart(date: string) {
-  return localToInstant(`${date}T00:00`);
+  return localToInstant(`${date}T00:00`, () => new ReservationInputError());
 }
 
 export function calendarWindow(days: readonly string[]) {
@@ -103,7 +95,7 @@ export function entriesForDay<T extends { startsAt: string; endsAt: string }>(
 
 export function formatCalendarTime(value: string | Date) {
   return new Intl.DateTimeFormat("es-MX", {
-    timeZone: RESERVATION_TIME_ZONE,
+    timeZone: TIME_ZONE,
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
@@ -134,31 +126,11 @@ export function formatCalendarTitle(
   return format(date, { month: "long", year: "numeric" });
 }
 
-const dateTimeFormatter = new Intl.DateTimeFormat("en-CA", {
-  timeZone: RESERVATION_TIME_ZONE,
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  hourCycle: "h23",
-});
-
-// datetime-local value (minutes) of an instant in the interface time zone.
-export function localDateTime(instant: Date | string | number) {
-  const parts = Object.fromEntries(
-    dateTimeFormatter
-      .formatToParts(new Date(instant))
-      .map((part) => [part.type, part.value]),
-  );
-  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
-}
-
 // Default plan interval: the next whole hour, one hour long.
 export function nextHourInterval(now: Date) {
   const start = Math.ceil(now.getTime() / 3_600_000) * 3_600_000;
   return {
-    startsLocal: localDateTime(start),
-    endsLocal: localDateTime(start + 3_600_000),
+    startsLocal: instantToLocal(start),
+    endsLocal: instantToLocal(start + 3_600_000),
   };
 }

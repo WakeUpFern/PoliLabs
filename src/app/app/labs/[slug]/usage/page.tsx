@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
 import { usageWeb } from "@/modules/usage/web/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { UsageForm } from "./usage-form";
 import { usagePageData } from "./page-data";
 export default async function UsagePage({
@@ -43,7 +43,7 @@ export default async function UsagePage({
                   >
                     {o.resourceName} ·{" "}
                     {o.kind === "academic" ? "Sesión" : "Reservación"}:{" "}
-                    {o.title} · {formatAcademicTime(o.startsAt)}
+                    {o.title} · {formatTime(o.startsAt)}
                   </option>
                 ))}
               </select>
@@ -69,8 +69,8 @@ export default async function UsagePage({
               </p>
               <p className="mt-2 break-all">Recurso: {u.resourceName}</p>
               <p className="mt-2 text-sm">
-                Inicio: {formatAcademicTime(u.startedAt)} · Fin:{" "}
-                {u.endedAt ? formatAcademicTime(u.endedAt) : "En curso"}
+                Inicio: {formatTime(u.startedAt)} · Fin:{" "}
+                {u.endedAt ? formatTime(u.endedAt) : "En curso"}
               </p>
               {u.sessionId ? (
                 <Link

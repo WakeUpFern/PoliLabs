@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { ReservationNotFoundError } from "@/modules/reservations/domain/reservation";
 import { reservationWeb } from "@/modules/reservations/web/services";
-import { formatReservationTime } from "@/modules/reservations/web/time";
+import { formatTime } from "@/shared/time";
 import { ReservationSummary } from "../reservation-summary";
 import { CancelReservationButton } from "../cancel-reservation-button";
 import { cancelReservationAction } from "../actions";
@@ -53,14 +53,14 @@ export default async function ReservationDetailPage({
         <p className="mt-5 text-sm text-muted">
           Creada:{" "}
           <time dateTime={reservation.createdAt}>
-            {formatReservationTime(reservation.createdAt)}
+            {formatTime(reservation.createdAt)}
           </time>
         </p>
         {reservation.cancelledAt && (
           <p className="mt-3 text-sm text-muted">
             Cancelada:{" "}
             <time dateTime={reservation.cancelledAt}>
-              {formatReservationTime(reservation.cancelledAt)}
+              {formatTime(reservation.cancelledAt)}
             </time>
           </p>
         )}

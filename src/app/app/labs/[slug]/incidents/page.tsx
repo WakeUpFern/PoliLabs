@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ReportDownloads } from "../reports/report-downloads";
 import { incidentsWeb } from "@/modules/incidents/web/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { incidentPageData } from "./page-data";
 import { statusLabels, severityLabels, targetLabels } from "./labels";
 export default async function IncidentsPage({
@@ -76,7 +76,7 @@ export default async function IncidentsPage({
               {i.description}
             </p>
             <p className="mt-2 text-sm text-muted">
-              {i.reporterName} · {formatAcademicTime(i.createdAt)}
+              {i.reporterName} · {formatTime(i.createdAt)}
             </p>
           </article>
         ))}

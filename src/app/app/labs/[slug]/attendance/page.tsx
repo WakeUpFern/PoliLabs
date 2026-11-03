@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { attendanceWeb } from "@/modules/attendance/web/services";
 import { ATTENDANCE_LABELS } from "@/modules/attendance/web/attendance-web";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { AttendanceForm } from "./attendance-form";
 import { attendancePageData } from "./page-data";
@@ -51,7 +51,7 @@ export default async function AttendancePage({
                 </option>
                 {data.sessions.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.title} · {formatAcademicTime(s.startsAt)}
+                    {s.title} · {formatTime(s.startsAt)}
                   </option>
                 ))}
               </select>
@@ -87,9 +87,7 @@ export default async function AttendancePage({
                   Sesión
                 </Link>{" "}
                 · {ATTENDANCE_LABELS[a.status]} ·{" "}
-                {a.checkInAt
-                  ? formatAcademicTime(a.checkInAt)
-                  : "Sin hora de entrada"}
+                {a.checkInAt ? formatTime(a.checkInAt) : "Sin hora de entrada"}
               </li>
             ))}
           </ul>

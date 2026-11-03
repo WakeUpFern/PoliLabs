@@ -1,5 +1,5 @@
 import type { ReservationView } from "@/modules/reservations/web/reservation-web";
-import { formatReservationTime } from "@/modules/reservations/web/time";
+import { formatTime } from "@/shared/time";
 export function ReservationSummary({
   reservation,
 }: {
@@ -25,13 +25,13 @@ export function ReservationSummary({
       <p>
         <span className="font-semibold">Inicio:</span>{" "}
         <time dateTime={reservation.startsAt}>
-          {formatReservationTime(reservation.startsAt)}
+          {formatTime(reservation.startsAt)}
         </time>
       </p>
       <p>
         <span className="font-semibold">Fin:</span>{" "}
         <time dateTime={reservation.endsAt}>
-          {formatReservationTime(reservation.endsAt)}
+          {formatTime(reservation.endsAt)}
         </time>
       </p>
       <p>

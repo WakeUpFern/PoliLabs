@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ReportDownloads } from "../reports/report-downloads";
 import { maintenanceWeb } from "@/modules/maintenance/web/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { maintenancePageData } from "./page-data";
 import { formatDueDate, operationalStatusLabels, statusTone } from "./labels";
 export default async function MaintenancePage({
@@ -47,7 +47,7 @@ export default async function MaintenancePage({
             <p className="mt-2 text-sm text-muted">{r.spaceName}</p>
             <p className="mt-2 text-sm">
               {r.lastPerformedAt
-                ? `Último mantenimiento: ${formatAcademicTime(r.lastPerformedAt)}`
+                ? `Último mantenimiento: ${formatTime(r.lastPerformedAt)}`
                 : "Sin mantenimiento registrado"}
               {r.nextDueOn ? ` · Próximo: ${formatDueDate(r.nextDueOn)}` : null}
             </p>

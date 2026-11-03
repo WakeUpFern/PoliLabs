@@ -1,9 +1,8 @@
 import type { PermissionKey } from "@/modules/identity/domain/access-catalog";
+import { instantToLocal, localDate, TIME_ZONE } from "@/shared/time";
 
 export type ReportContext = { actorUserId: string; laboratoryId: string };
 
-// Exports display wall time of the initial laboratory; instants stay exact.
-export const REPORT_TIME_ZONE = "America/Mexico_City";
 // Larger exports must be narrowed instead of silently truncated.
 export const MAX_REPORT_ROWS = 5000;
 export const MAX_PERIOD_DAYS = 366;
@@ -131,38 +130,13 @@ export function reportPeriod(
   return period;
 }
 
-const partsFormatter = new Intl.DateTimeFormat("en-CA", {
-  timeZone: REPORT_TIME_ZONE,
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  hourCycle: "h23",
-});
-function parts(value: Date) {
-  return Object.fromEntries(
-    partsFormatter.formatToParts(value).map((p) => [p.type, p.value]),
-  );
-}
 // Sortable wall time; the column header names the time zone.
 export function formatReportTime(value: Date | null) {
-  if (!value) return null;
-  const p = parts(value);
-  return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}`;
-}
-export function reportDate(value: Date) {
-  const p = parts(value);
-  return `${p.year}-${p.month}-${p.day}`;
-}
-export function addDays(date: string, days: number) {
-  const next = new Date(`${date}T00:00:00Z`);
-  next.setUTCDate(next.getUTCDate() + days);
-  return next.toISOString().slice(0, 10);
+  return value && instantToLocal(value).replace("T", " ");
 }
 // Inclusive local dates covered by a half-open period.
 export function describePeriod(period: ReportPeriod) {
-  return `${reportDate(period.from)} a ${reportDate(new Date(period.to.getTime() - 1))} (${REPORT_TIME_ZONE})`;
+  return `${localDate(period.from)} a ${localDate(new Date(period.to.getTime() - 1))} (${TIME_ZONE})`;
 }
 
 export function assertWithinLimit<T>(rows: T[]) {
@@ -191,5 +165,5 @@ export type ReportTable = {
 };
 
 export function reportFileName(table: ReportTable, format: ReportFormat) {
-  return `${table.key}-${reportDate(table.generatedAt)}.${format}`;
+  return `${table.key}-${localDate(table.generatedAt)}.${format}`;
 }

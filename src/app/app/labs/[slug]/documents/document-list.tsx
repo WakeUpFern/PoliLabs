@@ -1,4 +1,4 @@
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import type { DocumentSummary } from "@/modules/documents/domain/documents";
 import { ArchiveForm } from "./archive-form";
 const typeLabels: Record<DocumentSummary["mediaType"], string> = {
@@ -39,7 +39,7 @@ export function DocumentList({
           <p className="text-sm break-words text-muted">
             {d.title ? `${d.originalName} · ` : ""}
             {typeLabels[d.mediaType]} · {formatBytes(d.byteSize)} ·{" "}
-            {d.uploaderName} · {formatAcademicTime(d.createdAt)}
+            {d.uploaderName} · {formatTime(d.createdAt)}
           </p>
           {canArchive ? <ArchiveForm slug={slug} documentId={d.id} /> : null}
         </li>

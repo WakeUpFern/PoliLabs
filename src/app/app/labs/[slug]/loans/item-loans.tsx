@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { loansWeb } from "@/modules/loans/web/services";
-import {
-  formatAcademicTime,
-  instantToLocal,
-} from "@/modules/academic/web/time";
+import { formatTime, instantToLocal } from "@/shared/time";
 import { LendForm } from "./loan-forms";
 import { LoanCard } from "./loan-views";
 // Loans section of the inventory item detail; the parent page already
@@ -62,7 +59,7 @@ export async function ItemLoans({
               members={options.members}
               sessions={options.sessions.map((s) => ({
                 id: s.id,
-                label: `${s.label} · ${formatAcademicTime(s.startsAt)}`,
+                label: `${s.label} · ${formatTime(s.startsAt)}`,
               }))}
             />
           ) : (

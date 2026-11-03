@@ -1,7 +1,6 @@
 import type { GetLaboratoryBySlug } from "@/modules/identity/application/get-laboratory-by-slug";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
-import { localToInstant } from "@/modules/academic/web/time";
-import { AcademicError } from "@/modules/academic/domain/academic";
+import { localToInstant } from "@/shared/time";
 import type { LoanService } from "../application/loans";
 import { LoanError } from "../domain/loans";
 export type LoanActionState = {
@@ -92,14 +91,9 @@ export class LoansWeb {
   async lend(slug: string, itemId: string, form: FormData) {
     const context = await this.context(slug);
     const field = (key: string) => String(form.get(key) ?? "");
-    let dueAt: string | null = null;
-    try {
-      // The form states America/Mexico_City wall time; services receive offsets.
-      if (field("dueLocal")) dueAt = localToInstant(field("dueLocal"));
-    } catch (error) {
-      if (error instanceof AcademicError) throw new LoanError("input");
-      throw error;
-    }
+    const dueAt = field("dueLocal")
+      ? localToInstant(field("dueLocal"), () => new LoanError("input"))
+      : null;
     return this.services.loans.lend({
       ...context,
       source: "WEB",

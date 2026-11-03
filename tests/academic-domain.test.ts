@@ -11,11 +11,9 @@ import {
   requireSessionEditable,
   participantIds,
 } from "../src/modules/academic/domain/academic";
-import {
-  localToInstant,
-  instantToLocal,
-} from "../src/modules/academic/web/time";
+import { localToInstant, instantToLocal } from "../src/shared/time";
 import { academicActionError } from "../src/modules/academic/web/academic-web";
+const invalid = () => new AcademicError("input");
 const id = "00000000-0000-0000-0000-000000000001";
 const interval = {
   spaceId: id,
@@ -83,14 +81,26 @@ test("participants are concrete unique identifiers, origins are allowlisted", ()
   assert.throws(() => academicSource("sql"), AcademicError);
 });
 test("academic web times round-trip independently of browser timezone", () => {
-  assert.equal(localToInstant("2026-10-05T14:00"), "2026-10-05T20:00:00.000Z");
   assert.equal(
-    instantToLocal(localToInstant("2026-10-05T14:00")),
+    localToInstant("2026-10-05T14:00", invalid),
+    "2026-10-05T20:00:00.000Z",
+  );
+  assert.equal(
+    instantToLocal(localToInstant("2026-10-05T14:00", invalid)),
     "2026-10-05T14:00",
   );
-  assert.throws(() => localToInstant("2026-02-30T14:00"), AcademicError);
-  assert.throws(() => localToInstant("2022-04-03T02:30"), AcademicError);
-  assert.throws(() => localToInstant("2022-10-30T01:30"), AcademicError);
+  assert.throws(
+    () => localToInstant("2026-02-30T14:00", invalid),
+    AcademicError,
+  );
+  assert.throws(
+    () => localToInstant("2022-04-03T02:30", invalid),
+    AcademicError,
+  );
+  assert.throws(
+    () => localToInstant("2022-10-30T01:30", invalid),
+    AcademicError,
+  );
   assert.match(
     academicActionError(new AcademicError("own-participation")).message,
     /propia participación/,

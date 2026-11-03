@@ -23,11 +23,10 @@ import {
   type Reservation,
   type ResourceOccupancyStatus,
 } from "../domain/reservation";
-import { localToInstant } from "./time";
+import { localDate, localToInstant } from "@/shared/time";
 import {
   calendarDays,
   calendarWindow,
-  localDate,
   parseCalendarQuery,
   shiftCalendarDate,
 } from "./calendar";
@@ -35,6 +34,8 @@ import {
   reservationFormFingerprint,
   type ReservationActionState,
 } from "./form-state";
+
+const invalid = () => new ReservationInputError();
 
 type Services = {
   currentActor: () => Promise<{ actorUserId: string }>;
@@ -351,8 +352,8 @@ export class ReservationWeb {
       if (error instanceof AuthorizationDeniedError) return null;
       throw error;
     }
-    const startsAt = localToInstant(interval.startsLocal);
-    const endsAt = localToInstant(interval.endsLocal);
+    const startsAt = localToInstant(interval.startsLocal, invalid);
+    const endsAt = localToInstant(interval.endsLocal, invalid);
     const space = (await this.displayCatalog(actor)).find(
       (space) => space.id === spaceId,
     );
@@ -422,8 +423,8 @@ export class ReservationWeb {
       spaceId,
       resourceIds,
       isExclusive: mode === "space",
-      startsAt: localToInstant(String(form.get("startsLocal") ?? "")),
-      endsAt: localToInstant(String(form.get("endsLocal") ?? "")),
+      startsAt: localToInstant(String(form.get("startsLocal") ?? ""), invalid),
+      endsAt: localToInstant(String(form.get("endsLocal") ?? ""), invalid),
     };
     const fingerprint = reservationFormFingerprint(form);
     if (intent === "check") {

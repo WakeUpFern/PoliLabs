@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Loan } from "@/modules/loans/domain/loans";
 import { RETURN_CONDITION_LABELS } from "@/modules/loans/web/loans-web";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { ReturnForm } from "./loan-forms";
 const pieces = (value: string) => `${Number(value)} pz`;
 export function LoanCard({
@@ -53,14 +53,11 @@ export function LoanCard({
       </div>
       <dl className="mt-3 grid gap-1 text-sm text-muted sm:grid-cols-2">
         {showItem ? <div>Recibe: {loan.borrowerName}</div> : null}
-        <div>Prestado: {formatAcademicTime(loan.loanedAt)}</div>
+        <div>Prestado: {formatTime(loan.loanedAt)}</div>
         <div>
-          Compromiso:{" "}
-          {loan.dueAt ? formatAcademicTime(loan.dueAt) : "Sin fecha"}
+          Compromiso: {loan.dueAt ? formatTime(loan.dueAt) : "Sin fecha"}
         </div>
-        {loan.closedAt ? (
-          <div>Cerrado: {formatAcademicTime(loan.closedAt)}</div>
-        ) : null}
+        {loan.closedAt ? <div>Cerrado: {formatTime(loan.closedAt)}</div> : null}
         {loan.sessionLabel ? <div>Sesión: {loan.sessionLabel}</div> : null}
         <div>
           Registró: {loan.actorName} · {loan.source}
@@ -71,7 +68,7 @@ export function LoanCard({
         <ul className="mt-3 space-y-1 border-t border-line pt-3 text-sm">
           {loan.returns.map((r) => (
             <li key={r.id}>
-              {formatAcademicTime(r.returnedAt)} · {pieces(r.quantity)}{" "}
+              {formatTime(r.returnedAt)} · {pieces(r.quantity)}{" "}
               {RETURN_CONDITION_LABELS[r.condition].toLowerCase()} ·{" "}
               {r.actorName}
               {r.notes ? ` · ${r.notes}` : ""}

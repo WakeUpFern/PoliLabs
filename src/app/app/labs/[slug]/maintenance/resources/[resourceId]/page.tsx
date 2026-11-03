@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { maintenanceWeb } from "@/modules/maintenance/web/services";
-import {
-  formatAcademicTime,
-  instantToLocal,
-} from "@/modules/academic/web/time";
+import { formatTime, instantToLocal } from "@/shared/time";
 import { maintenancePageData } from "../../page-data";
 import {
   formatDueDate,
@@ -84,7 +81,7 @@ export default async function MaintenanceResourcePage({
             defaultPerformedLocal={instantToLocal(new Date())}
             incidents={options.incidents.map((i) => ({
               id: i.id,
-              label: `${i.name} · ${incidentStatusLabels[i.status]} · ${formatAcademicTime(i.createdAt)}`,
+              label: `${i.name} · ${incidentStatusLabels[i.status]} · ${formatTime(i.createdAt)}`,
             }))}
             items={access.canConsume ? options.items : null}
           />
@@ -98,8 +95,7 @@ export default async function MaintenanceResourcePage({
             className="rounded-md border border-line bg-surface p-6"
           >
             <p className="font-semibold">
-              {maintenanceTypeLabels[log.type]} ·{" "}
-              {formatAcademicTime(log.performedAt)}
+              {maintenanceTypeLabels[log.type]} · {formatTime(log.performedAt)}
             </p>
             <p className="mt-1 text-sm">
               {operationalStatusLabels[log.statusBefore]} →{" "}
@@ -155,8 +151,7 @@ export default async function MaintenanceResourcePage({
               ) : null}
             </div>
             <p className="mt-2 text-sm text-muted">
-              {log.performerName} · registrado{" "}
-              {formatAcademicTime(log.createdAt)}
+              {log.performerName} · registrado {formatTime(log.createdAt)}
               {log.nextDueOn
                 ? ` · próximo: ${formatDueDate(log.nextDueOn)}`
                 : null}

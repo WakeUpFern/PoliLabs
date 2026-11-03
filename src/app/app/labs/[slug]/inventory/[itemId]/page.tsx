@@ -9,6 +9,7 @@ import {
   MOVEMENT_LABELS,
   locationLabel,
 } from "@/modules/inventory/web/inventory-web";
+import { formatTime } from "@/shared/time";
 import { InventoryForm } from "../inventory-form";
 import { ItemLoans } from "../../loans/item-loans";
 export default async function InventoryDetailPage({
@@ -107,11 +108,7 @@ export default async function InventoryDetailPage({
                     dateTime={movement.createdAt}
                     className="text-sm text-muted"
                   >
-                    {new Intl.DateTimeFormat("es-MX", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                      timeZone: "America/Mexico_City",
-                    }).format(new Date(movement.createdAt))}
+                    {formatTime(movement.createdAt)}
                   </time>
                 </div>
                 <p className="mt-2">{movement.notes}</p>

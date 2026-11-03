@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { incidentsWeb } from "@/modules/incidents/web/services";
-import { formatAcademicTime } from "@/modules/academic/web/time";
+import { formatTime } from "@/shared/time";
 import { incidentPageData } from "../page-data";
 import { ReportForm } from "./report-form";
 export default async function NewIncidentPage({
@@ -39,7 +39,7 @@ export default async function NewIncidentPage({
               id: u.id,
               resourceId: u.resourceId,
               resourceName: u.resourceName,
-              label: `${u.resourceName} · inicio ${formatAcademicTime(u.startedAt)} · ${u.sessionId ? "sesión" : "reservación"}`,
+              label: `${u.resourceName} · inicio ${formatTime(u.startedAt)} · ${u.sessionId ? "sesión" : "reservación"}`,
             }))}
             initialTarget={initialTarget}
             initialUsage={initialUsage}
