@@ -20,7 +20,8 @@ src/
     identity/ audit/            # Responsabilidades documentadas; sin lógica todavía
     <module>/domain/            # Reglas puras; identity tiene un README inicial
     <module>/application/       # Servicios; identity tiene un README inicial
-  infrastructure/database/     # Cliente, punto de entrada de esquema y documentación
+  infrastructure/database/     # Cliente, punto de entrada de esquema y documentación; postgresError
+  shared/                      # time.ts (zona America/Mexico_City, Temporal) y validation.ts (ids, origen, instantes; zod)
 scripts/                       # Comprobación local de conexión
 tests/                         # Pruebas automatizadas
 docs/architecture/             # Arquitectura vigente y pendientes
@@ -31,7 +32,7 @@ La web invocará servicios de aplicación; estos validarán identidad, permisos,
 
 Giussepe será otra interfaz: herramienta → mismo servicio de aplicación → autorización y revalidación → persistencia. No tendrá acceso SQL directo ni privilegios adicionales. No hay código de IA en esta base.
 
-Se prefiere `infrastructure/database` a duplicar `core/database` del esquema sugerido en §11.2. Identidad y auditoría tienen un único lugar bajo `modules`. La estructura de carpetas es una convención inicial ajustable, no una nueva capa técnica.
+`src/shared/` guarda sólo utilidades puras usadas por varios módulos: la hora del laboratorio (`temporal-polyfill`, rechaza horas inexistentes o ambiguas) y la validación común de identificadores, origen de escritura e instantes con offset (`zod`). Cada dominio sigue lanzando su propio error. Se prefiere `infrastructure/database` a duplicar `core/database` del esquema sugerido en §11.2. Identidad y auditoría tienen un único lugar bajo `modules`. La estructura de carpetas es una convención inicial ajustable, no una nueva capa técnica.
 
 ## Dominios y relaciones del SRS
 
