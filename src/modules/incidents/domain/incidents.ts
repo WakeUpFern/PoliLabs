@@ -1,5 +1,6 @@
+import { parseId, parseOneOf, SOURCES, type Source } from "@/shared/validation";
 export type IncidentContext = { actorUserId: string; laboratoryId: string };
-export type IncidentSource = "WEB" | "API" | "AGENT" | "SYSTEM";
+export type IncidentSource = Source;
 export type IncidentTargetKind = "resource" | "space" | "session";
 export type IncidentSeverity = "low" | "medium" | "high";
 export type IncidentStatus = "open" | "in_review" | "resolved";
@@ -14,18 +15,10 @@ export class IncidentError extends Error {
   }
 }
 export function incidentId(value: string) {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      value,
-    )
-  )
-    throw new IncidentError("input");
-  return value.toLowerCase();
+  return parseId(value, () => new IncidentError("input"));
 }
 export function incidentSource(value: string): IncidentSource {
-  if (!["WEB", "API", "AGENT", "SYSTEM"].includes(value))
-    throw new IncidentError("input");
-  return value as IncidentSource;
+  return parseOneOf(SOURCES, value, () => new IncidentError("input"));
 }
 export function incidentText(value: string, maximum = 5000) {
   const result = value.trim();

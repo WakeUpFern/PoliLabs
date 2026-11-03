@@ -1,10 +1,17 @@
 import {
+  parseId,
+  parseInstant,
+  parseOneOf,
+  SOURCES,
+  type Source,
+} from "@/shared/validation";
+import {
   OPERATIONAL_STATUSES,
   type OperationalStatus,
 } from "@/modules/spatial/domain/resource";
 export { OPERATIONAL_STATUSES, type OperationalStatus };
 export type MaintenanceContext = { actorUserId: string; laboratoryId: string };
-export type MaintenanceSource = "WEB" | "API" | "AGENT" | "SYSTEM";
+export type MaintenanceSource = Source;
 export const MAINTENANCE_TYPES = [
   "preventive",
   "corrective",
@@ -23,18 +30,10 @@ export class MaintenanceError extends Error {
   }
 }
 export function maintenanceId(value: string) {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      value,
-    )
-  )
-    throw new MaintenanceError("input");
-  return value.toLowerCase();
+  return parseId(value, () => new MaintenanceError("input"));
 }
 export function maintenanceSource(value: string): MaintenanceSource {
-  if (!["WEB", "API", "AGENT", "SYSTEM"].includes(value))
-    throw new MaintenanceError("input");
-  return value as MaintenanceSource;
+  return parseOneOf(SOURCES, value, () => new MaintenanceError("input"));
 }
 export function maintenanceType(value: string): MaintenanceType {
   if (!MAINTENANCE_TYPES.includes(value as MaintenanceType))
@@ -56,10 +55,9 @@ export function maintenanceText(value: string, maximum = 5000) {
 }
 // The service receives an instant with offset; the user states when work happened.
 export function performedAt(value: string, now: Date) {
-  if (!/(Z|[+-]\d{2}:\d{2})$/.test(value)) throw new MaintenanceError("input");
-  const instant = new Date(value);
-  if (!Number.isFinite(instant.getTime()) || instant > now)
-    throw new MaintenanceError("input");
+  const invalid = () => new MaintenanceError("input");
+  const instant = parseInstant(value, invalid);
+  if (instant > now) throw invalid();
   return instant;
 }
 // Calendar date only. Compared with the UTC date of the work as a basic

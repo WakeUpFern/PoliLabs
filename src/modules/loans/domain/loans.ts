@@ -1,10 +1,17 @@
 import {
+  parseId,
+  parseInstant,
+  parseOneOf,
+  SOURCES,
+  type Source,
+} from "@/shared/validation";
+import {
   formatQuantity,
   InventoryError,
   quantityInThousandths,
 } from "@/modules/inventory/domain/inventory";
 export type LoanContext = { actorUserId: string; laboratoryId: string };
-export type LoanSource = "WEB" | "API" | "AGENT" | "SYSTEM";
+export type LoanSource = Source;
 export const LOAN_STATUSES = ["active", "returned"] as const;
 export type LoanStatus = (typeof LOAN_STATUSES)[number];
 export const RETURN_CONDITIONS = ["good", "damaged", "lost"] as const;
@@ -27,18 +34,10 @@ export class LoanError extends Error {
   }
 }
 export function loanId(value: string) {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      value,
-    )
-  )
-    throw new LoanError("input");
-  return value.toLowerCase();
+  return parseId(value, () => new LoanError("input"));
 }
 export function loanSource(value: string): LoanSource {
-  if (!["WEB", "API", "AGENT", "SYSTEM"].includes(value))
-    throw new LoanError("input");
-  return value as LoanSource;
+  return parseOneOf(SOURCES, value, () => new LoanError("input"));
 }
 // Reusable tools are counted in whole pieces; Inventory's exact arithmetic applies.
 export function loanQuantity(value: string) {
@@ -59,10 +58,9 @@ export function loanNotes(value: string | null | undefined, required = false) {
 // The service receives an instant with offset; a commitment date must be ahead.
 export function dueAt(value: string | null | undefined, now: Date) {
   if (!value) return null;
-  if (!/(Z|[+-]\d{2}:\d{2})$/.test(value)) throw new LoanError("input");
-  const instant = new Date(value);
-  if (!Number.isFinite(instant.getTime()) || instant <= now)
-    throw new LoanError("input");
+  const invalid = () => new LoanError("input");
+  const instant = parseInstant(value, invalid);
+  if (instant <= now) throw invalid();
   return instant;
 }
 export function returnCondition(value: string): ReturnCondition {

@@ -12,7 +12,7 @@ import type {
   LocationWriter,
   LocationWriteResult,
 } from "./spatial-organization-repository";
-import { isSpatialId } from "../domain/spatial-id";
+import { isId } from "@/shared/validation";
 
 type LocationInput = {
   actorUserId: string;
@@ -67,7 +67,7 @@ export class UpdateLocation {
   ) {}
 
   async execute(input: LocationInput & { locationId: string }) {
-    if (!isSpatialId(input.locationId)) throw new LocationNotFoundError();
+    if (!isId(input.locationId)) throw new LocationNotFoundError();
     const values = normalizeLocationInput(input);
     await authorize(this.authorization, input);
     const result = await this.repository.updateLocation({
@@ -89,7 +89,7 @@ export class DeactivateLocation {
   async execute(
     input: Omit<LocationInput, "name" | "parentId"> & { locationId: string },
   ) {
-    if (!isSpatialId(input.locationId)) throw new LocationNotFoundError();
+    if (!isId(input.locationId)) throw new LocationNotFoundError();
     await authorize(this.authorization, input);
     const result = await this.repository.deactivateLocation({
       ...input,

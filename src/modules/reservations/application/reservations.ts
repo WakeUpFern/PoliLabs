@@ -6,7 +6,7 @@ import {
   ReservationNotFoundError,
   ReservationTargetError,
 } from "../domain/reservation";
-import { isSpatialId } from "@/modules/spatial/domain/spatial-id";
+import { isId } from "@/shared/validation";
 import type { ActorContext, ReservationStore } from "./reservation-store";
 
 type Request = ActorContext & ReservationTarget & IntervalInput;
@@ -39,7 +39,7 @@ export class CreateReservation {
 export class GetReservation {
   constructor(private readonly store: ReservationStore) {}
   execute(input: ActorContext & { reservationId: string }) {
-    if (!isSpatialId(input.reservationId)) throw new ReservationNotFoundError();
+    if (!isId(input.reservationId)) throw new ReservationNotFoundError();
     return this.store.run(input, "reservation.read", (session) =>
       session.get(input),
     );
@@ -56,7 +56,7 @@ export class ListMyReservations {
 export class CancelReservation {
   constructor(private readonly store: ReservationStore) {}
   execute(input: ActorContext & { reservationId: string }) {
-    if (!isSpatialId(input.reservationId)) throw new ReservationNotFoundError();
+    if (!isId(input.reservationId)) throw new ReservationNotFoundError();
     return this.store.run(input, "reservation.cancel", (session) =>
       session.cancel(input),
     );
@@ -67,7 +67,7 @@ export class CancelReservation {
 export class ListSpaceOccupancy {
   constructor(private readonly store: ReservationStore) {}
   execute(input: ActorContext & { spaceId: string } & IntervalInput) {
-    if (!isSpatialId(input.spaceId)) throw new ReservationTargetError();
+    if (!isId(input.spaceId)) throw new ReservationTargetError();
     const window = normalizeOccupancyWindow(input);
     return this.store.run(input, "reservation.read", (session) =>
       session.listOccupancy({

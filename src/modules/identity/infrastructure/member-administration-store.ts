@@ -1,3 +1,4 @@
+import { isId } from "@/shared/validation";
 import { postgresError } from "@/infrastructure/database/postgres-error";
 import { and, asc, eq, inArray, ne, sql } from "drizzle-orm";
 import { hashPassword } from "better-auth/crypto";
@@ -31,9 +32,6 @@ import {
   roles,
 } from "./access-schema";
 import { accounts, sessions, users } from "./auth-schema";
-
-const UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export const temporaryPasswords: TemporaryPasswords = {
   generate: () =>
@@ -132,7 +130,7 @@ class DrizzleMemberTransaction implements MemberTransaction {
   }
 
   async member(laboratoryId: string, membershipId: string) {
-    if (!UUID.test(membershipId)) return null;
+    if (!isId(membershipId)) return null;
     // Serialize concurrent changes to the same membership.
     await this.tx
       .select({ id: laboratoryMemberships.id })

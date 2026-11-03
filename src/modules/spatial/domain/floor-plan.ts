@@ -1,4 +1,4 @@
-import { isSpatialId } from "./spatial-id";
+import { isId } from "@/shared/validation";
 
 export type FloorPlanErrorCode =
   "input" | "not-found" | "reference" | "bounds" | "duplicate";
@@ -40,7 +40,7 @@ export type FloorPlanElement = FloorPlanBox &
   FloorPlanElementTarget & { id: string; floorPlanId: string };
 
 export function floorPlanId(value: unknown) {
-  if (typeof value !== "string" || !isSpatialId(value))
+  if (typeof value !== "string" || !isId(value))
     throw new FloorPlanError("not-found");
   return value.toLowerCase();
 }
@@ -104,7 +104,7 @@ export function normalizeFloorPlanElementTarget(input: {
     };
   if (input.kind !== "resource" && input.kind !== "location")
     throw new FloorPlanError("input");
-  if (typeof input.targetId !== "string" || !isSpatialId(input.targetId))
+  if (typeof input.targetId !== "string" || !isId(input.targetId))
     throw new FloorPlanError("input");
   const id = input.targetId.toLowerCase();
   return input.kind === "resource"

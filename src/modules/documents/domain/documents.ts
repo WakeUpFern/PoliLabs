@@ -1,5 +1,6 @@
+import { parseId, parseOneOf, SOURCES, type Source } from "@/shared/validation";
 export type DocumentContext = { actorUserId: string; laboratoryId: string };
-export type DocumentSource = "WEB" | "API" | "AGENT" | "SYSTEM";
+export type DocumentSource = Source;
 export const DOCUMENT_MEDIA_TYPES = [
   "application/pdf",
   "image/png",
@@ -31,16 +32,11 @@ export class DocumentError extends Error {
     this.name = "DocumentError";
   }
 }
-const uuidPattern =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function documentId(value: string) {
-  if (!uuidPattern.test(value)) throw new DocumentError("input");
-  return value.toLowerCase();
+  return parseId(value, () => new DocumentError("input"));
 }
 export function documentSource(value: string): DocumentSource {
-  if (!["WEB", "API", "AGENT", "SYSTEM"].includes(value))
-    throw new DocumentError("input");
-  return value as DocumentSource;
+  return parseOneOf(SOURCES, value, () => new DocumentError("input"));
 }
 export function documentTarget(kind: string, id: string): DocumentTarget {
   if (kind === "resource") return { kind, resourceId: documentId(id) };

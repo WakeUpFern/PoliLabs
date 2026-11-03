@@ -1,7 +1,8 @@
+import { parseId, parseOneOf, SOURCES, type Source } from "@/shared/validation";
 export const ATTENDANCE_STATUSES = ["present", "late", "absent"] as const;
 export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
 export type OperationContext = { actorUserId: string; laboratoryId: string };
-export type OperationSource = "WEB" | "API" | "AGENT" | "SYSTEM";
+export type OperationSource = Source;
 export class AttendanceError extends Error {
   constructor(
     public readonly code:
@@ -17,18 +18,10 @@ export class AttendanceError extends Error {
   }
 }
 export function attendanceId(value: string) {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      value,
-    )
-  )
-    throw new AttendanceError("input");
-  return value.toLowerCase();
+  return parseId(value, () => new AttendanceError("input"));
 }
 export function attendanceSource(value: string): OperationSource {
-  if (!["WEB", "API", "AGENT", "SYSTEM"].includes(value))
-    throw new AttendanceError("input");
-  return value as OperationSource;
+  return parseOneOf(SOURCES, value, () => new AttendanceError("input"));
 }
 export function attendanceStatus(value: string): AttendanceStatus {
   if (!ATTENDANCE_STATUSES.includes(value as AttendanceStatus))

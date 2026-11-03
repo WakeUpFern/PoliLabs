@@ -1,3 +1,4 @@
+import { parseOneOf, SOURCES } from "@/shared/validation";
 import {
   InventoryError,
   normalizeItem,
@@ -5,7 +6,6 @@ import {
   validateMovement,
   quantityInThousandths,
   balanceAfter,
-  SOURCES,
   ITEM_TYPES,
   type ItemType,
   type Source,
@@ -19,8 +19,7 @@ type ItemInput = ActorContext & {
   source: string;
 };
 function source(value: string): Source {
-  if (!SOURCES.includes(value as Source)) throw new InventoryError("input");
-  return value as Source;
+  return parseOneOf(SOURCES, value, () => new InventoryError("input"));
 }
 function itemValues(input: ItemInput) {
   const locationId = input.locationId?.trim() || null;

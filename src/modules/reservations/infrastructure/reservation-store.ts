@@ -1,7 +1,7 @@
 import { postgresError } from "@/infrastructure/database/postgres-error";
 import { authorizeLocked } from "@/modules/identity/infrastructure/authorize-locked";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
-import { isSpatialId } from "@/modules/spatial/domain/spatial-id";
+import { isId } from "@/shared/validation";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "@/infrastructure/database/schema";
@@ -230,7 +230,7 @@ export class DrizzleReservationStore implements ReservationStore {
     permission: PermissionKey,
     operation: (session: ReservationSession) => Promise<T>,
   ): Promise<T> {
-    if (!isSpatialId(context.actorUserId) || !isSpatialId(context.laboratoryId))
+    if (!isId(context.actorUserId) || !isId(context.laboratoryId))
       throw new AuthorizationDeniedError();
     try {
       return await this.database.transaction(

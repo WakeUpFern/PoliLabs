@@ -1,3 +1,4 @@
+import { parseId, parseInstant } from "@/shared/validation";
 import type { PermissionKey } from "@/modules/identity/domain/access-catalog";
 import { instantToLocal, localDate, TIME_ZONE } from "@/shared/time";
 
@@ -100,23 +101,13 @@ export function reportFormat(value: string | null | undefined): ReportFormat {
   return value as ReportFormat;
 }
 export function reportUuid(value: string) {
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      value,
-    )
-  )
-    throw new ReportError("input");
-  return value.toLowerCase();
+  return parseId(value, () => new ReportError("input"));
 }
 
 // Half-open [from, to) between instants with an explicit offset.
 export type ReportPeriod = { from: Date; to: Date };
 function instant(value: string | null | undefined) {
-  if (!value || !/(Z|[+-]\d{2}:\d{2})$/.test(value))
-    throw new ReportError("input");
-  const parsed = new Date(value);
-  if (!Number.isFinite(parsed.getTime())) throw new ReportError("input");
-  return parsed;
+  return parseInstant(value, () => new ReportError("input"));
 }
 export function reportPeriod(
   from: string | null | undefined,

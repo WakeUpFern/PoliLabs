@@ -1,4 +1,4 @@
-import { isSpatialId } from "./spatial-id";
+import { isId } from "@/shared/validation";
 
 export class LocationInputError extends Error {
   constructor(message: string) {
@@ -52,7 +52,7 @@ export function normalizeLocationInput(input: {
   const name = input.name.trim();
   const parentId = input.parentId?.trim() || null;
   if (!name) throw new LocationInputError("Location name is required.");
-  if (parentId && !isSpatialId(parentId))
+  if (parentId && !isId(parentId))
     throw new LocationInputError("Parent location id is invalid.");
   return { name, parentId };
 }
