@@ -1,3 +1,4 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
 import { authorizeLocked } from "@/modules/identity/infrastructure/authorize-locked";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -29,12 +30,6 @@ import {
 } from "./academic-schema";
 type Database = NodePgDatabase<typeof schema>;
 type Transaction = Parameters<Parameters<Database["transaction"]>[0]>[0];
-function postgresError(error: unknown): { code?: string } {
-  if (!error || typeof error !== "object") return {};
-  if ("code" in error) return error as { code: string };
-  if ("cause" in error) return postgresError(error.cause);
-  return {};
-}
 class DrizzleAcademicSession implements AcademicSession {
   constructor(private readonly tx: Transaction) {}
   async list(context: AcademicContext, manage: boolean) {

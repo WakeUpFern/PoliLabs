@@ -1,3 +1,4 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
 import { authorizeLocked } from "@/modules/identity/infrastructure/authorize-locked";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { isSpatialId } from "@/modules/spatial/domain/spatial-id";
@@ -31,12 +32,6 @@ import { reservations, reservationResources } from "./reservation-schema";
 
 type Database = NodePgDatabase<typeof schema>;
 type Transaction = Parameters<Parameters<Database["transaction"]>[0]>[0];
-
-function postgresCode(error: unknown): string | undefined {
-  if (!error || typeof error !== "object") return;
-  if ("code" in error && typeof error.code === "string") return error.code;
-  if ("cause" in error) return postgresCode(error.cause);
-}
 
 class DrizzleReservationSession implements ReservationSession {
   constructor(private readonly transaction: Transaction) {}
@@ -247,7 +242,7 @@ export class DrizzleReservationStore implements ReservationStore {
         { isolationLevel: "read committed" },
       );
     } catch (error) {
-      const code = postgresCode(error);
+      const code = postgresError(error).code;
       if (code === "23P01") throw new ReservationConflictError();
       if (code === "23503") throw new ReservationTargetError();
       if (code === "23514")

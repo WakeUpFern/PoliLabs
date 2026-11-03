@@ -1,3 +1,4 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
 import { SpaceHasInventoryStockError } from "../domain/space";
 import { isInventoryStockGuard } from "./inventory-stock-guard";
 import { and, asc, eq } from "drizzle-orm";
@@ -24,12 +25,6 @@ export type SpatialDatabase = NodePgDatabase<typeof databaseSchema>;
 type SpatialTransaction = Parameters<
   Parameters<SpatialDatabase["transaction"]>[0]
 >[0];
-
-function hasPostgresCode(error: unknown, code: string): boolean {
-  if (!error || typeof error !== "object") return false;
-  if ("code" in error && error.code === code) return true;
-  return "cause" in error && hasPostgresCode(error.cause, code);
-}
 
 async function canManage(
   transaction: SpatialTransaction,
@@ -130,7 +125,7 @@ export class DrizzleSpaceRepository implements SpaceReader, SpaceWriter {
         return { status: "created" as const, space };
       });
     } catch (error) {
-      if (hasPostgresCode(error, "23505")) return { status: "duplicate" };
+      if (postgresError(error).code === "23505") return { status: "duplicate" };
       throw error;
     }
   }
@@ -164,7 +159,7 @@ export class DrizzleSpaceRepository implements SpaceReader, SpaceWriter {
           : { status: "not-found" as const };
       });
     } catch (error) {
-      if (hasPostgresCode(error, "23505")) return { status: "duplicate" };
+      if (postgresError(error).code === "23505") return { status: "duplicate" };
       throw error;
     }
   }

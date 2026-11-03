@@ -1,3 +1,4 @@
+import { postgresError } from "@/infrastructure/database/postgres-error";
 import { authorizeLocked } from "@/modules/identity/infrastructure/authorize-locked";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -25,12 +26,6 @@ import {
 } from "./inventory-schema";
 type Database = NodePgDatabase<typeof schema>;
 type Transaction = Parameters<Parameters<Database["transaction"]>[0]>[0];
-function postgresError(error: unknown): { code?: string; message?: string } {
-  if (!error || typeof error !== "object") return {};
-  if ("code" in error) return error as { code: string; message?: string };
-  if ("cause" in error) return postgresError(error.cause);
-  return {};
-}
 const selection = {
   id: items.id,
   laboratoryId: items.laboratoryId,
