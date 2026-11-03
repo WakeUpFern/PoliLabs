@@ -4,7 +4,7 @@
 
 Documents I fue seleccionado el 7 de octubre de 2026 tras Maintenance I; el responsable aprobó explícitamente su alcance y las decisiones del [ADR 0016](../decisions/0016-documents-object-storage.md) (Aceptada). SRS RF24, RNF7, RNF10, §§11, 18, 22.1, 30–31 y §33.13.
 
-Incluye: puerto de almacenamiento con adaptador de disco local, metadatos en PostgreSQL, manuales por Resource, evidencia añadida a entradas de mantenimiento, subida por route handler, descarga autorizada, archivado lógico y barrido de huérfanos. No incluye S3, documentos de prácticas, evidencia de incidencias, versionado, purga física, eliminación de EXIF ni Giussepe.
+Incluye: puerto de almacenamiento con adaptadores de disco local y S3 ([ADR 0024](../decisions/0024-vercel-deployment.md)), metadatos en PostgreSQL, manuales por Resource, evidencia añadida a entradas de mantenimiento, subida por route handler, descarga autorizada, archivado lógico y barrido de huérfanos. No incluye URLs prefirmadas, documentos de prácticas, evidencia de incidencias, versionado, purga física, eliminación de EXIF ni Giussepe.
 
 ## Módulo
 
@@ -38,7 +38,7 @@ Asignados por migración y bootstrap a `laboratory_responsible`. Los recursos de
 
 ## Flujos
 
-**Subida.** El cliente envía multipart a `POST /app/labs/[slug]/documents`. La ruta valida `Origin` contra `BETTER_AUTH_URL`, rechaza `Content-Length` mayor a 10 MB + 64 KiB y corta el stream al superarlo; después `DocumentService`:
+**Subida.** El cliente envía multipart a `POST /app/labs/[slug]/documents`. La ruta valida `Origin` contra `BETTER_AUTH_URL`, rechaza `Content-Length` mayor a 4 MB + 64 KiB (límite de la aplicación desde el [ADR 0024](../decisions/0024-vercel-deployment.md); el CHECK de la base sigue en 10 MB) y corta el stream al superarlo; después `DocumentService`:
 
 1. Valida nombre, tamaño, firma, título y origen; calcula SHA-256.
 2. Prevalida permisos y destino en una transacción sin escribir.
@@ -65,7 +65,7 @@ El formulario advierte que las fotos conservan sus metadatos (p. ej. GPS).
 
 ## Configuración
 
-`DOCUMENT_STORAGE_DIR` (opcional, documentada en `.env.example`): raíz local, por defecto `.local-storage/documents`, ignorada por git y rechazada si está dentro de `public/`. El origen permitido se deriva de `BETTER_AUTH_URL`.
+`DOCUMENT_STORAGE_DIR` (opcional, documentada en `.env.example`): raíz local, por defecto `.local-storage/documents`, ignorada por git y rechazada si está dentro de `public/`. `DOCUMENT_STORAGE=s3` y las variables `DOCUMENT_STORAGE_S3_*` eligen el bucket; ver la [guía de despliegue](deployment-vercel.md). El barrido de huérfanos también corre a diario como cron de Vercel (`/api/cron/documents-sweep`). El origen permitido se deriva de `BETTER_AUTH_URL`.
 
 ## Migración
 
@@ -73,4 +73,4 @@ El formulario advierte que las fotos conservan sus metadatos (p. ej. GPS).
 
 ## Pendientes
 
-S3 y URLs prefirmadas (ver ADR 0016), documentos de prácticas, evidencia de incidencias, versionado y documentos compartidos, purga y retención, eliminación de EXIF/GPS, antivirus, miniaturas, auditoría persistente, Giussepe y paginación. Ver [validación](documents-validation.md).
+URLs prefirmadas (ver ADR 0016), documentos de prácticas, evidencia de incidencias, versionado y documentos compartidos, purga y retención, eliminación de EXIF/GPS, antivirus, miniaturas, auditoría persistente, Giussepe y paginación. Ver [validación](documents-validation.md).

@@ -128,7 +128,7 @@ Bitácora inmutable por Resource y estado operativo `operational`/`in_maintenanc
 
 ## Documents I
 
-Metadatos en `documents` y binarios fuera de la base mediante el puerto `ObjectStorage`, con un único adaptador de disco local (`DOCUMENT_STORAGE_DIR`); S3 no está implementado ni aprovisionado. Manuales por Resource y evidencia añadida a entradas de mantenimiento sin editarlas. Tipo verificado por firma (PDF/PNG/JPEG/WebP), 10 MB, subida por route handler con `Origin` y corte de stream, descarga sólo por ruta autorizada, archivado lógico, compensación y barrido de huérfanos. Evidencia de incidencias y eliminación de EXIF pendientes. Ver [arquitectura](documents.md), [validación](documents-validation.md) y [ADR 0016 — Aceptada](../decisions/0016-documents-object-storage.md).
+Metadatos en `documents` y binarios fuera de la base mediante el puerto `ObjectStorage`, con adaptadores de disco local (desarrollo) y S3 (despliegue, [ADR 0024](../decisions/0024-vercel-deployment.md)). Manuales por Resource y evidencia añadida a entradas de mantenimiento sin editarlas. Tipo verificado por firma (PDF/PNG/JPEG/WebP), 4 MB, subida por route handler con `Origin` y corte de stream, descarga sólo por ruta autorizada, archivado lógico, compensación y barrido de huérfanos. Evidencia de incidencias y eliminación de EXIF pendientes. Ver [arquitectura](documents.md), [validación](documents-validation.md) y [ADR 0016 — Aceptada](../decisions/0016-documents-object-storage.md).
 
 ## Loans I
 

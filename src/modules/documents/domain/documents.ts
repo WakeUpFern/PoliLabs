@@ -8,7 +8,10 @@ export const DOCUMENT_MEDIA_TYPES = [
   "image/webp",
 ] as const;
 export type DocumentMediaType = (typeof DOCUMENT_MEDIA_TYPES)[number];
-export const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+// 4 MB keeps uploads under the ~4.5 MB request limit of Vercel functions
+// (ADR 0024). The database CHECK still allows 10 MB, so this can go back up
+// on AWS without a migration.
+export const MAX_DOCUMENT_BYTES = 4 * 1024 * 1024;
 export const MAX_EVIDENCE_PER_LOG = 10;
 export const MAX_DOCUMENT_NAME = 255;
 export const MAX_DOCUMENT_TITLE = 200;
