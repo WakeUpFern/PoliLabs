@@ -66,8 +66,8 @@ export async function renderReportPdf(table: ReportTable) {
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
   const clean = sanitizer(regular);
   pdf.setTitle(clean(`${table.title} — ${table.laboratoryName}`));
-  pdf.setCreator("Labora");
-  pdf.setProducer("Labora");
+  pdf.setCreator("PoliLabs");
+  pdf.setProducer("PoliLabs");
   pdf.setCreationDate(table.generatedAt);
   pdf.setModificationDate(table.generatedAt);
 

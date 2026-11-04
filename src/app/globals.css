@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Labora tokens. White canvas with a cool gray for boxes, hairline borders and
+ * PoliLabs tokens. White canvas with a cool gray for boxes, hairline borders and
  * 6px radii, so content and status colors carry the page. The palette follows
  * the IPN and UPIITA identity: IPN guinda paints the top bar and the one main
  * action and marks where you are; UPIITA gold (its logo) is a small accent, never body
@@ -82,7 +82,6 @@ textarea {
   .nav-row[aria-current="page"] {
     background: color-mix(in srgb, var(--color-ink) 7%, transparent);
     font-weight: 700;
-    box-shadow: inset 3px 0 0 var(--color-guinda);
   }
   .nav-icon {
     width: 1.125rem;
@@ -229,6 +228,13 @@ textarea {
     border: 1px solid var(--color-line);
     border-radius: 0.375rem;
     background: var(--color-surface);
+  }
+  /* An empty list keeps its place: one sentence in a dashed frame. */
+  .empty-state {
+    border: 1px dashed var(--color-line);
+    border-radius: 0.375rem;
+    padding: 1.5rem;
+    color: var(--color-muted);
   }
   .nav-label {
     font-size: 0.9375rem;

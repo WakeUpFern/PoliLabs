@@ -15,7 +15,7 @@ export default async function MaintenancePage({
   );
   return (
     <div>
-      <h1 className="text-3xl font-semibold">Mantenimiento</h1>
+      <h1 className="text-2xl font-semibold">Mantenimiento</h1>
       <p className="mt-3 text-muted">
         Estado operativo y bitácora de los recursos activos. Un recurso en
         mantenimiento o fuera de servicio no se ofrece para nuevas reservaciones

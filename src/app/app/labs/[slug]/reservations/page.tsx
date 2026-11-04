@@ -49,7 +49,7 @@ export default async function ReservationsPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold sm:text-3xl">Reservaciones</h1>
+      <h1 className="text-2xl font-semibold">Reservaciones</h1>
       <nav
         aria-label="Secciones de reservaciones"
         className="mt-4 flex gap-1 border-b border-line"
@@ -114,7 +114,7 @@ function Calendar({
   const { space } = data;
   if (!space)
     return (
-      <p className="mt-8 rounded-md border border-dashed border-line bg-paper p-8 text-muted">
+      <p className="mt-8 empty-state">
         No hay espacios activos visibles para mostrar un calendario.
       </p>
     );

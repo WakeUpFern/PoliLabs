@@ -25,11 +25,11 @@ export default async function SessionPage({
       >
         ← {data.practice.title}
       </Link>
-      <header className="mt-6">
-        <p className="text-xs font-bold uppercase text-guinda">
+      <header className="mt-6 flex flex-wrap items-center gap-3">
+        <h1 className="text-2xl font-semibold">Sesión de laboratorio</h1>
+        <span className="rounded-full bg-paper px-2.5 py-0.5 text-[0.8125rem] font-semibold text-muted">
           {SESSION_LABELS[s.status]}
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold">Sesión de laboratorio</h1>
+        </span>
       </header>
       <section className="mt-6 box p-6">
         <dl className="grid gap-6 sm:grid-cols-2">

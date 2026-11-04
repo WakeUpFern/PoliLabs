@@ -202,8 +202,8 @@ export function ReservationForm({
           </div>
         </div>
         <p className="text-sm leading-6 text-muted">
-          Horarios de Ciudad de México (America/Mexico_City). Consultar
-          disponibilidad es informativo; al confirmar se comprueba nuevamente.
+          Horarios de Ciudad de México. Consultar disponibilidad es informativo;
+          al confirmar se comprueba nuevamente.
         </p>
         <div className="flex flex-wrap gap-3">
           <button

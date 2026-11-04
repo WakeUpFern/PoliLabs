@@ -21,7 +21,7 @@ export default async function AttendancePage({
   const history = await attendancePageData(() => attendanceWeb.mine(slug));
   return (
     <div>
-      <h1 className="text-3xl font-semibold">Asistencia</h1>
+      <h1 className="text-2xl font-semibold">Asistencia</h1>
       <section className="mt-6 space-y-5 box p-6">
         <h2 className="text-xl font-semibold">
           {data.location?.name ?? "Sesiones abiertas"}

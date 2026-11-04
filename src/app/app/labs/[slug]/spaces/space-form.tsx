@@ -39,19 +39,21 @@ export function SpaceForm({ action, submitLabel, space }: SpaceFormProps) {
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="slug" className="mb-2 block text-sm font-semibold">
-            Slug
+            Identificador en la dirección
           </label>
           <input
             id="slug"
             name="slug"
             defaultValue={space?.slug}
             pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+            aria-describedby="slug-hint"
             required
             disabled={isPending}
-            className="min-h-12 w-full rounded-md border border-line px-4 font-mono text-sm outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
+            className="min-h-12 w-full rounded-md border border-line px-4 outline-none transition focus:border-guinda focus:ring-4 focus:ring-guinda/10 disabled:bg-paper"
           />
-          <p className="mt-2 text-xs leading-5 text-muted">
-            Minúsculas, números y guiones; único en este laboratorio.
+          <p id="slug-hint" className="mt-2 text-sm leading-5 text-muted">
+            Aparece en la URL. Minúsculas, números y guiones, p. ej.
+            area-maquinas.
           </p>
         </div>
         <div>

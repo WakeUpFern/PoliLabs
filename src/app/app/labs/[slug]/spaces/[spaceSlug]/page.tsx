@@ -105,38 +105,36 @@ export default async function SpaceOrganizationPage({ params }: Props) {
         <span aria-hidden="true">←</span> Espacios
       </Link>
 
-      {incidentAccess.canCreate ? (
-        <Link
-          className="mt-4 block font-semibold text-guinda"
-          href={`/app/labs/${slug}/incidents/new?target=space:${space.id}`}
-        >
-          Reportar problema del espacio
-        </Link>
-      ) : null}
-      <header className="mt-6 rounded-3xl bg-[#641229] p-7 text-white shadow-lg shadow-[#641229]/10 sm:p-10">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#e2c68f]">
-          Spatial II · {laboratory.name}
-        </p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">
-          {space.name}
-        </h1>
-        <p className="mt-4 text-white/72">
-          {space.capacity
-            ? `Capacidad: ${space.capacity} personas`
-            : "Capacidad no especificada"}
-        </p>
+      <header className="mt-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">{space.name}</h1>
+          <p className="mt-2 text-muted">
+            {space.capacity
+              ? `Capacidad: ${space.capacity} personas`
+              : "Capacidad no especificada"}
+          </p>
+        </div>
+        {incidentAccess.canCreate ? (
+          <Link
+            className="btn"
+            href={`/app/labs/${slug}/incidents/new?target=space:${space.id}`}
+          >
+            Reportar problema del espacio
+          </Link>
+        ) : null}
       </header>
 
       <section className="mt-8">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold">Planos</h2>
+            <h2 className="text-lg font-semibold">Planos</h2>
             <p className="mt-2 text-sm leading-6 text-muted">
               Representación gráfica del espacio con sus recursos y ubicaciones.
             </p>
           </div>
           <span className="text-sm text-muted">
-            {planCatalog.plans.length} activos
+            {planCatalog.plans.length}{" "}
+            {planCatalog.plans.length === 1 ? "activo" : "activos"}
           </span>
         </div>
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
@@ -148,7 +146,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                 <Link
                   key={plan.id}
                   href={`/app/labs/${slug}/spaces/${spaceSlug}/plans/${plan.id}`}
-                  className="flex items-center justify-between box p-5 font-semibold shadow-sm transition hover:border-guinda"
+                  className="flex items-center justify-between box p-5 font-semibold transition hover:border-guinda"
                 >
                   {plan.name}
                   <span className="text-sm font-normal text-muted">
@@ -159,7 +157,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
             )}
           </div>
           {planCatalog.canManage ? (
-            <div className="box p-5 shadow-sm">
+            <div className="box p-5">
               <h3 className="mb-4 font-semibold">Nuevo plano</h3>
               <ActionForm
                 action={createFloorPlanAction.bind(null, slug, spaceSlug)}
@@ -199,18 +197,19 @@ export default async function SpaceOrganizationPage({ params }: Props) {
         <section>
           <div className="flex items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold">Ubicaciones</h2>
+              <h2 className="text-lg font-semibold">Ubicaciones</h2>
               <p className="mt-2 text-sm leading-6 text-muted">
                 Organización jerárquica dentro del espacio.
               </p>
             </div>
             <span className="text-sm text-muted">
-              {sortedLocations.length} activas
+              {sortedLocations.length}{" "}
+              {sortedLocations.length === 1 ? "activa" : "activas"}
             </span>
           </div>
 
           {locationCatalog.canManage ? (
-            <div className="mt-5 box p-5 shadow-sm">
+            <div className="mt-5 box p-5">
               <h3 className="font-semibold">Nueva ubicación</h3>
               <LocationForm
                 action={createLocation}
@@ -239,7 +238,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                   location.id,
                 );
                 return (
-                  <article key={location.id} className="box p-5 shadow-sm">
+                  <article key={location.id} className="box p-5">
                     <p className="font-semibold">{location.name}</p>
                     <p className="mt-1 text-xs text-muted">
                       {locationPath(location, locationsById).join(" › ")}
@@ -282,18 +281,19 @@ export default async function SpaceOrganizationPage({ params }: Props) {
         <section>
           <div className="flex items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold">Recursos</h2>
+              <h2 className="text-lg font-semibold">Recursos</h2>
               <p className="mt-2 text-sm leading-6 text-muted">
                 Recursos físicos individuales de este espacio.
               </p>
             </div>
             <span className="text-sm text-muted">
-              {resourceCatalog.resources.length} activos
+              {resourceCatalog.resources.length}{" "}
+              {resourceCatalog.resources.length === 1 ? "activo" : "activos"}
             </span>
           </div>
 
           {resourceCatalog.canManage ? (
-            <div className="mt-5 box p-5 shadow-sm">
+            <div className="mt-5 box p-5">
               <h3 className="font-semibold">Nuevo recurso</h3>
               <ResourceForm
                 action={createResource}
@@ -325,7 +325,7 @@ export default async function SpaceOrganizationPage({ params }: Props) {
                   ? locationsById.get(resource.locationId)
                   : null;
                 return (
-                  <article key={resource.id} className="box p-5 shadow-sm">
+                  <article key={resource.id} className="box p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="font-semibold">{resource.name}</p>
@@ -411,9 +411,5 @@ export default async function SpaceOrganizationPage({ params }: Props) {
 }
 
 function EmptyState({ text }: { text: string }) {
-  return (
-    <div className="rounded-md border border-dashed border-line bg-paper p-8 text-center text-muted">
-      {text}
-    </div>
-  );
+  return <div className="empty-state">{text}</div>;
 }

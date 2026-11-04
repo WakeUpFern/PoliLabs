@@ -23,7 +23,7 @@ export function MyReservations({
   );
   if (reservations.length === 0)
     return (
-      <p className="mt-8 rounded-md border border-dashed border-line bg-paper p-8 text-muted">
+      <p className="mt-8 empty-state">
         Todavía no tienes reservaciones en este laboratorio.
         {canCreate
           ? " Elige una franja libre en el calendario para comenzar."
@@ -40,7 +40,7 @@ export function MyReservations({
           <h2 className="text-xl font-semibold">{group.title}</h2>
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             {group.rows.map((reservation) => (
-              <article key={reservation.id} className="box p-6 shadow-sm">
+              <article key={reservation.id} className="box p-6">
                 <ReservationSummary reservation={reservation} />
                 <Link
                   className="mt-5 inline-block font-semibold text-guinda"

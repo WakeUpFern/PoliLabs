@@ -36,9 +36,9 @@ export default async function ReservationDetailPage({
       >
         ← Mis reservaciones
       </Link>
-      <h1 className="mt-6 text-3xl font-semibold">Detalle de reservación</h1>
+      <h1 className="text-2xl mt-6 font-semibold">Detalle de reservación</h1>
       <p className="mt-3 text-muted">
-        {data.laboratory.name} · America/Mexico_City
+        {data.laboratory.name} · Hora de Ciudad de México
       </p>
       {created === "1" && (
         <p
@@ -48,7 +48,7 @@ export default async function ReservationDetailPage({
           Reservación creada correctamente.
         </p>
       )}
-      <article className="mt-8 box p-6 shadow-sm sm:p-8">
+      <article className="mt-8 box p-6 sm:p-8">
         <ReservationSummary reservation={reservation} />
         <p className="mt-5 text-sm text-muted">
           Creada:{" "}

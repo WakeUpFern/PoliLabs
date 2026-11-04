@@ -146,7 +146,7 @@ export function AppShell({
         <div className="flex h-16 items-center gap-2 px-4 sm:gap-3 sm:px-6">
           <Link
             href={laboratory ? laboratory.href : "/app"}
-            aria-label="Labora, inicio"
+            aria-label="PoliLabs, inicio"
             className="-ml-1 grid min-h-11 place-items-center rounded-md px-1"
           >
             <Logo />
@@ -157,7 +157,7 @@ export function AppShell({
                 {laboratory.name}
               </Link>
             ) : (
-              "Labora"
+              "PoliLabs"
             )}
           </p>
 

@@ -12,8 +12,8 @@ const atkinson = Atkinson_Hyperlegible_Next({
 });
 
 export const metadata: Metadata = {
-  title: "Labora",
-  description: "Gestión académica y operativa de laboratorios",
+  title: "PoliLabs",
+  description: "Gestión de los laboratorios de UPIITA-IPN",
 };
 
 export const viewport: Viewport = {

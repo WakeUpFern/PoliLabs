@@ -13,10 +13,7 @@ export default async function AcademicPage({
     <div>
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-guinda">
-            Académico
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold">Prácticas y sesiones</h1>
+          <h1 className="text-2xl font-semibold">Prácticas y sesiones</h1>
           <p className="mt-3 text-muted">
             Consulta las instrucciones y las sesiones en las que participas.
           </p>
@@ -30,23 +27,21 @@ export default async function AcademicPage({
           </Link>
         ) : null}
       </header>
-      <div className="mt-8 grid gap-4">
+      <div className="mt-6 grid gap-3">
         {data.practices.map((p) => (
           <Link
             key={p.id}
             href={`/app/labs/${slug}/academic/practices/${p.id}`}
-            className="box p-6 transition hover:border-guinda"
+            className="box flex flex-wrap items-center justify-between gap-3 p-5 transition hover:border-guinda"
           >
-            <span className="text-xs font-bold uppercase text-guinda">
+            <h2 className="text-lg font-semibold">{p.title}</h2>
+            <span className="rounded-full bg-paper px-2.5 py-0.5 text-[0.8125rem] font-semibold text-muted">
               {PRACTICE_LABELS[p.status]}
             </span>
-            <h2 className="mt-2 text-xl font-semibold">{p.title}</h2>
           </Link>
         ))}
         {data.practices.length === 0 ? (
-          <p className="rounded-md border border-dashed border-line p-8 text-muted">
-            Aún no hay prácticas disponibles.
-          </p>
+          <p className="empty-state">Aún no hay prácticas disponibles.</p>
         ) : null}
       </div>
     </div>

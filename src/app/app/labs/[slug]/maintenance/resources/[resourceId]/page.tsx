@@ -30,7 +30,7 @@ export default async function MaintenanceResourcePage({
   return (
     <div>
       <Link href={`/app/labs/${slug}/maintenance`}>← Mantenimiento</Link>
-      <h1 className="mt-6 text-3xl font-semibold break-words">
+      <h1 className="text-2xl mt-6 font-semibold break-words">
         {resource.name}
       </h1>
       <p className="mt-2 text-muted">{resource.spaceName}</p>

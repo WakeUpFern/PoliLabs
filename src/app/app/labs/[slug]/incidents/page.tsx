@@ -19,7 +19,7 @@ export default async function IncidentsPage({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold sm:text-3xl">Incidencias</h1>
+        <h1 className="text-2xl font-semibold">Incidencias</h1>
         {access.canCreate ? (
           <Link
             className="btn btn-primary"
@@ -77,7 +77,9 @@ export default async function IncidentsPage({
             </p>
           </article>
         ))}
-        {!entries.length ? <p>No hay incidencias en esta consulta.</p> : null}
+        {!entries.length ? (
+          <p className="empty-state">No hay incidencias en esta consulta.</p>
+        ) : null}
       </div>
     </div>
   );

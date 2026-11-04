@@ -36,7 +36,7 @@ export default async function InventoryPage({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold sm:text-3xl">Inventario</h1>
+        <h1 className="text-2xl font-semibold">Inventario</h1>
         <div className="flex flex-wrap gap-2">
           <ReportDownloads
             slug={slug}
@@ -63,14 +63,14 @@ export default async function InventoryPage({
         {data.items.length} artículos encontrados
       </p>
       {data.items.length === 0 ? (
-        <p className="mt-4 rounded-md border border-dashed border-line p-8 text-muted">
+        <p className="mt-4 empty-state">
           No hay artículos que coincidan. Revisa tu búsqueda o registra uno
           nuevo.
         </p>
       ) : (
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           {data.items.map((item) => (
-            <article key={item.id} className="box p-6 shadow-sm">
+            <article key={item.id} className="box p-6">
               <h2 className="text-xl font-semibold">{item.name}</h2>
               <p className="mt-2 text-muted">
                 {TYPE_LABELS[item.type]} ·{" "}

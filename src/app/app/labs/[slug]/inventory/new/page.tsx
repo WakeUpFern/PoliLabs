@@ -24,7 +24,7 @@ export default async function NewInventoryPage({
       >
         ← Inventario
       </Link>
-      <h1 className="mt-6 text-3xl font-semibold">Nuevo artículo</h1>
+      <h1 className="text-2xl mt-6 font-semibold">Nuevo artículo</h1>
       <p className="mt-3 text-muted">
         Antes de registrar, busca si el artículo ya existe. Si llegó más
         material, registra una entrada en su detalle.

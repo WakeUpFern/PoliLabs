@@ -108,7 +108,7 @@ test("email rendering rejects header injection and keeps a plain-text link", () 
   assert.equal(message.subject, "Tu incidencia fue resuelta · Pesados");
   assert.match(
     message.text,
-    /Consulta el detalle en Labora: http:\/\/localhost:3000\/app/,
+    /Consulta el detalle en PoliLabs: http:\/\/localhost:3000\/app/,
   );
   for (const recipientEmail of ["ana@invalid.test\r\nBcc: x@y", "nobody"])
     assert.throws(

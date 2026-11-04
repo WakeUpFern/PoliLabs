@@ -27,7 +27,7 @@ export default async function SessionAttendancePage({
       <Link href={`/app/labs/${slug}/academic/sessions/${sessionId}`}>
         ← Sesión
       </Link>
-      <h1 className="mt-6 text-3xl font-semibold">Asistencia de la sesión</h1>
+      <h1 className="text-2xl mt-6 font-semibold">Asistencia de la sesión</h1>
       {own ? (
         <p className="mt-4">
           Otro responsable debe realizar las correcciones de esta sesión.

@@ -113,8 +113,8 @@ export function LoginForm({
         {isReady ? null : (
           <p className="reveal-if-stalled rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
             La página no terminó de cargar, así que todavía no se puede iniciar
-            sesión. Recarga la página; si abriste Labora desde otro dispositivo
-            de la red local, su dirección debe estar en
+            sesión. Recarga la página; si abriste PoliLabs desde otro
+            dispositivo de la red local, su dirección debe estar en
             BETTER_AUTH_TRUSTED_ORIGINS del servidor.
           </p>
         )}

@@ -15,7 +15,7 @@ export default async function ResourceDocumentsPage({
   return (
     <div>
       <Link href={`/app/labs/${slug}`}>← Laboratorio</Link>
-      <h1 className="mt-6 text-3xl font-semibold break-words">
+      <h1 className="text-2xl mt-6 font-semibold break-words">
         Documentos de {resource.name}
       </h1>
       <p className="mt-2 text-muted">{resource.spaceName}</p>

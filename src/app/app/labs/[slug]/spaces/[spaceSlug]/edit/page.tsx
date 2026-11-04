@@ -57,13 +57,8 @@ export default async function EditSpacePage({ params }: EditSpacePageProps) {
       >
         <span aria-hidden="true">←</span> Espacios
       </Link>
-      <p className="mt-7 text-sm font-semibold text-guinda">
-        {laboratory.name}
-      </p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-        Editar espacio
-      </h1>
-      <section className="mt-8 box p-6 shadow-sm sm:p-8">
+      <h1 className="mt-6 text-2xl font-semibold">Editar espacio</h1>
+      <section className="mt-6 box p-6">
         <SpaceForm
           action={updateAction}
           submitLabel="Guardar cambios"

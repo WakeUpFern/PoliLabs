@@ -12,3 +12,6 @@ coverage/
 /test-results/
 /playwright-report/
 /blob-report/
+
+# taste-skill working files (screenshots, dealt directions)
+.taste-skill/

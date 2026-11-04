@@ -26,7 +26,7 @@ const tones: Record<ResourceOccupancyStatus | "unknown", string> = {
 };
 const textTones: Record<ResourceOccupancyStatus | "unknown", string> = {
   free: "text-emerald-900",
-  occupied: "text-[#641229]",
+  occupied: "text-guinda-deep",
   blocked: "text-amber-900",
   unknown: "text-ink",
 };

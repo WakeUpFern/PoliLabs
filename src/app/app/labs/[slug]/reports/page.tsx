@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
-import { TIME_ZONE } from "@/shared/time";
 import { REPORT_ERROR_MESSAGES } from "@/modules/reports/web/reports-web";
 import { reportsWeb } from "@/modules/reports/web/services";
 import { ReportForm } from "./report-form";
@@ -27,15 +26,13 @@ export default async function ReportsPage({
       : null;
   return (
     <div>
-      <h1 className="text-3xl font-semibold">Reportes</h1>
-      <p className="mt-3 text-muted">
-        Exporta información del laboratorio en CSV o PDF. Cada reporte se genera
-        al momento con tus permisos actuales; las fechas usan la hora de{" "}
-        {TIME_ZONE} y el periodo incluye ambos días. Inventario, Préstamos,
-        Mantenimiento e Incidencias ofrecen las mismas descargas en su propia
-        sección.
+      <h1 className="text-2xl font-semibold">Reportes</h1>
+      <p className="mt-2 max-w-3xl text-muted">
+        Descarga la información del laboratorio en CSV o PDF. Cada reporte se
+        genera al momento, en hora de Ciudad de México, e incluye los dos días
+        del periodo.
       </p>
-      <div className="mt-8 grid gap-4 lg:grid-cols-2">
+      <div className="mt-6 grid items-start gap-4 lg:grid-cols-2">
         {data.reports.map((report) => (
           <ReportForm
             key={report.key}
