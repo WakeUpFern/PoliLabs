@@ -47,7 +47,7 @@ type Props = {
 const LOCAL = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 const statusTone = {
   free: "bg-emerald-100 text-emerald-900",
-  occupied: "bg-guinda/15 text-[#641229]",
+  occupied: "bg-guinda/15 text-guinda-deep",
   blocked: "bg-amber-100 text-amber-900",
 };
 
@@ -158,12 +158,10 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
       </Link>
       <header className="mt-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-guinda">
-            Plano · {space.name}
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold">{data.plan.name}</h1>
+          <h1 className="text-2xl font-semibold">{data.plan.name}</h1>
           <p className="mt-2 text-sm text-muted">
-            {data.plan.width} × {data.plan.height} celdas
+            Plano de {space.name} · {data.plan.width} × {data.plan.height}{" "}
+            celdas
           </p>
         </div>
         {occupancy ? (
@@ -179,7 +177,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
       {occupancy !== null || intervalError ? (
         <form
           method="get"
-          className="mt-6 grid gap-4 box p-5 shadow-sm sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+          className="mt-6 grid gap-4 box p-5 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
         >
           <div>
             <label htmlFor="start" className="mb-2 block font-semibold">
@@ -212,7 +210,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
           </button>
           <p className="text-sm text-muted sm:col-span-3">
             {intervalError
-              ? "Revisa el intervalo: el fin debe ser posterior al inicio, sin superar 42 días, en hora válida de America/Mexico_City."
+              ? "Revisa el intervalo: el fin debe ser posterior al inicio, sin superar 42 días, en una hora válida de Ciudad de México."
               : occupancy
                 ? `Ocupación de ${formatTime(occupancy.startsAt)} a ${formatTime(occupancy.endsAt)}. ${occupancy.canCreate ? "Selecciona un recurso libre para reservarlo." : ""}`
                 : null}
@@ -226,7 +224,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
 
       <div className="mt-6">
         {data.elements.length === 0 ? (
-          <p className="mb-3 rounded-md border border-dashed border-line bg-paper p-4 text-sm text-muted">
+          <p className="mb-3 empty-state text-sm">
             El plano todavía no tiene elementos.
             {data.canManage
               ? " Coloca recursos, ubicaciones o etiquetas abajo."
@@ -316,7 +314,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
 
       {data.canManage ? (
         <section className="mt-10 grid gap-6 xl:grid-cols-2">
-          <div className="box p-5 shadow-sm">
+          <div className="box p-5">
             <h2 className="text-lg font-semibold">Colocar elemento</h2>
             <p className="mt-1 mb-4 text-sm text-muted">
               Las coordenadas son celdas desde la esquina superior izquierda
@@ -343,7 +341,7 @@ export default async function FloorPlanPage({ params, searchParams }: Props) {
                 .map(({ id, name }) => ({ id, name }))}
             />
           </div>
-          <div className="box p-5 shadow-sm">
+          <div className="box p-5">
             <h2 className="mb-4 text-lg font-semibold">Datos del plano</h2>
             <ActionForm
               action={updateFloorPlanAction.bind(

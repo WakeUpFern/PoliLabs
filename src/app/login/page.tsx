@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/modules/identity/infrastructure/auth";
@@ -37,48 +38,44 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   }
 
   return (
-    <main className="grid min-h-screen bg-[#f6f3ee] lg:grid-cols-[minmax(0,1fr)_minmax(28rem,0.72fr)]">
-      <section className="relative hidden overflow-hidden bg-[#641229] p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_20%_15%,white_0,transparent_32%),radial-gradient(circle_at_80%_85%,#d4a85f_0,transparent_28%)]" />
-        <p className="relative text-sm font-semibold tracking-[0.24em] text-white/75">
-          LABORA · POLILABS
-        </p>
-        <div className="relative max-w-xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#e2c68f]">
-            Gestión de laboratorios
-          </p>
-          <h1 className="mt-5 text-5xl font-semibold leading-tight tracking-tight xl:text-6xl">
-            El trabajo del laboratorio, en un solo lugar.
-          </h1>
-          <p className="mt-6 max-w-lg text-lg leading-8 text-white/72">
-            Accede a los laboratorios en los que participas y continúa desde un
-            contexto seguro y autorizado.
-          </p>
+    <main className="grid min-h-screen bg-surface lg:grid-cols-[minmax(0,1fr)_minmax(28rem,0.72fr)]">
+      <section className="hidden bg-guinda p-12 text-white lg:flex lg:flex-col lg:justify-between">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/brand/upiita-mark.png"
+            alt=""
+            width={175}
+            height={128}
+            priority
+            className="h-10 w-auto"
+          />
+          <p className="text-xl font-bold">PoliLabs</p>
         </div>
-        <p className="relative text-sm text-white/60">UPIITA · IPN</p>
+        <p className="max-w-lg text-2xl leading-snug font-semibold">
+          Prácticas, reservaciones, préstamos e inventario de los laboratorios
+          de UPIITA.
+        </p>
+        <p className="text-sm text-white/75">UPIITA · IPN</p>
       </section>
 
       <section className="flex items-center justify-center px-6 py-12 sm:px-10">
         <div className="w-full max-w-md">
-          <p className="text-sm font-bold tracking-[0.22em] text-guinda lg:hidden">
-            LABORA
+          <p className="mb-6 text-lg font-bold text-guinda lg:hidden">
+            PoliLabs
           </p>
-          <p className="text-sm font-semibold text-guinda">Bienvenido</p>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
             Inicia sesión
-          </h2>
+          </h1>
           <p className="mt-3 leading-7 text-muted">
-            Usa la cuenta local proporcionada por el responsable de tu
-            laboratorio.
+            Usa la cuenta que te dio el responsable de tu laboratorio.
           </p>
           <LoginForm
             returnPath={safeReturnPath(query.next)}
             initialMessage={reason ? messages[reason] : undefined}
             clearExistingSession={clearExistingSession}
           />
-          <p className="mt-8 text-center text-xs leading-5 text-muted">
-            El acceso y las acciones disponibles dependen de tu membresía activa
-            en cada laboratorio.
+          <p className="mt-8 text-sm leading-6 text-muted">
+            Lo que puedes ver y hacer depende de tu papel en cada laboratorio.
           </p>
         </div>
       </section>

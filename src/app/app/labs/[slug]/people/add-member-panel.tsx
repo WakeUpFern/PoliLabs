@@ -18,7 +18,7 @@ export function AddMemberPanel({
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">Personas</h1>
+        <h1 className="text-2xl font-semibold">Personas</h1>
         {roles.length > 0 ? (
           <button
             type="button"

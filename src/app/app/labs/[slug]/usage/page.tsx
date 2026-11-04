@@ -16,7 +16,7 @@ export default async function UsagePage({
   ]);
   return (
     <div>
-      <h1 className="text-3xl font-semibold">Uso de maquinaria</h1>
+      <h1 className="text-2xl font-semibold">Uso de equipo</h1>
       <p className="mt-3 text-muted">
         Registra el uso efectivo. La asistencia y las reservaciones se conservan
         por separado.
@@ -50,7 +50,7 @@ export default async function UsagePage({
             </label>
           </UsageForm>
         ) : (
-          <p>
+          <p className="text-muted">
             No hay sesiones abiertas o reservaciones vigentes con recursos
             disponibles para tu cuenta.
           </p>

@@ -1,7 +1,7 @@
 import type { ReportDefinition } from "@/modules/reports/domain/reports";
 
 const field = "mt-1 w-full rounded-md border border-line px-3 py-2 text-sm";
-const button = "btn btn-primary";
+const button = "btn";
 
 // Native GET form: the route handler answers with an attachment, so the page
 // stays in place and no client JavaScript is needed.

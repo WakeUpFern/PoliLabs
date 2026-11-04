@@ -9,7 +9,7 @@ export default async function SecurityPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-3xl font-bold tracking-tight">Contraseña</h1>
+      <h1 className="text-2xl font-semibold">Contraseña</h1>
       {pending ? (
         <div className="mt-5 flex gap-3 rounded-md border border-pending/30 bg-pending/5 p-4">
           <KeyRound

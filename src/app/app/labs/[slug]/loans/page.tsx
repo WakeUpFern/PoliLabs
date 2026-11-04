@@ -31,7 +31,7 @@ export default async function LoansPage({
     }`;
   return (
     <div>
-      <h1 className="text-3xl font-semibold">Préstamos</h1>
+      <h1 className="text-2xl font-semibold">Préstamos</h1>
       <p className="mt-3 text-muted">
         Herramientas reutilizables prestadas temporalmente. Los préstamos se
         registran y devuelven desde el detalle de cada artículo de inventario.

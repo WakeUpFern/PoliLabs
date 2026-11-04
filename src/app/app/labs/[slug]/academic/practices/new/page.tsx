@@ -17,7 +17,7 @@ export default async function NewPracticePage({
       >
         ← Prácticas
       </Link>
-      <h1 className="mt-6 text-3xl font-semibold">Crear práctica</h1>
+      <h1 className="text-2xl mt-6 font-semibold">Crear práctica</h1>
       <p className="mt-3 text-muted">
         Se guardará como borrador. Publícala cuando las instrucciones estén
         listas.

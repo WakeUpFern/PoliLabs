@@ -63,12 +63,12 @@ El dominio decide título, cuerpo, regla de destinatarios y si hay correo; la in
 
 ## Configuración
 
-| Variable           | Valor por defecto                  | Uso                                            |
-| ------------------ | ---------------------------------- | ---------------------------------------------- |
-| `EMAIL_TRANSPORT`  | `file`                             | `file` escribe `.eml`; `disabled` no despacha  |
-| `EMAIL_FROM`       | `Labora <no-reply@labora.invalid>` | Remitente; se rechazan saltos de línea         |
-| `EMAIL_OUTBOX_DIR` | `.local-storage/email-outbox`      | Carpeta de `.eml`; no puede estar en `public/` |
-| `BETTER_AUTH_URL`  | (requerida)                        | Origen absoluto de los enlaces del correo      |
+| Variable           | Valor por defecto                      | Uso                                            |
+| ------------------ | -------------------------------------- | ---------------------------------------------- |
+| `EMAIL_TRANSPORT`  | `file`                                 | `file` escribe `.eml`; `disabled` no despacha  |
+| `EMAIL_FROM`       | `PoliLabs <no-reply@polilabs.invalid>` | Remitente; se rechazan saltos de línea         |
+| `EMAIL_OUTBOX_DIR` | `.local-storage/email-outbox`          | Carpeta de `.eml`; no puede estar en `public/` |
+| `BETTER_AUTH_URL`  | (requerida)                            | Origen absoluto de los enlaces del correo      |
 
 ## Seguridad
 

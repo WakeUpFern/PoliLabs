@@ -51,18 +51,18 @@ export default async function InventoryDetailPage({
           Artículo registrado.
         </p>
       )}
-      <h1 className="mt-6 text-3xl font-semibold">{item.name}</h1>
+      <h1 className="text-2xl mt-6 font-semibold">{item.name}</h1>
       <p className="mt-3 text-muted">
         {TYPE_LABELS[item.type]} · {item.isActive ? "Activo" : "Desactivado"}
       </p>
-      <section className="mt-6 rounded-md bg-[#641229] p-7 text-white">
-        <h2 className="text-sm uppercase tracking-wide">Existencia actual</h2>
-        <p className="mt-3 text-4xl font-semibold">
+      <section className="mt-6 box p-5">
+        <h2 className="text-sm text-muted">Existencia actual</h2>
+        <p className="mt-1 text-3xl font-semibold">
           {item.quantity} {UNIT_LABELS[item.unit]}
         </p>
         <p className="mt-4">{locationLabel(item, data.locations)}</p>
         {item.type === "reusable_tool" && (
-          <p className="mt-3 text-sm text-white/80">
+          <p className="mt-2 text-sm text-muted">
             Cantidad total registrada, incluidas las piezas prestadas.
           </p>
         )}

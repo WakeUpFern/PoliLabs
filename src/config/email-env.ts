@@ -9,7 +9,7 @@ export function readEmailConfig(
   const transport = env.EMAIL_TRANSPORT || "file";
   if (transport !== "file" && transport !== "disabled")
     throw new Error("EMAIL_TRANSPORT must be file or disabled.");
-  const from = env.EMAIL_FROM || "Labora <no-reply@labora.invalid>";
+  const from = env.EMAIL_FROM || "PoliLabs <no-reply@polilabs.invalid>";
   if (/[\r\n]/.test(from) || !from.includes("@"))
     throw new Error("EMAIL_FROM must be a single address.");
   const outboxDir = resolve(

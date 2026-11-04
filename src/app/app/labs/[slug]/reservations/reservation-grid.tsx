@@ -264,8 +264,9 @@ export function ReservationGrid({
                 className="relative touch-pan-y select-none border-l border-line"
                 style={{
                   height: SLOTS_PER_DAY * SLOT_PX,
+                  // Half-hour rules of the calendar, drawn as a background.
                   backgroundImage:
-                    "repeating-linear-gradient(to bottom, transparent 0, transparent 27px, #f0ece8 27px, #f0ece8 28px)",
+                    "repeating-linear-gradient(to bottom, transparent 0, transparent 27px, #eef1f4 27px, #eef1f4 28px)", // taste-skill-ignore
                 }}
                 onPointerDown={(event) => {
                   if (event.pointerType !== "mouse" || event.button !== 0)
@@ -327,7 +328,7 @@ export function ReservationGrid({
                 {draft?.date === day.date && (
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-1 z-10 rounded-lg border-2 border-guinda bg-guinda/15"
+                    className="pointer-events-none absolute inset-x-1 z-10 rounded border-2 border-guinda bg-guinda/15"
                     style={{
                       top:
                         ((Number(draft.time.slice(0, 2)) * 60 +
@@ -352,10 +353,10 @@ export function ReservationGrid({
                     left: `calc(${(block.lane / block.lanes) * 100}% + 2px)`,
                     width: `calc(${100 / block.lanes}% - 4px)`,
                   };
-                  const className = `absolute z-10 overflow-hidden rounded-lg border-l-4 px-1.5 py-0.5 text-xs leading-tight ${
+                  const className = `absolute z-10 overflow-hidden rounded border px-1.5 py-0.5 text-xs leading-tight ${
                     block.entry.isMine
-                      ? "border-guinda bg-[#f3e3e7] text-[#641229]"
-                      : "border-stone-400 bg-line text-muted"
+                      ? "border-guinda/30 bg-guinda-tint text-guinda-deep"
+                      : "border-line bg-paper text-muted"
                   }`;
                   const body = (
                     <>

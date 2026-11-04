@@ -155,9 +155,9 @@ export function renderNotificationEmail(input: {
       input.title,
       input.body,
       "",
-      `Consulta el detalle en Labora: ${input.url}`,
+      `Consulta el detalle en PoliLabs: ${input.url}`,
       "",
-      "Este es un mensaje automático de Labora. No respondas a este correo.",
+      "Este es un mensaje automático de PoliLabs. No respondas a este correo.",
     ].join("\n"),
   };
 }

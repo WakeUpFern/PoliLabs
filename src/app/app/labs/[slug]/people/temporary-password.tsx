@@ -53,7 +53,7 @@ export function TemporaryPassword({
       </div>
       <p className="mt-3 text-sm leading-6 text-muted">
         Entrégala en persona; no se volverá a mostrar. Al entrar por primera
-        vez, Labora le pedirá elegir su propia contraseña.
+        vez, PoliLabs le pedirá elegir su propia contraseña.
       </p>
     </div>
   );

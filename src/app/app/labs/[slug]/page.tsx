@@ -1,11 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowRightLeft,
-  BookOpenText,
-  CalendarClock,
-  TriangleAlert,
-} from "lucide-react";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import { getLaboratoryBySlug } from "@/modules/identity/infrastructure/services";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
@@ -36,20 +30,17 @@ function sessionDay(startsAt: Date, now: Date) {
 
 function Box({
   title,
-  icon: Icon,
   action,
   children,
 }: {
   title: string;
-  icon: typeof BookOpenText;
   action?: { href: string; label: string };
   children: React.ReactNode;
 }) {
   return (
     <section className="box overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-line bg-paper px-4 py-3">
-        <Icon aria-hidden className="size-4 text-muted" />
-        <h2 className="flex-1 font-bold">{title}</h2>
+      <div className="flex items-center gap-2 border-b border-line px-4 py-3">
+        <h2 className="flex-1 font-semibold">{title}</h2>
         {action ? (
           <Link
             href={action.href}
@@ -65,7 +56,7 @@ function Box({
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <div className="px-4 py-6 text-center text-muted">{children}</div>;
+  return <div className="px-4 py-5 text-muted">{children}</div>;
 }
 
 export default async function LaboratoryPage({
@@ -73,7 +64,7 @@ export default async function LaboratoryPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const [{ slug }, { actorUserId, user }] = await Promise.all([
+  const [{ slug }, { actorUserId }] = await Promise.all([
     params,
     requireCurrentActor(),
   ]);
@@ -99,6 +90,28 @@ export default async function LaboratoryPage({
       LABORATORY_ROLE_CATALOG.find((role) => role.key === key)?.name ?? key,
   );
   const teaches = can("academic.manage");
+  const count = (n: number, one: string, many: string) =>
+    `${n} ${n === 1 ? one : many}`;
+  // What waits today, in the same words as the boxes below.
+  const summary = [
+    home.academic
+      ? count(
+          home.academic.sessions.length,
+          "sesión próxima",
+          "sesiones próximas",
+        )
+      : null,
+    home.incidents && home.incidentsScope === "laboratory"
+      ? count(
+          home.incidents.length,
+          "incidencia por atender",
+          "incidencias por atender",
+        )
+      : null,
+    home.loans && home.loansScope === "laboratory"
+      ? count(home.loans.length, "préstamo activo", "préstamos activos")
+      : null,
+  ].filter((part): part is string => part !== null);
 
   // The one action that starts the usual work of this person.
   const primary = teaches
@@ -111,11 +124,12 @@ export default async function LaboratoryPage({
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-2xl leading-tight font-bold">
-            Hola, {user.name.split(/\s+/)[0]}
-          </h1>
+          <h1 className="text-2xl font-semibold">Inicio</h1>
           <p className="mt-0.5 text-muted">
-            {roleNames.length > 0 ? roleNames.join(", ") : "Sin rol"}
+            {[
+              roleNames.length > 0 ? roleNames.join(", ") : "Sin rol",
+              ...summary,
+            ].join(" · ")}
           </p>
         </div>
         {primary ? (
@@ -129,7 +143,6 @@ export default async function LaboratoryPage({
         {home.academic ? (
           <Box
             title="Tus próximas sesiones"
-            icon={CalendarClock}
             action={{ href: `${base}/academic`, label: "Prácticas" }}
           >
             {home.academic.sessions.length === 0 ? (
@@ -229,7 +242,6 @@ export default async function LaboratoryPage({
                   ? "Incidencias por atender"
                   : "Tus reportes"
               }
-              icon={TriangleAlert}
               action={
                 can("incident.create")
                   ? { href: `${base}/incidents/new`, label: "Reportar falla" }
@@ -279,7 +291,6 @@ export default async function LaboratoryPage({
                   ? "Préstamos activos"
                   : "Tus préstamos"
               }
-              icon={ArrowRightLeft}
               action={{ href: `${base}/loans`, label: "Ver todos" }}
             >
               {home.loans.length === 0 ? (
@@ -306,7 +317,7 @@ export default async function LaboratoryPage({
                         </span>
                       </span>
                       {loan.overdue ? (
-                        <span className="rounded-full border border-red-300 px-2 text-xs font-semibold text-red-700">
+                        <span className="rounded-full bg-red-50 px-2.5 py-0.5 text-[0.8125rem] font-semibold text-red-800">
                           Vencido
                         </span>
                       ) : null}

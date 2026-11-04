@@ -25,7 +25,7 @@ export default async function NewIncidentPage({
   return (
     <div>
       <Link href={`/app/labs/${slug}/incidents`}>← Incidencias</Link>
-      <h1 className="mt-6 text-3xl font-semibold">Reportar incidencia</h1>
+      <h1 className="text-2xl mt-6 font-semibold">Reportar incidencia</h1>
       <p className="mt-3 text-muted">
         El reporte quedará a tu nombre y con la hora de registro. Describe lo
         observado; no necesitas identificar a una persona responsable.
@@ -45,7 +45,7 @@ export default async function NewIncidentPage({
             initialUsage={initialUsage}
           />
         ) : (
-          <p>
+          <p className="text-muted">
             No hay objetivos disponibles para tu cuenta en este laboratorio.
           </p>
         )}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight, FlaskConical } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { requireCurrentActor } from "@/app/_lib/current-actor";
 import {
   getUserLaboratories,
@@ -12,7 +12,7 @@ export default async function LaboratoriesPage({
 }: {
   searchParams: Promise<{ choose?: string }>;
 }) {
-  const [{ actorUserId, user }, query] = await Promise.all([
+  const [{ actorUserId }, query] = await Promise.all([
     requireCurrentActor(),
     searchParams,
   ]);
@@ -26,13 +26,13 @@ export default async function LaboratoriesPage({
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-bold tracking-tight">Tus laboratorios</h1>
+      <h1 className="text-2xl font-semibold">Tus laboratorios</h1>
       <p className="mt-2 leading-7 text-muted">
-        Hola, {user.name}. Elige el laboratorio donde vas a trabajar.
+        Elige el laboratorio donde vas a trabajar.
       </p>
 
       {laboratories.length === 0 ? (
-        <section className="mt-8 rounded-md border border-dashed border-line bg-surface p-8">
+        <section className="mt-6 empty-state text-ink">
           <h2 className="text-lg font-semibold">Aún no tienes laboratorio</h2>
           <p className="mt-2 leading-6 text-muted">
             Tu cuenta está activa, pero nadie te ha dado acceso a un
@@ -41,16 +41,13 @@ export default async function LaboratoriesPage({
           </p>
         </section>
       ) : (
-        <ul className="mt-8 divide-y divide-line overflow-hidden box">
+        <ul className="mt-6 divide-y divide-line overflow-hidden box">
           {laboratories.map((laboratory) => (
             <li key={laboratory.id}>
               <Link
                 href={`/app/labs/${encodeURIComponent(laboratory.slug)}`}
                 className="flex items-center gap-4 px-5 py-4 transition hover:bg-paper"
               >
-                <span className="grid size-11 flex-none place-items-center rounded-lg bg-guinda-tint text-guinda">
-                  <FlaskConical aria-hidden className="size-5" />
-                </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-lg font-semibold">
                     {laboratory.name}

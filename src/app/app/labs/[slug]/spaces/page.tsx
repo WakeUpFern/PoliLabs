@@ -36,40 +36,21 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
 
   return (
     <div>
-      <div className="sm:flex sm:items-end sm:justify-between sm:gap-6">
-        <div>
-          <p className="text-sm font-semibold text-guinda">Spatial I</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Espacios
-          </h1>
-          <p className="mt-3 max-w-2xl leading-7 text-muted">
-            Catálogo operativo de áreas pertenecientes a {laboratory.name}.
-          </p>
-        </div>
-        <p className="mt-4 text-sm text-muted sm:mt-0">
-          {catalog.spaces.length}{" "}
-          {catalog.spaces.length === 1 ? "activo" : "activos"}
-        </p>
-      </div>
+      <h1 className="text-2xl font-semibold">Espacios</h1>
+      <p className="mt-2 text-muted">
+        {catalog.spaces.length === 1
+          ? "1 espacio activo"
+          : `${catalog.spaces.length} espacios activos`}{" "}
+        en {laboratory.name}.
+      </p>
 
-      {catalog.canManage ? (
-        <section className="mt-8 box p-6 shadow-sm sm:p-8">
-          <h2 className="text-xl font-semibold">Registrar espacio</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">
-            La capacidad puede dejarse vacía hasta contar con el dato validado.
-          </p>
-          <SpaceForm action={createAction} submitLabel="Crear espacio" />
-        </section>
-      ) : null}
-
-      <section className="mt-8">
-        <h2 className="text-xl font-semibold">Espacios activos</h2>
+      <section className="mt-6">
         {catalog.spaces.length === 0 ? (
-          <div className="mt-4 rounded-md border border-dashed border-line bg-paper p-8 text-center text-muted">
+          <div className="empty-state">
             Todavía no hay espacios registrados.
           </div>
         ) : (
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <ul className="box divide-y divide-line">
             {catalog.spaces.map((space) => {
               const deactivateAction = deactivateSpaceAction.bind(
                 null,
@@ -77,46 +58,62 @@ export default async function SpacesPage({ params }: SpacesPageProps) {
                 space.slug,
               );
               return (
-                <article key={space.id} className="box p-6 shadow-sm">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="text-lg font-semibold">{space.name}</h3>
-                      <p className="mt-1 font-mono text-xs text-muted">
-                        {space.slug}
-                      </p>
-                    </div>
-                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-                      Activo
-                    </span>
-                  </div>
-                  <p className="mt-5 text-sm text-muted">
-                    {space.capacity
-                      ? `Capacidad: ${space.capacity} personas`
-                      : "Capacidad no especificada"}
-                  </p>
-                  <Link
-                    href={`/app/labs/${slug}/spaces/${space.slug}`}
-                    className="mt-5 inline-flex text-sm font-semibold text-guinda transition hover:text-[#571020]"
-                  >
-                    Abrir organización física <span aria-hidden="true">→</span>
-                  </Link>
-                  {catalog.canManage ? (
-                    <div className="mt-5 flex items-center gap-4 border-t border-line pt-4">
+                <li
+                  key={space.id}
+                  className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4"
+                >
+                  <div className="min-w-0">
+                    <h2 className="font-semibold">
                       <Link
-                        href={`/app/labs/${slug}/spaces/${space.slug}/edit`}
-                        className="text-sm font-semibold text-guinda transition hover:text-[#571020]"
+                        href={`/app/labs/${slug}/spaces/${space.slug}`}
+                        className="hover:underline"
                       >
-                        Editar
+                        {space.name}
                       </Link>
-                      <DeactivateSpaceButton action={deactivateAction} />
-                    </div>
-                  ) : null}
-                </article>
+                    </h2>
+                    <p className="mt-0.5 text-sm text-muted">
+                      {space.capacity
+                        ? `Capacidad: ${space.capacity} personas`
+                        : "Capacidad no especificada"}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm">
+                    <Link
+                      href={`/app/labs/${slug}/spaces/${space.slug}`}
+                      className="font-semibold text-guinda hover:underline"
+                    >
+                      Abrir organización física
+                    </Link>
+                    {catalog.canManage ? (
+                      <>
+                        <Link
+                          href={`/app/labs/${slug}/spaces/${space.slug}/edit`}
+                          className="font-semibold text-guinda hover:underline"
+                        >
+                          Editar
+                        </Link>
+                        <DeactivateSpaceButton action={deactivateAction} />
+                      </>
+                    ) : null}
+                  </div>
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
       </section>
+
+      {catalog.canManage ? (
+        <details className="mt-8 box p-5" open={catalog.spaces.length === 0}>
+          <summary className="cursor-pointer font-semibold">
+            Registrar espacio
+          </summary>
+          <p className="mt-3 text-sm leading-6 text-muted">
+            La capacidad puede dejarse vacía hasta contar con el dato validado.
+          </p>
+          <SpaceForm action={createAction} submitLabel="Crear espacio" />
+        </details>
+      ) : null}
     </div>
   );
 }

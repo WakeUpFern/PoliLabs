@@ -12,7 +12,7 @@ export default async function ResourceUsageTrace({
   return (
     <div>
       <Link href={`/app/labs/${slug}/spaces`}>← Espacios</Link>
-      <h1 className="mt-6 text-3xl font-semibold">
+      <h1 className="text-2xl mt-6 font-semibold">
         Historial de uso del recurso
       </h1>
       <p className="mt-3 text-muted">

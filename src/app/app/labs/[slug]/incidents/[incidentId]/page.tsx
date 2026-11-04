@@ -54,7 +54,7 @@ export default async function IncidentDetailPage({
       <Link href={`/app/labs/${slug}/incidents?scope=${scope}`}>
         ← Incidencias
       </Link>
-      <h1 className="mt-6 text-3xl font-semibold">
+      <h1 className="text-2xl mt-6 font-semibold">
         {targetLabels[i.targetKind]}: {i.targetSnapshot.name}
       </h1>
       <section className="mt-6 space-y-3 box p-6">

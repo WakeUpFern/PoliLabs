@@ -6,10 +6,7 @@ export default async function NotificationsPage() {
   const unread = entries.some((n) => !n.readAt);
   return (
     <div>
-      <p className="text-sm font-semibold text-guinda">Avisos</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-        Notificaciones
-      </h1>
+      <h1 className="text-2xl font-semibold">Notificaciones</h1>
       {unread ? (
         <form action={markAllNotificationsRead} className="mt-4">
           <button className="text-sm font-semibold text-guinda underline-offset-4 hover:underline">
@@ -21,12 +18,15 @@ export default async function NotificationsPage() {
         {entries.map((n) => (
           <li
             key={n.id}
-            className={`rounded-md border bg-surface p-5 ${n.readAt ? "border-line" : "border-guinda/40 shadow-sm"}`}
+            className={`rounded-md border bg-surface p-5 ${n.readAt ? "border-line" : "border-guinda/40"}`}
           >
             <form action={openNotification}>
               <input type="hidden" name="notificationId" value={n.id} />
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">
-                {n.readAt ? "Leída" : "Nueva"} · {n.laboratoryName}
+              <p className="text-sm text-muted">
+                <span className={n.readAt ? "" : "font-semibold text-guinda"}>
+                  {n.readAt ? "Leída" : "Nueva"}
+                </span>{" "}
+                · {n.laboratoryName}
               </p>
               <h2 className="mt-2 break-words font-semibold">{n.title}</h2>
               <p className="mt-1 break-words text-muted">{n.body}</p>
@@ -44,7 +44,7 @@ export default async function NotificationsPage() {
         ))}
       </ul>
       {!entries.length ? (
-        <p className="mt-6 text-muted">No tienes notificaciones.</p>
+        <p className="mt-6 empty-state">No tienes notificaciones.</p>
       ) : null}
     </div>
   );

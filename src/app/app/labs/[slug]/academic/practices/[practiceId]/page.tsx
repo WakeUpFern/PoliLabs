@@ -26,11 +26,11 @@ export default async function PracticePage({
       >
         ← Prácticas
       </Link>
-      <header className="mt-6">
-        <p className="text-xs font-bold uppercase text-guinda">
+      <header className="mt-6 flex flex-wrap items-center gap-3">
+        <h1 className="text-2xl font-semibold">{p.title}</h1>
+        <span className="rounded-full bg-paper px-2.5 py-0.5 text-[0.8125rem] font-semibold text-muted">
           {PRACTICE_LABELS[p.status]}
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold">{p.title}</h1>
+        </span>
       </header>
       <section className="mt-6 box p-6">
         <h2 className="text-lg font-semibold">Instrucciones</h2>

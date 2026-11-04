@@ -24,7 +24,7 @@ export function MonthCalendar({
 }) {
   return (
     <div className="overflow-hidden rounded-md border border-line bg-line">
-      <div className="grid grid-cols-7 gap-px text-center text-xs font-semibold uppercase text-muted">
+      <div className="grid grid-cols-7 gap-px text-center text-sm font-semibold text-muted">
         {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((day) => (
           <div key={day} className="bg-paper py-2">
             {day}
@@ -84,7 +84,7 @@ export function MonthCalendar({
 function EntryChip({ slug, entry }: { slug: string; entry: OccupancyView }) {
   const time = `${formatCalendarTime(entry.startsAt)}–${formatCalendarTime(entry.endsAt)}`;
   const tone = entry.isMine
-    ? "border-guinda bg-guinda/10 text-[#641229]"
+    ? "border-guinda/30 bg-guinda-tint text-guinda-deep"
     : "border-line bg-paper text-muted";
   const body = (
     <>
@@ -94,7 +94,7 @@ function EntryChip({ slug, entry }: { slug: string; entry: OccupancyView }) {
       </span>
     </>
   );
-  const className = `block rounded-lg border-l-4 px-2 py-1 text-xs ${tone}`;
+  const className = `block rounded border px-2 py-1 text-xs ${tone}`;
   return entry.reservationId ? (
     <Link
       href={`/app/labs/${slug}/reservations/${entry.reservationId}`}

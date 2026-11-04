@@ -25,9 +25,7 @@ export async function ItemLoans({
           ["Disponibles", summary.available],
         ].map(([label, value]) => (
           <div key={label} className="bg-surface p-5">
-            <p className="text-xs uppercase tracking-wide text-muted">
-              {label}
-            </p>
+            <p className="text-sm text-muted">{label}</p>
             <p className="mt-1 text-2xl font-semibold">{Number(value)} pz</p>
           </div>
         ))}

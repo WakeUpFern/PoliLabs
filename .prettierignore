@@ -3,3 +3,7 @@ node_modules
 pnpm-lock.yaml
 docs/srs
 next-env.d.ts
+.agents
+.claude/skills
+.taste-skill
+skills-lock.json
