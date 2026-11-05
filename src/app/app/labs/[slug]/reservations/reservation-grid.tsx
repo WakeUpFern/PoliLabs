@@ -36,6 +36,9 @@ export type GridDay = {
   end: string;
   label: string;
   shortLabel: string;
+  /** "Lun", "Mar"…, and the day of the month, for the phone's narrow header. */
+  weekday: string;
+  dayNumber: number;
   isToday: boolean;
 };
 
@@ -76,6 +79,7 @@ function overlapping(entries: readonly OccupancyView[], draft: Draft) {
 }
 
 export function ReservationGrid({
+  title,
   days,
   entries,
   spaceEntries,
@@ -87,6 +91,8 @@ export function ReservationGrid({
   slug,
   action,
 }: {
+  /** The period and subject; "Nueva reservación" sits beside it. */
+  title: React.ReactNode;
   days: GridDay[];
   entries: OccupancyView[];
   spaceEntries: OccupancyView[];
@@ -128,8 +134,18 @@ export function ReservationGrid({
     if (autoDayHref && window.matchMedia("(max-width: 639px)").matches)
       router.replace(autoDayHref);
   }, [autoDayHref, router]);
+  // Open on the working morning, or on the current hour if it is later.
   useEffect(() => {
-    scroller.current?.scrollTo({ top: 7 * 2 * SLOT_PX - 12 });
+    const today = days.find((d) => d.isToday);
+    const hour = today
+      ? Math.max(7, Math.floor((now - Date.parse(today.start)) / 3_600_000) - 1)
+      : 7;
+    const frame = requestAnimationFrame(() =>
+      scroller.current?.scrollTo({ top: Math.min(hour, 18) * 2 * SLOT_PX - 8 }),
+    );
+    return () => cancelAnimationFrame(frame);
+    // Only on mount: later renders keep where the person scrolled.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     if (!draft) return;
@@ -164,6 +180,7 @@ export function ReservationGrid({
       ),
     );
   };
+  const week = days.length > 1;
   const isPast = (day: GridDay, slot: number) =>
     Date.parse(day.start) + (slot + 1) * SLOT_MINUTES * 60_000 <= now;
 
@@ -189,12 +206,15 @@ export function ReservationGrid({
 
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted">
-          {canCreate
-            ? "Toca una franja libre o arrastra sobre ella para reservar."
-            : "Necesitas permiso de creación para reservar desde el calendario."}
-        </p>
+      <div className="mt-5 mb-3 flex items-start justify-between gap-3 max-sm:mt-4">
+        <div className="min-w-0">
+          {title}
+          <p className="mt-2 text-sm text-muted max-sm:hidden">
+            {canCreate
+              ? "Toca una franja libre o arrastra sobre ella para reservar."
+              : "Necesitas permiso de creación para reservar desde el calendario."}
+          </p>
+        </div>
         {canCreate && (
           <button
             type="button"
@@ -205,9 +225,11 @@ export function ReservationGrid({
                 : 18;
               open(day.date, Math.min(slot, SLOTS_PER_DAY - 2), 2);
             }}
-            className="btn btn-primary"
+            aria-label="Nueva reservación"
+            className="btn btn-primary flex-none"
           >
-            Nueva reservación
+            <span className="max-sm:hidden">Nueva reservación</span>
+            <span className="sm:hidden">Reservar</span>
           </button>
         )}
       </div>
@@ -218,11 +240,18 @@ export function ReservationGrid({
         {notice}
       </p>
 
-      <div ref={scroller} className="max-h-[70vh] overflow-auto box">
+      <div
+        ref={scroller}
+        className="max-h-[70vh] overflow-auto box max-sm:max-h-[calc(100dvh-15rem)]"
+      >
         <div
-          className="grid"
+          className={`grid [--gutter:3rem] max-sm:[--gutter:2.5rem] ${
+            week
+              ? "[--day-min:6.5rem] max-sm:[--day-min:0px]"
+              : "[--day-min:0px]"
+          }`}
           style={{
-            gridTemplateColumns: `3rem repeat(${days.length}, minmax(${days.length > 1 ? "6.5rem" : "0"}, 1fr))`,
+            gridTemplateColumns: `var(--gutter) repeat(${days.length}, minmax(var(--day-min), 1fr))`,
           }}
         >
           {/* A single day is already named by the title above the grid. */}
@@ -232,11 +261,24 @@ export function ReservationGrid({
               {days.map((day) => (
                 <div
                   key={day.date}
-                  className={`sticky top-0 z-20 border-b border-l border-line bg-surface px-2 py-2 text-center text-sm font-semibold first-letter:uppercase ${
+                  className={`sticky top-0 z-20 border-b border-l border-line bg-surface px-2 py-2 text-center text-sm font-semibold first-letter:uppercase max-sm:px-0 max-sm:py-1.5 ${
                     day.isToday ? "text-guinda" : ""
                   }`}
                 >
-                  {day.shortLabel}
+                  <span className="max-sm:hidden">{day.shortLabel}</span>
+                  {/* Phones stack the weekday over its number, all seven in view. */}
+                  <span aria-hidden className="hidden max-sm:block">
+                    <span className="block text-[11px] font-semibold text-muted">
+                      {day.weekday}
+                    </span>
+                    <span
+                      className={`mx-auto mt-0.5 grid size-7 place-items-center rounded-full text-sm ${
+                        day.isToday ? "bg-guinda text-white" : ""
+                      }`}
+                    >
+                      {day.dayNumber}
+                    </span>
+                  </span>
                 </div>
               ))}
             </>
@@ -245,7 +287,7 @@ export function ReservationGrid({
             {Array.from({ length: 24 }, (_, hour) => (
               <span
                 key={hour}
-                className="absolute right-1 -translate-y-1/2 text-[11px] text-muted"
+                className="absolute right-1.5 -translate-y-1/2 text-[11px] text-muted"
                 style={{ top: hour * 2 * SLOT_PX }}
               >
                 {hour ? `${String(hour).padStart(2, "0")}:00` : ""}
@@ -354,20 +396,27 @@ export function ReservationGrid({
                     width: `calc(${100 / block.lanes}% - 4px)`,
                   };
                   const className = `absolute z-10 overflow-hidden rounded border px-1.5 py-0.5 text-xs leading-tight ${
+                    week ? "max-sm:px-0.5 max-sm:text-[10px]" : ""
+                  } ${
                     block.entry.isMine
                       ? "border-guinda/30 bg-guinda-tint text-guinda-deep"
                       : "border-line bg-paper text-muted"
                   }`;
+                  // A phone's week column is too narrow for the label: the
+                  // time stays visible and the full text is the block's name.
                   const body = (
                     <>
                       <span className="block font-semibold">{time}</span>
-                      <span className="block">{label}</span>
+                      <span className={week ? "block max-sm:hidden" : "block"}>
+                        {label}
+                      </span>
                     </>
                   );
                   return block.entry.reservationId ? (
                     <Link
                       key={index}
                       href={`/app/labs/${slug}/reservations/${block.entry.reservationId}`}
+                      aria-label={`${time} ${label}`}
                       className={className}
                       style={style}
                       onPointerDown={(e) => e.stopPropagation()}
@@ -378,6 +427,7 @@ export function ReservationGrid({
                   ) : (
                     <div
                       key={index}
+                      title={`${time} ${label}`}
                       className={className}
                       style={style}
                       onPointerDown={(e) => e.stopPropagation()}

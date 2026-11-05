@@ -9,7 +9,7 @@ export function CalendarFilters({ children }: { children: React.ReactNode }) {
     <form
       method="get"
       onChange={(event) => event.currentTarget.requestSubmit()}
-      className="grid gap-3 sm:grid-cols-2 lg:max-w-2xl"
+      className="grid grid-cols-2 gap-3 lg:max-w-2xl"
     >
       {children}
       <button type="submit" className="sr-only">

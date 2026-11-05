@@ -129,6 +129,35 @@ test("the panel shows occupied resources and books the whole space", async ({
   await context.close();
 });
 
+test("choosing a day in the month lists its reservations as cards", async ({
+  browser,
+}, testInfo) => {
+  const { context, page } = await openAs(browser, testInfo, lab.users.student);
+  await page.goto(`/app/labs/${lab.slug}/reservations?view=month&date=${day}`);
+  const name = new Intl.DateTimeFormat("es-MX", {
+    timeZone: "UTC",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(`${day}T00:00:00Z`));
+  const cell = page.getByRole("button", { name: `${name}, 2 reservaciones` });
+  await cell.click();
+  await expect(cell).toHaveAttribute("aria-pressed", "true");
+  const agenda = page.getByRole("region", {
+    name: new RegExp(`^${Number(day.slice(8))} `),
+  });
+  await expect(agenda.getByRole("listitem")).toHaveCount(2);
+  await expect(agenda.getByRole("listitem").first()).toContainText(
+    "10:00–11:00",
+  );
+  await expect(agenda.getByRole("listitem").nth(1)).toContainText(
+    "13:00–14:00",
+  );
+  await expectNoHorizontalOverflow(page);
+  await context.close();
+});
+
 test("another person sees the slots as occupied without the owner", async ({
   browser,
 }, testInfo) => {
