@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { addDays } from "@/shared/time";
@@ -21,6 +22,7 @@ const viewLabels: Record<CalendarView, string> = {
   week: "Semana",
   month: "Mes",
 };
+const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const inputStyle =
   "min-h-11 w-full rounded-md border border-line bg-surface px-3 focus:outline-none focus:ring-4 focus:ring-guinda/20";
 
@@ -133,9 +135,20 @@ function Calendar({
     end: dayStart(addDays(date, 1)),
     label: formatCalendarDay(date, "long"),
     shortLabel: formatCalendarDay(date, "short"),
+    weekday: WEEKDAYS[(new Date(`${date}T00:00:00Z`).getUTCDay() + 6) % 7],
+    dayNumber: Number(date.slice(8)),
     isToday: date === data.today,
   }));
   const linkStyle = "btn";
+  const title = (
+    <h2 className="text-lg leading-tight font-semibold first-letter:uppercase">
+      {formatCalendarTitle(data.view, data.date, data.days)}
+      <span className="ml-2 text-base font-normal text-muted max-sm:ml-0 max-sm:block max-sm:text-sm">
+        <span className="max-sm:hidden">· </span>
+        {data.resource?.name ?? space.name}
+      </span>
+    </h2>
+  );
 
   return (
     <>
@@ -187,16 +200,27 @@ function Calendar({
         </CalendarFilters>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <nav aria-label="Periodo" className="flex flex-wrap gap-2">
-          <Link href={href({ date: data.previous })} className={linkStyle}>
-            <span aria-hidden="true">←</span> Anterior
+      {/* One row on a phone: arrows and Hoy on the left, the view on the right. */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 max-sm:flex-nowrap max-sm:gap-2">
+        <nav aria-label="Periodo" className="flex gap-2 max-sm:gap-1">
+          <Link
+            href={href({ date: data.previous })}
+            aria-label="Anterior"
+            className={`${linkStyle} max-sm:w-11 max-sm:px-0`}
+          >
+            <ChevronLeft aria-hidden className="size-4" />
+            <span className="max-sm:hidden">Anterior</span>
           </Link>
           <Link href={href({ date: data.today })} className={linkStyle}>
             Hoy
           </Link>
-          <Link href={href({ date: data.next })} className={linkStyle}>
-            Siguiente <span aria-hidden="true">→</span>
+          <Link
+            href={href({ date: data.next })}
+            aria-label="Siguiente"
+            className={`${linkStyle} max-sm:w-11 max-sm:px-0`}
+          >
+            <span className="max-sm:hidden">Siguiente</span>
+            <ChevronRight aria-hidden className="size-4" />
           </Link>
         </nav>
         <nav
@@ -208,9 +232,9 @@ function Calendar({
               key={view}
               href={href({ view })}
               aria-current={view === data.view ? "page" : undefined}
-              className={`grid min-h-9 place-items-center rounded px-4 text-sm font-semibold max-lg:min-h-11 ${
+              className={`grid min-h-9 place-items-center rounded px-4 text-sm font-semibold max-lg:min-h-10 max-sm:px-2.5 ${
                 view === data.view
-                  ? "bg-surface text-guinda shadow-sm"
+                  ? "bg-surface text-guinda ring-1 ring-line"
                   : "text-muted"
               }`}
             >
@@ -220,24 +244,25 @@ function Calendar({
         </nav>
       </div>
 
-      <h2 className="mt-5 mb-3 text-lg font-semibold first-letter:uppercase">
-        {formatCalendarTitle(data.view, data.date, data.days)}
-        <span className="ml-2 text-base font-normal text-muted">
-          · {data.resource?.name ?? space.name}
-        </span>
-      </h2>
-
       {data.view === "month" ? (
-        <MonthCalendar
-          slug={slug}
-          month={data.date.slice(0, 7)}
-          today={data.today}
-          days={data.days}
-          entries={data.entries}
-          dayHref={(date) => href({ view: "day", date })}
-        />
+        <div className="mt-5 max-sm:mt-4">
+          <div className="mb-3">{title}</div>
+          <MonthCalendar
+            key={data.date.slice(0, 7)}
+            slug={slug}
+            month={data.date.slice(0, 7)}
+            today={data.today}
+            days={data.days}
+            entries={data.entries}
+            dayHrefs={Object.fromEntries(
+              data.days.map((date) => [date, href({ view: "day", date })]),
+            )}
+            canCreate={data.canCreate}
+          />
+        </div>
       ) : (
         <ReservationGrid
+          title={title}
           key={`${space.id}-${data.view}-${data.days[0]}`}
           slug={slug}
           days={days}
