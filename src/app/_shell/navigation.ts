@@ -123,10 +123,10 @@ export function labNavigation(
 }
 
 /**
- * The phone's bottom bar: Inicio plus the three sections this person uses
- * most, picked from what they can do. Managing stock marks whoever runs the
- * laboratory, managing practices marks a teacher, and everyone else works
- * through practices, reservations and loans. The rest lives under "Más".
+ * The phone's dock: Inicio plus the two sections this person uses most, with
+ * the create button between them and "Más" closing the row (ADR 0025).
+ * Managing stock marks whoever runs the laboratory, managing practices marks
+ * a teacher, and everyone else works through practices and reservations.
  */
 export function quickSections(
   sections: readonly NavItem[],
@@ -134,57 +134,155 @@ export function quickSections(
 ): string[] {
   const can = (key: string) => permissionKeys.includes(key);
   const preferred = can("inventory.manage")
-    ? ["incidents", "inventory", "loans"]
+    ? ["incidents", "inventory"]
     : can("academic.manage")
-      ? ["academic", "attendance", "reservations"]
-      : ["academic", "reservations", "loans"];
+      ? ["academic", "attendance"]
+      : ["academic", "reservations"];
   const available = new Set(sections.map((item) => item.key));
   const picked = preferred.filter((key) => available.has(key));
   for (const item of sections) {
-    if (picked.length >= 3) break;
+    if (picked.length >= 2) break;
     if (item.key !== "home" && !picked.includes(item.key))
       picked.push(item.key);
   }
   return available.has("home") ? ["home", ...picked] : picked;
 }
 
-/** What the "+" menu offers: the things a person starts most often. */
+export type CreateAction = NavItem & {
+  /** One line on what the action starts, shown under its name. */
+  hint: string;
+  /** The section it belongs to; its actions come first while you are there. */
+  section: string;
+};
+
+/**
+ * What the create button offers: everything a person can start, in the order
+ * their role reaches for it. A teacher starts with practices and sessions, a
+ * student with reservations and attendance, whoever manages stock with the
+ * inventory; the rest follows. Every entry is
+ * decided from permissions, never role keys.
+ */
 export function createActions(
   slug: string,
   permissionKeys: readonly string[],
-): NavItem[] {
+): CreateAction[] {
   const can = (key: string) => permissionKeys.includes(key);
   const base = `/app/labs/${encodeURIComponent(slug)}`;
-  const actions: NavItem[] = [];
-  if (can("academic.manage"))
-    actions.push({
-      key: "new-practice",
-      href: `${base}/academic/practices/new`,
-      label: "Nueva práctica",
-      icon: "practices",
-    });
-  if (can("reservation.create"))
-    actions.push({
-      key: "new-reservation",
-      href: `${base}/reservations`,
-      label: "Nueva reservación",
-      icon: "calendar",
-    });
-  if (can("incident.create"))
-    actions.push({
-      key: "new-incident",
-      href: `${base}/incidents/new`,
-      label: "Reportar una falla",
-      icon: "incident",
-    });
-  if (can("laboratory.membership.manage"))
-    actions.push({
-      key: "new-person",
-      href: `${base}/people`,
-      label: "Agregar persona",
-      icon: "people",
-    });
+  const actions: CreateAction[] = [];
+  const add = (
+    allowed: boolean,
+    action: Omit<CreateAction, "href"> & { path: string },
+  ) => {
+    if (!allowed) return;
+    const { path, ...rest } = action;
+    actions.push({ ...rest, href: `${base}${path}` });
+  };
+
+  add(can("academic.manage"), {
+    key: "new-practice",
+    path: "/academic/practices/new",
+    label: "Nueva práctica",
+    hint: "Objetivo, instrucciones y material",
+    icon: "practices",
+    section: "academic",
+  });
+  add(can("academic.manage"), {
+    key: "new-session",
+    path: "/academic",
+    label: "Programar sesión",
+    hint: "Elige la práctica y el horario",
+    icon: "attendance",
+    section: "academic",
+  });
+  add(can("reservation.create"), {
+    key: "new-reservation",
+    path: "/reservations",
+    label: "Reservar",
+    hint: "Un espacio o una máquina en el calendario",
+    icon: "calendar",
+    section: "reservations",
+  });
+  add(can("attendance.checkin"), {
+    key: "check-in",
+    path: "/attendance",
+    label: "Registrar asistencia",
+    hint: "A la sesión que está abierta",
+    icon: "attendance",
+    section: "attendance",
+  });
+  add(can("usage.record"), {
+    key: "start-usage",
+    path: "/usage",
+    label: "Usar una máquina",
+    hint: "Registra el inicio de su uso",
+    icon: "machine",
+    section: "usage",
+  });
+  add(can("inventory.loan"), {
+    key: "new-loan",
+    path: "/inventory",
+    label: "Prestar herramienta",
+    hint: "Elígela en el inventario",
+    icon: "loans",
+    section: "loans",
+  });
+  add(can("inventory.manage"), {
+    key: "new-item",
+    path: "/inventory/new",
+    label: "Nuevo artículo",
+    hint: "Material, consumible o herramienta",
+    icon: "inventory",
+    section: "inventory",
+  });
+  add(can("maintenance.create"), {
+    key: "new-maintenance",
+    path: "/maintenance",
+    label: "Registrar mantenimiento",
+    hint: "Elige el equipo atendido",
+    icon: "maintenance",
+    section: "maintenance",
+  });
+  add(can("incident.create"), {
+    key: "new-incident",
+    path: "/incidents/new",
+    label: "Reportar una falla",
+    hint: "Equipo dañado o algo que no funciona",
+    icon: "incident",
+    section: "incidents",
+  });
+  add(can("laboratory.membership.manage"), {
+    key: "new-person",
+    path: "/people",
+    label: "Agregar persona",
+    hint: "Da de alta a un alumno o profesor",
+    icon: "people",
+    section: "people",
+  });
+  // Whoever runs the laboratory starts with stock and the care of equipment.
+  if (can("inventory.manage")) {
+    const first = ["new-item", "new-loan", "new-maintenance", "new-incident"];
+    const rank = (action: CreateAction) => {
+      const index = first.indexOf(action.key);
+      return index === -1 ? first.length : index;
+    };
+    return actions
+      .map((action, index) => ({ action, index }))
+      .sort((a, b) => rank(a.action) - rank(b.action) || a.index - b.index)
+      .map(({ action }) => action);
+  }
   return actions;
+}
+
+/** The actions of the section you are in go first; the rest keep their order. */
+export function actionsFor(
+  actions: readonly CreateAction[],
+  sectionKey: string | undefined,
+): CreateAction[] {
+  if (!sectionKey) return [...actions];
+  return [
+    ...actions.filter((action) => action.section === sectionKey),
+    ...actions.filter((action) => action.section !== sectionKey),
+  ];
 }
 
 export const ACCOUNT_NAVIGATION: NavItem[] = [

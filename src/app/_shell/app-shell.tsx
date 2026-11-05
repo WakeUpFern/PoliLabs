@@ -7,7 +7,12 @@ import { useEffect, useRef } from "react";
 import { Bell, Ellipsis, Plus, X } from "lucide-react";
 import { LogoutButton } from "@/app/_components/logout-button";
 import { NavIcon } from "./nav-icon";
-import { NAV_GROUPS, type NavItem } from "./navigation";
+import {
+  NAV_GROUPS,
+  actionsFor,
+  type CreateAction,
+  type NavItem,
+} from "./navigation";
 
 type ShellProps = {
   /** The laboratory being worked in; absent on account pages. */
@@ -17,7 +22,7 @@ type ShellProps = {
     sections: NavItem[];
     /** Keys of the sections on the phone's bottom bar. */
     quick: string[];
-    create: NavItem[];
+    create: CreateAction[];
   } | null;
   laboratories: readonly { slug: string; name: string }[];
   account: NavItem[];
@@ -109,6 +114,33 @@ function SectionList({
   );
 }
 
+/**
+ * Everything this person can start, the current section's actions first. The
+ * same list is the header's "+" menu on a wide screen and the dock's create
+ * sheet on the phone.
+ */
+function CreateList({ actions }: { actions: CreateAction[] }) {
+  return (
+    <ul className="flex flex-col gap-0.5">
+      {actions.map((action) => (
+        <li key={action.key}>
+          <Link href={action.href} className="nav-row items-start py-2">
+            <NavIcon name={action.icon} className="nav-icon mt-0.5" />
+            <span className="min-w-0">
+              <span className="nav-label block font-semibold">
+                {action.label}
+              </span>
+              <span className="block text-sm leading-5 text-muted">
+                {action.hint}
+              </span>
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function AppShell({
   laboratory,
   laboratories,
@@ -120,6 +152,8 @@ export function AppShell({
   const pathname = usePathname();
   const sheet = useRef<HTMLDialogElement>(null);
   const moreButton = useRef<HTMLButtonElement>(null);
+  const createSheet = useRef<HTMLDialogElement>(null);
+  const createButton = useRef<HTMLButtonElement>(null);
   const header = useRef<HTMLElement>(null);
 
   const sections = laboratory?.sections ?? [];
@@ -128,10 +162,32 @@ export function AppShell({
     .map((key) => sections.find((item) => item.key === key))
     .filter((item): item is NavItem => Boolean(item));
   const currentIsQuick = quick.some((item) => item.key === current?.key);
+  const create = actionsFor(laboratory?.create ?? [], current?.key);
+  // Inicio and one section on each side of the create button, "Más" last.
+  const half = Math.ceil(quick.length / 2);
+  const dockItem = (item: NavItem) => {
+    const active = current?.key === item.key;
+    return (
+      <li key={item.key} className="min-w-0 flex-1">
+        <Link
+          href={item.href}
+          aria-current={active ? "page" : undefined}
+          aria-label={item.short ? item.label : undefined}
+          className="bottom-item"
+        >
+          <NavIcon name={item.icon} className="size-5.5" />
+          <span className="max-w-full truncate">
+            {item.short ?? item.label}
+          </span>
+        </Link>
+      </li>
+    );
+  };
 
   // Following a link closes whatever menu it came from.
   useEffect(() => {
     sheet.current?.close();
+    createSheet.current?.close();
     // Header menus are native popovers: a click outside or Escape closes them.
     header.current
       ?.querySelectorAll<HTMLElement>("[popover]")
@@ -139,6 +195,7 @@ export function AppShell({
   }, [pathname]);
 
   const closeSheet = () => sheet.current?.close();
+  const closeCreate = () => createSheet.current?.close();
 
   return (
     <div className="min-h-dvh">
@@ -161,27 +218,23 @@ export function AppShell({
             )}
           </p>
 
-          {laboratory && laboratory.create.length > 0 ? (
+          {create.length > 0 ? (
             <>
+              {/* On the phone this lives in the dock's center button. */}
               <button
                 type="button"
                 popoverTarget="create-menu"
                 aria-label="Crear"
-                className="icon-btn"
+                className="icon-btn hidden lg:grid"
               >
                 <Plus aria-hidden className="size-4.5" />
               </button>
               <div
                 id="create-menu"
                 popover="auto"
-                className="menu-popover w-60"
+                className="menu-popover w-80"
               >
-                {laboratory.create.map((action) => (
-                  <Link key={action.key} href={action.href} className="nav-row">
-                    <NavIcon name={action.icon} className="nav-icon" />
-                    <span className="nav-label">{action.label}</span>
-                  </Link>
-                ))}
+                <CreateList actions={create} />
               </div>
             </>
           ) : null}
@@ -277,24 +330,23 @@ export function AppShell({
         <>
           <nav aria-label="Accesos rápidos" className="bottom-bar lg:hidden">
             <ul className="mx-auto flex max-w-lg">
-              {quick.map((item) => {
-                const active = current?.key === item.key;
-                return (
-                  <li key={item.key} className="min-w-0 flex-1">
-                    <Link
-                      href={item.href}
-                      aria-current={active ? "page" : undefined}
-                      aria-label={item.short ? item.label : undefined}
-                      className="bottom-item"
-                    >
-                      <NavIcon name={item.icon} className="size-5.5" />
-                      <span className="max-w-full truncate">
-                        {item.short ?? item.label}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
+              {quick.slice(0, half).map(dockItem)}
+              {create.length > 0 ? (
+                <li className="flex w-18 flex-none justify-center">
+                  <button
+                    ref={createButton}
+                    type="button"
+                    onClick={() => createSheet.current?.showModal()}
+                    aria-haspopup="dialog"
+                    aria-controls="create-actions"
+                    aria-label="Crear"
+                    className="dock-create"
+                  >
+                    <Plus aria-hidden className="size-6" strokeWidth={2.25} />
+                  </button>
+                </li>
+              ) : null}
+              {quick.slice(half).map(dockItem)}
               <li className="min-w-0 flex-1">
                 <button
                   ref={moreButton}
@@ -311,6 +363,34 @@ export function AppShell({
               </li>
             </ul>
           </nav>
+
+          <dialog
+            ref={createSheet}
+            id="create-actions"
+            aria-labelledby="create-actions-title"
+            className="sheet lg:hidden"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) closeCreate();
+            }}
+            onClose={() => createButton.current?.focus()}
+          >
+            <div className="flex max-h-[80dvh] flex-col overflow-y-auto px-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+              <div className="sticky top-0 z-10 flex h-14 items-center bg-surface px-2.5">
+                <h2 id="create-actions-title" className="text-lg font-semibold">
+                  Crear
+                </h2>
+                <button
+                  type="button"
+                  onClick={closeCreate}
+                  aria-label="Cerrar"
+                  className="absolute top-1.5 right-0 grid size-11 place-items-center rounded-md text-muted hover:bg-ink/6 hover:text-ink"
+                >
+                  <X aria-hidden className="size-5" />
+                </button>
+              </div>
+              <CreateList actions={create} />
+            </div>
+          </dialog>
 
           <dialog
             ref={sheet}

@@ -17,6 +17,7 @@ import {
   withinActorPermissions,
 } from "../src/modules/identity/domain/member-administration";
 import {
+  actionsFor,
   createActions,
   labNavigation,
   quickSections,
@@ -290,41 +291,72 @@ test("lab sections follow the practice order and depend on permissions", () => {
 
   assert.deepEqual(
     createActions("pesados", student.permissions).map((a) => a.key),
-    ["new-reservation", "new-incident"],
+    ["new-reservation", "check-in", "start-usage", "new-incident"],
   );
   assert.deepEqual(
     createActions("pesados", teacher.permissions).map((a) => a.key),
-    ["new-practice", "new-reservation", "new-incident", "new-person"],
+    [
+      "new-practice",
+      "new-session",
+      "new-reservation",
+      "new-loan",
+      "new-incident",
+      "new-person",
+    ],
   );
 });
 
-test("the phone's bottom bar offers each role the sections it uses most", () => {
+test("whoever manages stock starts the create menu with the inventory", () => {
+  assert.deepEqual(
+    createActions("pesados", responsible.permissions)
+      .slice(0, 4)
+      .map((a) => a.key),
+    ["new-item", "new-loan", "new-maintenance", "new-incident"],
+  );
+});
+
+test("the create menu puts the current section's actions first", () => {
+  const actions = createActions("pesados", teacher.permissions);
+  assert.deepEqual(
+    actionsFor(actions, "incidents").map((a) => a.key),
+    [
+      "new-incident",
+      "new-practice",
+      "new-session",
+      "new-reservation",
+      "new-loan",
+      "new-person",
+    ],
+  );
+  assert.deepEqual(
+    actionsFor(actions, undefined).map((a) => a.key),
+    actions.map((a) => a.key),
+  );
+});
+
+test("the phone's dock offers each role the sections it uses most", () => {
   const quick = (permissions: readonly string[]) =>
     quickSections(labNavigation("pesados", permissions), permissions);
   assert.deepEqual(quick(responsible.permissions), [
     "home",
     "incidents",
     "inventory",
-    "loans",
   ]);
   assert.deepEqual(quick(teacher.permissions), [
     "home",
     "academic",
     "attendance",
-    "reservations",
   ]);
   assert.deepEqual(quick(student.permissions), [
     "home",
     "academic",
     "reservations",
-    "loans",
   ]);
   // Missing preferred sections are filled in the order of a practice.
   assert.deepEqual(quick(["inventory.read", "space.read"]), [
     "home",
     "inventory",
     "spaces",
-    "reports",
   ]);
 });
 
