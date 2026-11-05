@@ -2,6 +2,8 @@
 
 Estado: **Aceptada** (3 de noviembre de 2026; el responsable pidió aplicar el análisis de UX que la propone). Reemplaza la decisión D7 del [ADR 0022](0022-laboratory-people-and-guided-navigation.md) en lo que toca a la navegación, el encabezado y el inicio.
 
+> El dock del celular y el «+» se actualizaron en el [ADR 0025](0025-mobile-dock-create-button.md).
+
 ## Contexto
 
 El ADR 0022 copió dos patrones de GitHub: pestañas con ícono bajo el encabezado y un menú lateral oculto. En GitHub muestran cosas distintas (las pestañas son las secciones del repositorio y el menú lateral es la navegación global), pero en Labora ambos tenían las mismas doce secciones del laboratorio. El menú quedó como una copia de la tira, y la tira no cabía: en 1280 px se cortaba «Personas» y en un celular sólo se veían tres pestañas y media, sin indicio de que hubiera más.

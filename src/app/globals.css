@@ -244,8 +244,8 @@ textarea {
 
 /*
  * One navigation per screen size (ADR 0023): a fixed, grouped sidebar from
- * 1024px, and below it a bottom bar whose "Más" opens the same list in a
- * bottom sheet.
+ * 1024px, and below it a bottom dock whose "Más" opens the same list in a
+ * bottom sheet and whose center button opens what you can create.
  */
 .sidebar {
   position: sticky;
@@ -294,6 +294,49 @@ textarea {
   height: 3px;
   border-radius: 0 0 3px 3px;
   background: var(--color-guinda);
+}
+
+/*
+ * The create button sits in the middle of the dock and rises above it in a
+ * white cradle that carries the bar's top rule around it (ADR 0025). Flat:
+ * the guinda fill is the only emphasis, no shadow or glow.
+ */
+.dock-create {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-top: -1.125rem;
+  border-radius: 999px;
+  background: var(--color-guinda);
+  color: white;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    scale 150ms ease;
+}
+.dock-create::before {
+  content: "";
+  position: absolute;
+  inset: -0.375rem;
+  z-index: -1;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-surface);
+  /* Only the arc above the bar shows; below it the bar is the cradle. */
+  clip-path: inset(0 0 calc(100% - 1.5625rem) 0);
+}
+.dock-create:hover {
+  background: var(--color-guinda-deep);
+}
+.dock-create:active {
+  scale: 0.96;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dock-create {
+    transition: none;
+  }
 }
 
 .sheet {
