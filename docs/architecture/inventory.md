@@ -74,3 +74,7 @@ Loans I ([arquitectura](loans.md), [validación](loans-validation.md), [ADR 0017
 - Un trigger diferido nuevo sobre `inventory_stocks` impide que cualquier movimiento deje la existencia por debajo de lo prestado (error `loaned-stock`). Desactivar un artículo con préstamos activos sigue rechazándose porque exige saldo cero. No se redefinieron funciones de `0005`.
 - Una devolución con daño o pérdida genera el movimiento `damage`/`loss` correspondiente en la misma transacción.
 - La «devolución» de §14.4 no es el regreso de un préstamo: una devolución a proveedor se registra con `adjustment_out`.
+
+## Actualización: fotos y notas
+
+[ADR 0026](../decisions/0026-inventory-photos-and-notes.md) (Propuesta). Cada artículo activo admite hasta 10 fotos con una nota opcional, guardadas en `documents` (`inventory_item_id`) mediante el módulo Documents; el inventario no cambia su esquema ni sus saldos. Se ven con `inventory.read` y se suben con `inventory.manage` + `document.upload`. El alta admite una foto opcional: la Server Action devuelve el id del artículo y el formulario sube la foto antes de navegar al detalle, que muestra la sección «Fotos y notas».

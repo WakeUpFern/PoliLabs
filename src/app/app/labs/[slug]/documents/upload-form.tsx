@@ -1,24 +1,33 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-const MAX_BYTES = 4 * 1024 * 1024;
+import { FilePicker } from "./file-picker";
+import { uploadDocument } from "./prepare-photo";
 const field = "mt-2 block w-full rounded-md border border-line p-3";
+const PHOTOS = "image/png,image/jpeg,image/webp";
+const PHOTOS_AND_PDF = `application/pdf,${PHOTOS}`;
 // Uploads go to the dedicated route handler; it repeats every check.
 export function UploadForm({
   slug,
   targetKind,
   targetId,
-  withTitle,
+  withTitle = false,
+  withNote = false,
+  photosOnly = false,
   label,
 }: {
   slug: string;
-  targetKind: "resource" | "maintenance-log";
+  targetKind: "resource" | "maintenance-log" | "inventory-item";
   targetId: string;
-  withTitle: boolean;
+  withTitle?: boolean;
+  withNote?: boolean;
+  photosOnly?: boolean;
   label: string;
 }) {
   const router = useRouter();
-  const formRef = useRef<HTMLFormElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState("");
+  const [note, setNote] = useState("");
   const [pending, setPending] = useState(false);
   const [state, setState] = useState<{
     status: "idle" | "success" | "error";
@@ -26,47 +35,31 @@ export function UploadForm({
   }>({ status: "idle", message: "" });
   return (
     <form
-      ref={formRef}
       className="space-y-3"
       onSubmit={async (e) => {
         e.preventDefault();
-        const form = new FormData(e.currentTarget);
-        const file = form.get("file");
-        if (file instanceof File && file.size > MAX_BYTES) {
-          setState({
-            status: "error",
-            message: "El archivo supera el máximo de 4 MB.",
-          });
+        if (!file) {
+          setState({ status: "error", message: "Elige un archivo." });
           return;
         }
-        form.set("targetKind", targetKind);
-        form.set("targetId", targetId);
         setPending(true);
-        try {
-          const response = await fetch(`/app/labs/${slug}/documents`, {
-            method: "POST",
-            body: form,
-          });
-          const result = response.headers
-            .get("content-type")
-            ?.includes("application/json")
-            ? ((await response.json()) as { message: string })
-            : { message: "Inicia sesión de nuevo." };
-          setState({
-            status: response.ok ? "success" : "error",
-            message: result.message,
-          });
-          if (response.ok) {
-            formRef.current?.reset();
-            router.refresh();
-          }
-        } catch {
-          setState({
-            status: "error",
-            message: "No se pudo enviar el archivo. Intenta de nuevo.",
-          });
-        } finally {
-          setPending(false);
+        const result = await uploadDocument(slug, {
+          targetKind,
+          targetId,
+          file,
+          title: withTitle ? title : undefined,
+          note: withNote ? note : undefined,
+        });
+        setPending(false);
+        setState({
+          status: result.ok ? "success" : "error",
+          message: result.message,
+        });
+        if (result.ok) {
+          setFile(null);
+          setTitle("");
+          setNote("");
+          router.refresh();
         }
       }}
     >
@@ -74,23 +67,41 @@ export function UploadForm({
         {withTitle ? (
           <label className="block">
             Título (opcional)
-            <input name="title" maxLength={200} className={field} />
+            <input
+              name="title"
+              maxLength={200}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className={field}
+            />
           </label>
         ) : null}
-        <label className="block">
-          {label}
-          <input
-            name="file"
-            type="file"
-            required
-            accept="application/pdf,image/png,image/jpeg,image/webp"
-            className={field}
+        <div role="group" aria-label={label}>
+          <p className="mb-2">{label}</p>
+          <FilePicker
+            accept={photosOnly ? PHOTOS : PHOTOS_AND_PDF}
+            file={file}
+            onChange={setFile}
           />
-        </label>
+        </div>
+        {withNote ? (
+          <label className="block">
+            Nota (opcional)
+            <textarea
+              name="note"
+              maxLength={1000}
+              rows={3}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Ej. A esta caja le falta una llave."
+              className={field}
+            />
+          </label>
+        ) : null}
         <p className="text-sm text-muted">
-          PDF, PNG, JPEG o WebP; máximo 4 MB. El formato se verifica por el
-          contenido del archivo. Las fotos conservan sus metadatos (p. ej.
-          ubicación GPS).
+          {photosOnly ? "PNG, JPEG o WebP" : "PDF, PNG, JPEG o WebP"}; máximo 4
+          MB. Las fotos se reducen antes de subirlas y pierden sus metadatos
+          (ubicación GPS, dispositivo).
         </p>
         <button type="submit" className="btn btn-primary">
           {pending ? "Subiendo…" : "Subir"}

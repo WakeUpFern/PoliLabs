@@ -12,11 +12,13 @@ import {
   resources,
 } from "@/modules/spatial/infrastructure/spatial-schema";
 import { maintenanceLogs } from "@/modules/maintenance/infrastructure/maintenance-schema";
+import { inventoryItems } from "@/modules/inventory/infrastructure/inventory-schema";
 import { documents } from "./document-schema";
 import {
   DocumentError,
   documentId,
   MAX_EVIDENCE_PER_LOG,
+  MAX_PHOTOS_PER_ITEM,
   type DocumentContext,
   type DocumentRecord,
   type DocumentSummary,
@@ -30,6 +32,7 @@ import type {
 const summaryColumns = {
   id: documents.id,
   title: documents.title,
+  note: documents.note,
   originalName: documents.originalName,
   mediaType: documents.mediaType,
   byteSize: documents.byteSize,
@@ -40,11 +43,18 @@ const summaryColumns = {
   createdAt: documents.createdAt,
   resourceId: documents.resourceId,
   maintenanceLogId: documents.maintenanceLogId,
+  inventoryItemId: documents.inventoryItemId,
 };
 type SummaryRow = Omit<DocumentSummary, "kind">;
+const kindOf = (row: SummaryRow): DocumentSummary["kind"] =>
+  row.resourceId
+    ? "resource"
+    : row.maintenanceLogId
+      ? "maintenance-log"
+      : "inventory-item";
 const withKind = <T extends SummaryRow>(row: T) => ({
   ...row,
-  kind: row.resourceId ? ("resource" as const) : ("maintenance-log" as const),
+  kind: kindOf(row),
 });
 class DrizzleDocumentTransaction implements DocumentTransaction {
   constructor(
@@ -110,6 +120,21 @@ class DrizzleDocumentTransaction implements DocumentTransaction {
       .orderBy(documents.createdAt, documents.id);
     return rows.map(withKind);
   }
+  async itemPhotos(inventoryItemId: string) {
+    const rows = await this.tx
+      .select(summaryColumns)
+      .from(documents)
+      .innerJoin(users, eq(users.id, documents.uploadedBy))
+      .where(
+        and(
+          eq(documents.laboratoryId, this.context.laboratoryId),
+          eq(documents.inventoryItemId, inventoryItemId),
+          isNull(documents.archivedAt),
+        ),
+      )
+      .orderBy(desc(documents.createdAt), desc(documents.id));
+    return rows.map(withKind);
+  }
   private spaceOf?: string;
   async lockTarget(target: DocumentTarget) {
     if (target.kind === "resource") {
@@ -150,6 +175,31 @@ class DrizzleDocumentTransaction implements DocumentTransaction {
       this.spaceOf = space.id;
       return;
     }
+    if (target.kind === "inventory-item") {
+      // Locked like a stock movement does; photos need an active item.
+      const [item] = await this.tx
+        .select({ id: inventoryItems.id, isActive: inventoryItems.isActive })
+        .from(inventoryItems)
+        .where(
+          and(
+            eq(inventoryItems.id, target.inventoryItemId),
+            eq(inventoryItems.laboratoryId, this.context.laboratoryId),
+          ),
+        )
+        .for("update");
+      if (!item?.isActive) throw new DocumentError("not-found");
+      const [photos] = await this.tx
+        .select({ value: sql<number>`count(*)::integer` })
+        .from(documents)
+        .where(
+          and(
+            eq(documents.inventoryItemId, item.id),
+            isNull(documents.archivedAt),
+          ),
+        );
+      if (photos.value >= MAX_PHOTOS_PER_ITEM) throw new DocumentError("limit");
+      return;
+    }
     // The log is locked, never updated: its immutability trigger is untouched.
     const [log] = await this.tx
       .select({ id: maintenanceLogs.id })
@@ -183,6 +233,7 @@ class DrizzleDocumentTransaction implements DocumentTransaction {
       laboratoryId: this.context.laboratoryId,
       storageKey: document.storageKey,
       title: document.title,
+      note: document.note,
       originalName: document.originalName,
       mediaType: document.mediaType,
       byteSize: document.byteSize,
@@ -194,12 +245,15 @@ class DrizzleDocumentTransaction implements DocumentTransaction {
       resourceId: target.kind === "resource" ? target.resourceId : null,
       maintenanceLogId:
         target.kind === "maintenance-log" ? target.maintenanceLogId : null,
+      inventoryItemId:
+        target.kind === "inventory-item" ? target.inventoryItemId : null,
     });
     const record = await this.document(document.id);
     return {
       id: record.id,
       kind: record.kind,
       title: record.title,
+      note: record.note,
       originalName: record.originalName,
       mediaType: record.mediaType,
       byteSize: record.byteSize,
@@ -210,6 +264,7 @@ class DrizzleDocumentTransaction implements DocumentTransaction {
       createdAt: record.createdAt,
       resourceId: record.resourceId,
       maintenanceLogId: record.maintenanceLogId,
+      inventoryItemId: record.inventoryItemId,
     };
   }
   async document(id: string): Promise<DocumentRecord> {
@@ -277,7 +332,10 @@ export class DrizzleDocumentStore implements DocumentStore {
       const pg = postgresError(error);
       if (pg.code === "23503") throw new DocumentError("not-found");
       if (pg.code === "23514") {
-        if (pg.message?.includes("evidence-limit"))
+        if (
+          pg.message?.includes("evidence-limit") ||
+          pg.message?.includes("photo-limit")
+        )
           throw new DocumentError("limit");
         throw new DocumentError("input");
       }

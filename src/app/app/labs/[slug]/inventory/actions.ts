@@ -1,6 +1,5 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { inventoryWeb } from "@/modules/inventory/web/services";
 import {
   inventoryActionError,
@@ -21,7 +20,6 @@ export async function inventoryAction(
   }
   revalidatePath(`/app/labs/${slug}/inventory`);
   revalidatePath(`/app/labs/${slug}/inventory/${result.itemId}`);
-  if (operation === "create")
-    redirect(`/app/labs/${slug}/inventory/${result.itemId}?created=1`);
-  return { status: "success", message: result.message };
+  // After a create the form may upload a photo, then it navigates itself.
+  return { status: "success", message: result.message, itemId: result.itemId };
 }

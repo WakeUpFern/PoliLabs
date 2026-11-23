@@ -71,6 +71,10 @@ El formulario advierte que las fotos conservan sus metadatos (p. ej. GPS).
 
 `0011_documents_i.sql`: generada con `pnpm db:generate` (sólo la tabla nueva), índice único reordenado antes de las FKs, dos funciones y dos triggers manuales, tres permisos y su asignación a `laboratory_responsible`. Sin DROP, TRUNCATE ni DELETE; migraciones anteriores intactas.
 
+## Actualización: fotos de inventario y notas
+
+[ADR 0026](../decisions/0026-inventory-photos-and-notes.md) (Propuesta) añade un tercer destino, artículos de inventario (`inventory_item_id`, sólo imágenes, 10 activas por artículo, lectura con `inventory.read`, subida con `inventory.manage` + `document.upload`), y la columna `note` (≤ 1000) para evidencia y fotos. El cliente reduce las fotos a 1600 px JPEG antes de subirlas, lo que elimina EXIF/GPS; en pantallas táctiles el selector ofrece «Tomar foto» con la cámara trasera. Los listados muestran miniatura y nota.
+
 ## Pendientes
 
-URLs prefirmadas (ver ADR 0016), documentos de prácticas, evidencia de incidencias, versionado y documentos compartidos, purga y retención, eliminación de EXIF/GPS, antivirus, miniaturas, auditoría persistente, Giussepe y paginación. Ver [validación](documents-validation.md).
+URLs prefirmadas (ver ADR 0016), documentos de prácticas, evidencia de incidencias, versionado y documentos compartidos, purga y retención, eliminación de EXIF/GPS en el servidor (el navegador ya la quita al reducir fotos, ADR 0026), antivirus, miniaturas, auditoría persistente, Giussepe y paginación. Ver [validación](documents-validation.md).

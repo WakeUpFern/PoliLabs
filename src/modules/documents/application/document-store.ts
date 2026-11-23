@@ -14,6 +14,8 @@ export interface DocumentTransaction {
   resourceDocuments(resourceId: string): Promise<DocumentSummary[]>;
   // Active evidence of every log of the resource.
   resourceEvidence(resourceId: string): Promise<DocumentSummary[]>;
+  // Active photos of an inventory item of the laboratory.
+  itemPhotos(inventoryItemId: string): Promise<DocumentSummary[]>;
   // Validates and locks the target; throws when it cannot receive a document.
   lockTarget(target: DocumentTarget): Promise<void>;
   insert(document: NewDocument): Promise<DocumentSummary>;

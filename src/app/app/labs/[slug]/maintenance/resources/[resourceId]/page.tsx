@@ -140,7 +140,7 @@ export default async function MaintenanceResourcePage({
                       slug={slug}
                       targetKind="maintenance-log"
                       targetId={log.id}
-                      withTitle={false}
+                      withNote
                       label="Foto o documento"
                     />
                   </div>

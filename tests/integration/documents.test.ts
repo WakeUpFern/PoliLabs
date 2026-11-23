@@ -19,6 +19,11 @@ import {
 import { MaintenanceService } from "../../src/modules/maintenance/application/maintenance";
 import { DrizzleMaintenanceStore } from "../../src/modules/maintenance/infrastructure/maintenance-store";
 import { AuthorizationDeniedError } from "../../src/modules/identity/domain/access-errors";
+import {
+  CreateInventoryItem,
+  DeactivateInventoryItem,
+} from "../../src/modules/inventory/application/inventory";
+import { DrizzleInventoryStore } from "../../src/modules/inventory/infrastructure/inventory-store";
 import { operationFixture, pgCode, eq, inArray } from "./operation-fixture";
 
 const rejected = (code: string) => (error: unknown) =>
@@ -162,6 +167,8 @@ test("Documents I metadata, authorization, evidence and storage consistency in P
         canArchive: false,
         canReadEvidence: false,
         canAddEvidence: false,
+        canReadPhotos: false,
+        canAddPhotos: false,
       });
       await grantStudent("document.read");
       const read = await service.download({
@@ -454,6 +461,111 @@ test("Documents I metadata, authorization, evidence and storage consistency in P
       assert.deepEqual(await findOrphans(storage, known, new Date()), []);
       await storage.delete(orphans[0].key);
       assert.deepEqual(await objects(), beforeObjects);
+    },
+  );
+
+  await t.test(
+    "inventory items keep photos with a note, images only, up to ten",
+    async () => {
+      const inventory = new DrizzleInventoryStore(db);
+      const item = await new CreateInventoryItem(inventory).execute({
+        ...actor,
+        name: "Caja de llaves",
+        type: "reusable_tool",
+        unit: "piece",
+        source: "WEB",
+      });
+      const photo = (overrides: Record<string, unknown> = {}) =>
+        service.upload({
+          ...actor,
+          target: { kind: "inventory-item", inventoryItemId: item.id },
+          fileName: "caja.png",
+          note: "  A esta caja de llaves le falta una llave  ",
+          bytes: png(),
+          source: "WEB",
+          ...overrides,
+        });
+      const first = await photo();
+      assert.equal(first.kind, "inventory-item");
+      assert.equal(first.inventoryItemId, item.id);
+      assert.equal(first.note, "A esta caja de llaves le falta una llave");
+      assert.equal(first.title, null);
+      const before = await objects();
+      await assert.rejects(photo({ bytes: pdf() }), rejected("image-only"));
+      await assert.rejects(
+        photo({ note: "x".repeat(1001) }),
+        rejected("input"),
+      );
+      assert.deepEqual(await objects(), before);
+      // The database refuses a PDF on an item even past the service.
+      const [firstRow] = await db
+        .select()
+        .from(schema.documents)
+        .where(eq(schema.documents.id, first.id));
+      await assert.rejects(
+        pool.query(
+          `insert into documents (id, laboratory_id, storage_key, original_name, media_type, byte_size, sha256, uploaded_by, source, inventory_item_id)
+           values ($1, $2, $3, 'x.pdf', 'application/pdf', 10, $4, $5, 'WEB', $6)`,
+          [
+            randomUUID(),
+            actor.laboratoryId,
+            `documents/${actor.laboratoryId}/${randomUUID()}`,
+            firstRow.sha256,
+            actor.actorUserId,
+            item.id,
+          ],
+        ),
+        (e: unknown) => pgCode(e) === "23514",
+      );
+      // Readers need inventory.read; the student role lacks it.
+      await assert.rejects(
+        service.itemPhotos({ ...student, itemId: item.id }),
+        AuthorizationDeniedError,
+      );
+      await assert.rejects(
+        service.download({ ...student, documentId: first.id }),
+        AuthorizationDeniedError,
+      );
+      await assert.rejects(
+        service.upload({
+          ...student,
+          target: { kind: "inventory-item", inventoryItemId: item.id },
+          fileName: "caja.png",
+          bytes: png(),
+          source: "WEB",
+        }),
+        AuthorizationDeniedError,
+      );
+      for (let i = 1; i < 10; i += 1) await photo({ note: null });
+      await assert.rejects(photo(), rejected("limit"));
+      const listed = await service.itemPhotos({ ...actor, itemId: item.id });
+      assert.equal(listed.length, 10);
+      assert.equal(listed.at(-1)?.id, first.id);
+      // Archiving frees a slot; a deactivated item takes no new photos.
+      await service.archive({
+        ...actor,
+        documentId: first.id,
+        reason: "Foto repetida",
+      });
+      await photo();
+      const second = await new CreateInventoryItem(inventory).execute({
+        ...actor,
+        name: "Juego de dados",
+        type: "reusable_tool",
+        unit: "piece",
+        source: "WEB",
+      });
+      await new DeactivateInventoryItem(inventory).execute({
+        ...actor,
+        itemId: second.id,
+        source: "WEB",
+      });
+      await assert.rejects(
+        photo({
+          target: { kind: "inventory-item", inventoryItemId: second.id },
+        }),
+        rejected("not-found"),
+      );
     },
   );
 
