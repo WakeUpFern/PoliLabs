@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AuthorizationDeniedError } from "@/modules/identity/domain/access-errors";
 import { inventoryWeb } from "@/modules/inventory/web/services";
+import { documentsWeb } from "@/modules/documents/web/services";
 import { InventoryForm } from "../inventory-form";
 export default async function NewInventoryPage({
   params,
@@ -9,9 +10,12 @@ export default async function NewInventoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  let data;
+  let data, documents;
   try {
-    data = await inventoryWeb.newForm(slug);
+    [data, documents] = await Promise.all([
+      inventoryWeb.newForm(slug),
+      documentsWeb.access(slug),
+    ]);
   } catch (error) {
     if (error instanceof AuthorizationDeniedError) notFound();
     throw error;
@@ -35,6 +39,7 @@ export default async function NewInventoryPage({
           mode="create"
           locations={data.locations}
           canAdjust={data.canAdjust}
+          canAddPhotos={documents.canAddPhotos}
         />
       </section>
     </div>

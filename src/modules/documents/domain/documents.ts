@@ -13,12 +13,15 @@ export type DocumentMediaType = (typeof DOCUMENT_MEDIA_TYPES)[number];
 // on AWS without a migration.
 export const MAX_DOCUMENT_BYTES = 4 * 1024 * 1024;
 export const MAX_EVIDENCE_PER_LOG = 10;
+export const MAX_PHOTOS_PER_ITEM = 10;
+export const MAX_DOCUMENT_NOTE = 1000;
 export const MAX_DOCUMENT_NAME = 255;
 export const MAX_DOCUMENT_TITLE = 200;
 export const MAX_ARCHIVE_REASON = 1000;
 export type DocumentTarget =
   | { kind: "resource"; resourceId: string }
-  | { kind: "maintenance-log"; maintenanceLogId: string };
+  | { kind: "maintenance-log"; maintenanceLogId: string }
+  | { kind: "inventory-item"; inventoryItemId: string };
 export type DocumentKind = DocumentTarget["kind"];
 export class DocumentError extends Error {
   constructor(
@@ -26,6 +29,7 @@ export class DocumentError extends Error {
       | "input"
       | "not-found"
       | "type"
+      | "image-only"
       | "too-large"
       | "limit"
       | "archived"
@@ -45,6 +49,8 @@ export function documentTarget(kind: string, id: string): DocumentTarget {
   if (kind === "resource") return { kind, resourceId: documentId(id) };
   if (kind === "maintenance-log")
     return { kind, maintenanceLogId: documentId(id) };
+  if (kind === "inventory-item")
+    return { kind, inventoryItemId: documentId(id) };
   throw new DocumentError("input");
 }
 function startsWith(bytes: Uint8Array, signature: number[], offset = 0) {
@@ -72,6 +78,14 @@ export function documentBytes(bytes: Uint8Array) {
   const mediaType = sniffMediaType(bytes);
   if (!mediaType) throw new DocumentError("type");
   return mediaType;
+}
+// Inventory items keep photos only; manuals and evidence also accept PDF.
+export function acceptsMediaType(
+  target: DocumentTarget,
+  mediaType: DocumentMediaType,
+) {
+  if (target.kind === "inventory-item" && mediaType === "application/pdf")
+    throw new DocumentError("image-only");
 }
 // Display name only: storage keys never derive from it.
 export function documentName(value: string) {
@@ -115,6 +129,7 @@ export type DocumentSummary = {
   id: string;
   kind: DocumentKind;
   title: string | null;
+  note: string | null;
   originalName: string;
   mediaType: DocumentMediaType;
   byteSize: number;
@@ -125,6 +140,7 @@ export type DocumentSummary = {
   createdAt: Date;
   resourceId: string | null;
   maintenanceLogId: string | null;
+  inventoryItemId: string | null;
 };
 export type DocumentRecord = DocumentSummary & {
   laboratoryId: string;
@@ -143,6 +159,7 @@ export type NewDocument = {
   storageKey: string;
   target: DocumentTarget;
   title: string | null;
+  note: string | null;
   originalName: string;
   mediaType: DocumentMediaType;
   byteSize: number;

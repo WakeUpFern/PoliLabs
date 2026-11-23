@@ -65,7 +65,7 @@ const documentMessages: Record<DocumentError["code"], UploadResult> = {
   input: {
     status: 422,
     message:
-      "Revisa el archivo, el título (máximo 200 caracteres) o el motivo (máximo 1000).",
+      "Revisa el archivo, el título (máximo 200 caracteres), la nota o el motivo (máximo 1000).",
   },
   "not-found": {
     status: 404,
@@ -77,13 +77,17 @@ const documentMessages: Record<DocumentError["code"], UploadResult> = {
     message:
       "Formato no admitido. Sólo se aceptan PDF, PNG, JPEG y WebP verificados por su contenido.",
   },
+  "image-only": {
+    status: 415,
+    message: "Aquí sólo se aceptan fotos: PNG, JPEG o WebP.",
+  },
   "too-large": {
     status: 413,
     message: "El archivo supera el máximo de 4 MB.",
   },
   limit: {
     status: 409,
-    message: "La entrada ya tiene el máximo de 10 evidencias activas.",
+    message: "Ya hay 10 archivos activos; archiva alguno antes de subir otro.",
   },
   archived: { status: 409, message: "El documento ya estaba archivado." },
   unavailable: {
@@ -148,6 +152,14 @@ export class DocumentsWeb {
     ]);
     return { access, evidence };
   }
+  async itemPhotos(slug: string, itemId: string) {
+    const context = await this.context(slug);
+    const [access, photos] = await Promise.all([
+      this.services.documents.access(context),
+      this.services.documents.itemPhotos({ ...context, itemId }),
+    ]);
+    return { access, photos };
+  }
   // Called by the upload route after the origin check. The session and
   // laboratory are resolved before reading up to 4 MB of request body.
   async upload(
@@ -179,6 +191,7 @@ export class DocumentsWeb {
         String(form.get("targetId") ?? ""),
       ),
       title: String(form.get("title") ?? "") || null,
+      note: String(form.get("note") ?? "") || null,
       fileName: file instanceof File ? file.name : "",
       bytes: new Uint8Array(await file.arrayBuffer()),
     });

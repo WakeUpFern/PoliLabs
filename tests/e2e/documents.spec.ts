@@ -24,6 +24,8 @@ const png = {
     "base64",
   ),
 };
+// Phones label the chooser «Elegir de la galería» next to «Tomar foto».
+const chooseFile = /^Elegir (archivo|de la galería)$/;
 let pdfUrl = "";
 let evidenceUrl = "";
 
@@ -86,7 +88,7 @@ test("manager uploads a manual that is served only through the authorized route"
     page.getByRole("heading", { name: "Documentos de Torno e2e" }),
   ).toBeVisible();
   await page.getByLabel("Título (opcional)").fill("Manual del torno");
-  await page.getByLabel("Archivo").setInputFiles(pdf);
+  await page.getByRole("button", { name: chooseFile }).setInputFiles(pdf);
   await page.getByRole("button", { name: "Subir" }).click();
   await expect(page.locator("form").getByRole("status")).toHaveText(
     "Archivo guardado.",
@@ -110,7 +112,7 @@ test("content is verified by its bytes and uploads require the app origin", asyn
 }, testInfo) => {
   const { context, page } = await openAs(browser, testInfo, lab.users.manager);
   await page.goto(documentsPath());
-  await page.getByLabel("Archivo").setInputFiles({
+  await page.getByRole("button", { name: chooseFile }).setInputFiles({
     name: "no-es-pdf.pdf",
     mimeType: "application/pdf",
     buffer: Buffer.from("texto plano disfrazado de PDF"),
@@ -142,10 +144,12 @@ test("evidence is appended to the maintenance entry without changing it", async 
   });
   await expect(entry).toContainText("Sin evidencia adjunta.");
   await entry.getByText("Añadir evidencia").click();
-  await entry.getByLabel("Foto o documento").setInputFiles(png);
+  await entry.getByRole("button", { name: chooseFile }).setInputFiles(png);
+  await entry.getByLabel("Nota (opcional)").fill("Foto de la hoja escrita");
   await entry.getByRole("button", { name: "Subir" }).click();
   await expect(entry.getByRole("status")).toHaveText("Archivo guardado.");
-  const evidence = entry.getByRole("link", { name: png.name });
+  // The browser re-encodes photos to JPEG (smaller, without EXIF).
+  const evidence = entry.getByRole("link", { name: "bitacora-escrita.jpg" });
   await expect(evidence).toBeVisible();
   await expect(entry).toContainText(
     "Lubricación registrada en bitácora en papel",
@@ -154,7 +158,8 @@ test("evidence is appended to the maintenance entry without changing it", async 
   expect(evidenceUrl).toContain(`/app/labs/${lab.slug}/documents/`);
   const image = await page.request.get(evidenceUrl);
   expect(image.status()).toBe(200);
-  expect(image.headers()["content-type"]).toBe("image/png");
+  expect(image.headers()["content-type"]).toBe("image/jpeg");
+  await expect(entry).toContainText("Foto de la hoja escrita");
   expect(logId).toBeTruthy();
   await context.close();
 });

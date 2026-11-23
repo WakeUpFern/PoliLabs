@@ -1,5 +1,6 @@
 "use client";
 import { useActionState, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { InventoryItem } from "@/modules/inventory/domain/inventory";
 import {
   MOVEMENT_LABELS,
@@ -9,6 +10,8 @@ import {
   type InventoryActionState,
 } from "@/modules/inventory/web/inventory-web";
 import { inventoryAction } from "./actions";
+import { FilePicker } from "../documents/file-picker";
+import { uploadDocument } from "../documents/prepare-photo";
 const field =
   "mt-2 block w-full rounded-md border border-line bg-surface px-4 py-3";
 const button = "btn btn-primary";
@@ -18,6 +21,7 @@ export function InventoryForm({
   item,
   locations = [],
   canAdjust = false,
+  canAddPhotos = false,
   hasHistory = false,
 }: {
   slug: string;
@@ -25,8 +29,12 @@ export function InventoryForm({
   item?: InventoryItem;
   locations?: LocationOption[];
   canAdjust?: boolean;
+  canAddPhotos?: boolean;
   hasHistory?: boolean;
 }) {
+  const router = useRouter();
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoNote, setPhotoNote] = useState("");
   const [quantity, setQuantity] = useState("");
   const [notes, setNotes] = useState("");
   const [, startTransition] = useTransition();
@@ -42,6 +50,21 @@ export function InventoryForm({
       if (result.status === "success" && mode === "movement") {
         setQuantity("");
         setNotes("");
+      }
+      if (result.status === "success" && mode === "create" && result.itemId) {
+        // The item exists already; a failed photo is reported on its page.
+        const upload = photo
+          ? await uploadDocument(slug, {
+              targetKind: "inventory-item",
+              targetId: result.itemId,
+              file: photo,
+              note: photoNote,
+            })
+          : { ok: true };
+        router.push(
+          `/app/labs/${slug}/inventory/${result.itemId}?created=1${upload.ok ? "" : "&photo=failed"}`,
+        );
+        return { ...result, message: "Artículo registrado." };
       }
       return result;
     },
@@ -175,6 +198,29 @@ export function InventoryForm({
                   />
                 </label>
               </>
+            )}
+            {mode === "create" && canAddPhotos && (
+              <div className="space-y-3 border-t border-line pt-5">
+                <div role="group" aria-label="Foto opcional">
+                  <p className="mb-2 font-medium">Foto opcional</p>
+                  <FilePicker
+                    accept="image/png,image/jpeg,image/webp"
+                    file={photo}
+                    onChange={setPhoto}
+                  />
+                </div>
+                <label className="block font-medium">
+                  Nota de la foto
+                  <textarea
+                    value={photoNote}
+                    onChange={(event) => setPhotoNote(event.target.value)}
+                    maxLength={1000}
+                    rows={3}
+                    placeholder="Ej. A esta caja de llaves le falta una llave."
+                    className={field}
+                  />
+                </label>
+              </div>
             )}
             {mode === "create" && !canAdjust && (
               <p className="text-sm text-muted">

@@ -12,24 +12,32 @@ import {
 import { formatTime } from "@/shared/time";
 import { InventoryForm } from "../inventory-form";
 import { ItemLoans } from "../../loans/item-loans";
+import { documentsWeb } from "@/modules/documents/web/services";
+import { DocumentError } from "@/modules/documents/domain/documents";
+import { DocumentList } from "../../documents/document-list";
+import { UploadForm } from "../../documents/upload-form";
 export default async function InventoryDetailPage({
   params,
   searchParams,
 }: {
   params: Promise<{ slug: string; itemId: string }>;
-  searchParams: Promise<{ created?: string }>;
+  searchParams: Promise<{ created?: string; photo?: string }>;
 }) {
   const [{ slug, itemId }, feedback] = await Promise.all([
     params,
     searchParams,
   ]);
-  let data;
+  let data, photos;
   try {
-    data = await inventoryWeb.detail(slug, itemId);
+    [data, photos] = await Promise.all([
+      inventoryWeb.detail(slug, itemId),
+      documentsWeb.itemPhotos(slug, itemId),
+    ]);
   } catch (error) {
     if (
       error instanceof AuthorizationDeniedError ||
-      error instanceof InventoryError
+      error instanceof InventoryError ||
+      error instanceof DocumentError
     )
       notFound();
     throw error;
@@ -51,6 +59,11 @@ export default async function InventoryDetailPage({
           Artículo registrado.
         </p>
       )}
+      {feedback.photo === "failed" && (
+        <p role="alert" className="mt-3 rounded-md bg-red-50 p-4 text-red-800">
+          La foto no se pudo subir. Inténtalo de nuevo en «Fotos y notas».
+        </p>
+      )}
       <h1 className="text-2xl mt-6 font-semibold">{item.name}</h1>
       <p className="mt-3 text-muted">
         {TYPE_LABELS[item.type]} · {item.isActive ? "Activo" : "Desactivado"}
@@ -66,6 +79,34 @@ export default async function InventoryDetailPage({
             Cantidad total registrada, incluidas las piezas prestadas.
           </p>
         )}
+      </section>
+      <section className="mt-6 box p-5" aria-labelledby="item-photos">
+        <h2 id="item-photos" className="mb-4 text-xl font-semibold">
+          Fotos y notas
+        </h2>
+        <DocumentList
+          slug={slug}
+          documents={photos.photos}
+          canArchive={photos.access.canArchive}
+          empty="Sin fotos todavía."
+        />
+        {item.isActive && photos.access.canAddPhotos ? (
+          <details className="mt-4" open={photos.photos.length === 0}>
+            <summary className="cursor-pointer font-semibold text-guinda">
+              Agregar foto
+            </summary>
+            <div className="mt-3">
+              <UploadForm
+                slug={slug}
+                targetKind="inventory-item"
+                targetId={item.id}
+                withNote
+                photosOnly
+                label="Foto del artículo"
+              />
+            </div>
+          </details>
+        ) : null}
       </section>
       <ItemLoans slug={slug} itemId={item.id} />
       <div className="mt-8 grid gap-6 lg:grid-cols-2">

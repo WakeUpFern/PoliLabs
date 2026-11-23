@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import {
+  acceptsMediaType,
   documentBytes,
   documentId,
   documentName,
@@ -7,6 +8,7 @@ import {
   documentText,
   DocumentError,
   MAX_ARCHIVE_REASON,
+  MAX_DOCUMENT_NOTE,
   MAX_DOCUMENT_TITLE,
   storageKey,
   type DocumentContext,
@@ -20,19 +22,23 @@ export type DocumentUpload = {
   fileName: string;
   bytes: Uint8Array;
   title?: string | null;
+  note?: string | null;
   source: string;
 };
 const uploadPermissions = {
   resource: ["document.upload"],
   "maintenance-log": ["maintenance.create", "document.upload"],
+  "inventory-item": ["inventory.manage", "document.upload"],
 } as const satisfies Record<
   DocumentTarget["kind"],
   readonly [PermissionKey, ...PermissionKey[]]
 >;
-// Evidence belongs to the maintenance log; manuals to the resource library.
+// Evidence belongs to the maintenance log, photos to the inventory item and
+// manuals to the resource library.
 const readPermission = {
   resource: "document.read",
   "maintenance-log": "maintenance.read",
+  "inventory-item": "inventory.read",
 } as const satisfies Record<DocumentTarget["kind"], PermissionKey>;
 function groupByLog(documents: DocumentSummary[]) {
   const result = new Map<string, DocumentSummary[]>();
@@ -58,6 +64,9 @@ export class DocumentService {
       canReadEvidence: keys.includes("maintenance.read"),
       canAddEvidence:
         keys.includes("maintenance.create") && keys.includes("document.upload"),
+      canReadPhotos: keys.includes("inventory.read"),
+      canAddPhotos:
+        keys.includes("inventory.manage") && keys.includes("document.upload"),
     }));
   }
   async resourceDocuments(input: DocumentContext & { resourceId: string }) {
@@ -75,6 +84,10 @@ export class DocumentService {
       ),
     );
   }
+  async itemPhotos(input: DocumentContext & { itemId: string }) {
+    const id = documentId(input.itemId);
+    return this.store.run(input, ["inventory.read"], (tx) => tx.itemPhotos(id));
+  }
   async upload(
     input: DocumentContext & DocumentUpload & { target: DocumentTarget },
   ) {
@@ -82,10 +95,12 @@ export class DocumentService {
     const permissions = uploadPermissions[target.kind];
     const originalName = documentName(input.fileName);
     const mediaType = documentBytes(input.bytes);
+    acceptsMediaType(target, mediaType);
     const title =
       target.kind === "resource"
         ? documentText(input.title, MAX_DOCUMENT_TITLE, false)
         : null;
+    const note = documentText(input.note, MAX_DOCUMENT_NOTE, false);
     const source = documentSource(input.source);
     const sha256 = createHash("sha256").update(input.bytes).digest("hex");
     // Reject unauthorized or invalid targets before writing any object.
@@ -102,6 +117,7 @@ export class DocumentService {
           storageKey: key,
           target,
           title,
+          note,
           originalName,
           mediaType,
           byteSize: input.bytes.byteLength,

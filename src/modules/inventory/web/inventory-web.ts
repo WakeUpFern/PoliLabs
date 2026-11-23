@@ -18,6 +18,8 @@ import { InventoryError, type InventoryItem } from "../domain/inventory";
 export type InventoryActionState = {
   status: "idle" | "error" | "success";
   message: string;
+  // Set after a create, so the form can attach a photo before navigating.
+  itemId?: string;
 };
 export type LocationOption = { id: string; label: string };
 type Services = {
